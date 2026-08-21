@@ -6,117 +6,96 @@
 <type>(<scope>): <subject>
 
 <body>
-
-<footer>
 ```
+
+**KHÔNG có footer** — không thêm 🤖 hay Co-Authored-By.
 
 ---
 
-## Quy tắc quan trọng: Small Commits per Scope
+## Quy tắc quan trọng
+
+### 1. Tiếng Việt có dấu
 
 ```
-Mỗi module chia thành nhiều commits nhỏ:
+✅ feat(strategy): thêm LRU eviction strategy
+✅ fix(core): sửa lỗi binary search wrap-around
+✅ test(node): thêm test case cho TTL expiration
 
-✅ ĐÚNG: 4 commits cho Module 1
-  feat(core): add types and interfaces
-  feat(core): add hash helpers
-  feat(core): add consistent hashing implementation
-  feat(core): add cache node implementation
-
-❌ SAI: 1 commit cho cả module
-  feat(core): add everything for module 1
+❌ feat(strategy): add LRU eviction strategy
+❌ feat(strategy): add LRU eviction strategy
 ```
 
-### Tại sao small commits?
+### 2. Không AI footer
 
 ```
-1. Dễ review: Mỗi commit chỉ 1-3 files
-2. Dễ revert: Nếu bug, revert 1 commit nhỏ
-3. Dễ hiểu: Git history rõ ràng
-4. Dễ debug: Biết chính xác commit nào gây bug
-```
+✅ feat(strategy): thêm LRU eviction strategy
 
-### Rule
-
-```
-1 commit = 1 file hoặc 1 nhóm files liên quan trực tiếp
-Tối đa: 3 files trong 1 commit
-```
-
----
-
-## Examples
-
-### ✅ Small commits pattern
-
-```
-feat(strategy): add eviction strategy interface
-
-- Add EvictionStrategy interface in src/strategies/index.ts
-- Define onAccess, onInsert, onEvict, onRemove methods
-
----
-
-feat(strategy): add LRU eviction strategy
-
-- Add LRUStrategy class in src/strategies/lru.ts
-- Track access order with array
+- Implement access order tracking
 - Evict least recently used key
 
----
+❌ feat(strategy): add LRU eviction strategy
 
-feat(strategy): add LRU tests
+- Implement access order tracking
 
-- Add tests/strategies/lru.test.ts
-- Test eviction order, access tracking, edge cases
+🤖 Generated with Codebuff
+Co-Authored-By: Codebuff <noreply@codebuff.com>
+```
 
----
+### 3. Small commits per scope
 
-test(strategy): add LFU and FIFO tests
+```
+1 commit = 1-3 files liên quan trực tiếp
+Tối đa 3 files trong 1 commit
+```
 
-- Add tests/strategies/lfu.test.ts
-- Add tests/strategies/fifo.test.ts
+### 4. Validation trước khi commit
+
+```
+□ npm test — pass
+□ git diff —check — không có trailing whitespace
+□ Code compile không lỗi
 ```
 
 ---
 
 ## Types
 
-| Type | Mô tả | Khi nào dùng |
-|---|---|---|
-| `feat` | Feature mới | Thêm functionality mới |
-| `fix` | Fix bug | Sửa bug |
-| `docs` | Documentation | Thêm/sửa docs |
-| `style` | Code style | Formatting, semicolons (không ảnh hưởng logic) |
-| `refactor` | Refactor | Cải thiện code structure |
-| `test` | Tests | Thêm/sửa tests |
-| `bench` | Benchmark | Thêm/sửa benchmark |
-| `chore` | Maintenance | Dependencies, CI, config |
-| `perf` | Performance | Cải thiện performance |
+| Type | Khi nào dùng |
+|---|---|
+| `feat` | Thêm tính năng mới |
+| `fix` | Sửa bug |
+| `refactor` | Refactor code, không thay đổi logic |
+| `chore` | Cập nhật package, cấu hình, build settings |
+| `opt` | Tối ưu hiệu năng |
+| `test` | Thêm/sửa test |
+| `docs` | README, tài liệu |
 
 ## Scopes
 
 | Scope | Mô tả |
 |---|---|
-| `core` | Core logic (consistent hashing, replication) |
+| `core` | Core logic (consistent hashing, node, cluster) |
+| `strategy` | Cache strategies (LRU, LFU, FIFO) |
 | `server` | Network layer (TCP server, protocol) |
-| `strategy` | Cache strategies (LRU, LFU, TTL) |
-| `vis` | Visualization (React components) |
+| `replication` | Data replication |
+| `invalidation` | Cache invalidation |
+| `bench` | Benchmark |
+| `vis` | Visualization |
 | `docs` | Documentation |
 | `agent` | Development workflow |
-| `ci` | CI/CD pipeline |
-| `deps` | Dependencies |
+
+---
 
 ## Rules
 
 ### Subject
 
 ```
-- Viết lowercase
-- Không viết hoa chữ cái đầu
+- Tiếng Việt có dấu
+- Không viết hoa chữ đầu
 - Không kết thúc bằng dấu chấm
 - Tối đa 50 ký tự
-- Dùng imperative mood: "add" không phải "added"
+- Dùng imperative mood: "thêm" không phải "đã thêm"
 ```
 
 ### Body
@@ -128,9 +107,42 @@ test(strategy): add LFU and FIFO tests
 - Sử dụng bullet points
 ```
 
-### Footer
+---
+
+## Ví dụ
 
 ```
-- Reference issues: Closes #12, Fixes #45
-- Breaking changes: BREAKING CHANGE: mô tả
+feat(strategy): thêm LRU eviction strategy
+
+- Implement access order tracking với array
+- onAccess: move to front (most recent)
+- onEvict: remove from back (least recent)
+- Add unit tests cho eviction order
+
+---
+
+feat(strategy): thêm LFU eviction strategy
+
+- Track frequency với Map
+- onAccess: increment frequency counter
+- onEvict: remove key có frequency thấp nhất
+
+---
+
+test(strategy): thêm tests cho LRU, LFU, FIFO
+
+- 19 tests cho 3 eviction strategies
+- Test edge cases: empty, single key, multiple accesses
+```
+
+---
+
+## Validation checklist
+
+```
+□ npm test — pass
+□ git diff --check — không có lỗi
+□ Code compile không lỗi
+□ Không có console.log trong production code
+□ JSDoc cho mọi public API
 ```
