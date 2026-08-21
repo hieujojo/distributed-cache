@@ -19,13 +19,13 @@ BƯỚC 3 — Hiểu core algorithms:
   7. docs/core/cache-invalidation.md
 
 BƯỚC 4 — Biết quy tắc code:
-  8.  docs/guides/rules.md
-  9.  docs/architecture/design-system.md
+  8. docs/guides/rules.md
+  9. docs/architecture/design-system.md
   10. docs/architecture/design-patterns.md
 
 BƯỚC 5 — Biết cách contribute:
-  11. docs/guides/setup.md
-  12. docs/guides/contributing.md
+  11. CONTRIBUTING.md
+  12. docs/guides/setup.md
 
 BƯỚC 6 — Reference khi cần:
   13. docs/reference/diagrams.md
@@ -35,29 +35,57 @@ BƯỚC 6 — Reference khi cần:
 
 ---
 
+## Khi bắt đầu code
+
+```
+1. Đọc agent/WORKFLOW.md     ← Quy trình
+2. Đọc agent/PROGRESS.md     ← Xem progress
+3. Đọc tasks/<module>.md     ← Chi tiết task
+4. Code theo tasks file
+```
+
+---
+
 ## Cấu trúc thư mục
 
 ```
 distributed-cache/
-├── src/
-│   ├── core/              # Core logic (chưa implement)
-│   ├── strategies/        # Cache strategies
-│   ├── server/            # TCP server
-│   └── visualization/     # React + Canvas
+├── src/                          # SOURCE CODE (chưa tạo)
+│   ├── core/                     # Core logic
+│   ├── strategies/               # Cache strategies
+│   ├── server/                   # Network layer
+│   ├── visualization/            # Frontend
+│   └── benchmark/                # Performance testing
 │
-├── docs/
-│   ├── core/              # Kiến thức cốt lõi
-│   │   ├── knowledge-base.md    ← Đọc trước tiên
-│   │   ├── consistent-hashing.md
-│   │   ├── replication.md
-│   │   └── cache-invalidation.md
-│   ├── architecture/      # Kiến trúc & design
-│   ├── guides/            # Hướng dẫn & quy tắc
-│   └── reference/         # Reference khi cần
+├── docs/                         # DOCUMENTATION
+│   ├── core/                     # Kiến thức cốt lõi
+│   ├── architecture/             # Kiến trúc & design
+│   ├── guides/                   # Hướng dẫn & quy tắc
+│   └── reference/                # Reference khi cần
 │
-├── agent/                 # Git workflow & conventions
+├── agent/                        # AI WORKFLOW
+│   ├── WORKFLOW.md               ← Quy trình tổng hợp
+│   ├── PROGRESS.md               ← Track progress
+│   ├── MODULES.md                ← Tổng quan modules
+│   ├── COMMIT_CONVENTION.md      ← Quy tắc commit
+│   ├── GIT_WORKFLOW.md           ← Git workflow
+│   ├── CODE_STYLE.md             ← Code style
+│   └── PR_TEMPLATE.md            ← Template PR
+│
+├── tasks/                        # TASK TRACKING
+│   ├── 00-overview.md            ← Dependencies chung
+│   ├── 01-core-foundation.md     ← Module 1
+│   ├── 02-eviction-strategies.md ← Module 2
+│   ├── 03-network-layer.md       ← Module 3
+│   ├── 04-cluster-management.md  ← Module 4
+│   ├── 05-replication.md         ← Module 5
+│   ├── 06-cache-invalidation.md  ← Module 6
+│   ├── 07-benchmark.md           ← Module 7
+│   └── 08-visualization.md       ← Module 8
+│
 ├── package.json
 ├── tsconfig.json
+├── README.md
 ├── AGENTS.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
@@ -82,7 +110,7 @@ distributed-cache/
 ## Trạng thái
 
 ```
-✅ Đã có: Documentation (15 files), package.json, tsconfig.json
+✅ Đã có: Documentation (24 files), package.json, tsconfig.json
 🔲 Chưa có: Source code implementation
 ```
 
