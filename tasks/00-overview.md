@@ -1,0 +1,172 @@
+# Tasks Overview — Tổng quan Tasks & Dependencies
+
+> File này quản lý dependencies chung và tổng quan toàn bộ tasks.
+
+---
+
+## Dependencies
+
+### Đã cài ✅
+
+```
+typescript      ^5.4.0    (devDependency)
+tsup            ^8.0.0    (devDependency)
+jest            ^29.7.0   (devDependency)
+@types/jest     ^29.5.0   (devDependency)
+ts-jest         ^29.1.0   (devDependency)
+tsx             ^4.0.0    (devDependency)
+@types/node     ^20.0.0   (devDependency)
+```
+
+### Cần cài thêm ⬜
+
+```
+murmurhash3     (Module 1: Consistent Hashing)
+react           (Module 8: Visualization)
+react-dom       (Module 8: Visualization)
+@types/react    (Module 8: Visualization)
+```
+
+### Không cần cài ❌
+
+```
+redis           — Project tự implement
+express         — Dùng TCP socket
+socket.io       — Dùng raw TCP
+mongoose        — In-memory cache
+```
+
+---
+
+## Files cần tạo trước khi code
+
+### Config files ⬜
+
+```
+⬜ .gitignore
+     Nội dung:
+       node_modules/
+       dist/
+       coverage/
+       .env
+       .env.local
+       *.js (ngoài config files)
+       *.d.ts (ngoài generated)
+       .DS_Store
+     Cần thiết: Yes (trước Module 1)
+
+⬜ jest.config.ts
+     Nội dung:
+       module.exports = {
+         preset: 'ts-jest',
+         testEnvironment: 'node',
+         roots: ['<rootDir>/tests'],
+         testMatch: ['**/*.test.ts'],
+         collectCoverageFrom: ['src/**/*.ts'],
+         coverageThreshold: { global: { branches: 80, functions: 80, lines: 80 } }
+       }
+     Cần thiết: Yes (trước Module 1)
+
+⬜ tsconfig.json (đã có)
+     Đã tạo: Yes
+     Cần update: No
+```
+
+### Source structure ⬜
+
+```
+⬜ src/core/types.ts           (Module 1)
+⬜ src/core/hash-helpers.ts    (Module 1)
+⬜ src/core/consistent-hashing.ts (Module 1)
+⬜ src/core/node.ts            (Module 1)
+⬜ src/strategies/index.ts     (Module 2)
+⬜ src/strategies/lru.ts       (Module 2)
+⬜ src/strategies/lfu.ts       (Module 2)
+⬜ src/strategies/fifo.ts      (Module 2)
+⬜ src/server/protocol.ts      (Module 3)
+⬜ src/server/cache-server.ts  (Module 3)
+⬜ src/server/client.ts        (Module 3)
+⬜ src/core/cluster.ts         (Module 4)
+⬜ src/core/election.ts        (Module 4)
+⬜ src/core/failover.ts        (Module 4)
+⬜ src/core/replication.ts     (Module 5)
+⬜ src/core/invalidation.ts    (Module 6)
+⬜ src/benchmark/throughput.ts (Module 7)
+⬜ src/benchmark/data-movement.ts (Module 7)
+⬜ src/benchmark/run.ts        (Module 7)
+⬜ src/visualization/hash-ring.tsx (Module 8)
+⬜ src/visualization/dashboard.tsx (Module 8)
+⬜ src/visualization/server.ts (Module 8)
+```
+
+---
+
+## Module Dependency Graph
+
+```
+Module 1 (Core Foundation)
+  ├── TẠO: types.ts, hash-helpers.ts, consistent-hashing.ts, node.ts
+  ├── Dependencies: murmurhash3
+  └── Không phụ thuộc module nào
+
+Module 2 (Eviction Strategies)
+  ├── TẠO: index.ts, lru.ts, lfu.ts, fifo.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1 (types.ts — EvictionStrategy interface)
+
+Module 3 (Network Layer)
+  ├── TẠO: protocol.ts, cache-server.ts, client.ts
+  ├── Dependencies: Không cần thêm (net module built-in)
+  └── Phụ thuộc: Module 1 (node.ts — CacheNode)
+
+Module 4 (Cluster Management)
+  ├── TẠO: cluster.ts, election.ts, failover.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1 (consistent-hashing.ts, node.ts)
+
+Module 5 (Replication)
+  ├── TẠO: replication.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1 (node.ts), Module 4 (cluster.ts)
+
+Module 6 (Cache Invalidation)
+  ├── TẠO: invalidation.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1 (node.ts)
+
+Module 7 (Benchmark)
+  ├── TẠO: throughput.ts, data-movement.ts, run.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1 (node.ts, consistent-hashing.ts)
+
+Module 8 (Visualization)
+  ├── TẠO: hash-ring.tsx, dashboard.tsx, server.ts
+  ├── Dependencies: react, react-dom, @types/react
+  └── Phụ thuộc: Module 1 (node.ts), Module 4 (cluster.ts)
+```
+
+---
+
+## Conflict Map
+
+```
+Module 1 → Module 2: KHÔNG (inject strategy)
+Module 1 → Module 3: KHÔNG (sử dụng interface)
+Module 1 → Module 4: KHÔNG (quản lý nodes)
+Module 1 → Module 5: KHÔNG (sync data)
+Module 1 → Module 6: KHÔNG (invalidate)
+Module 1 → Module 7: KHÔNG (read-only)
+Module 1 → Module 8: KHÔNG (read-only)
+
+→ Tất cả modules KHÔNG conflict
+→ Mỗi module TẠO file mới, KHÔNG sửa file cũ
+```
+
+---
+
+## Changelog
+
+```
+2026-08-21: Tạo tasks/ folder
+2026-08-21: Tạo 9 files tasks
+```
