@@ -19,69 +19,6 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 
 ---
 
-## Trạng thái hiện tại
-
-### ✅ Đã có
-
-```
-├── Documentation
-│   ├── README.md                    ← Bạn đang đọc
-│   ├── docs/architecture.md         ← Kiến trúc tổng quan
-│   ├── docs/tech-stack.md           ← Technology choices
-│   ├── docs/concepts.md             ← Giải thích khái niệm
-│   ├── docs/consistent-hashing.md   ← Deep dive hashing
-│   ├── docs/replication.md          ← Deep dive replication
-│   ├── docs/cache-invalidation.md   ← Deep dive invalidation
-│   ├── docs/setup.md                ← Hướng dẫn cài đặt
-│   └── docs/contributing.md         ← Quy trình contribution
-│
-├── Agent Workflow
-│   ├── agent/COMMIT_CONVENTION.md   ← Quy tắc commit
-│   ├── agent/GIT_WORKFLOW.md        ← Quy trình Git
-│   ├── agent/CODE_STYLE.md          ← Quy tắc code
-│   └── agent/PR_TEMPLATE.md         ← Template PR
-│
-└── Infrastructure
-    ├── package.json                 ← Dependencies
-    ├── tsconfig.json                ← TypeScript config
-    └── AGENTS.md                    ← Hướng dẫn cho AI
-```
-
-### 🔲 Chưa có (cần implement)
-
-```
-├── Core Logic
-│   ├── src/core/consistent-hashing.ts  ← TIÊN CHỈ
-│   ├── src/core/node.ts
-│   ├── src/core/cluster.ts
-│   └── src/core/replication.ts
-│
-├── Cache Strategies
-│   ├── src/strategies/lru.ts
-│   ├── src/strategies/lfu.ts
-│   └── src/strategies/ttl.ts
-│
-├── Network Layer
-│   ├── src/server/cache-server.ts
-│   ├── src/server/protocol.ts
-│   └── src/server/client.ts
-│
-├── Visualization
-│   ├── src/visualization/hash-ring.tsx
-│   └── src/visualization/dashboard.tsx
-│
-├── Benchmark
-│   ├── src/benchmark/throughput.ts
-│   └── src/benchmark/data-movement.ts
-│
-└── Tests
-    ├── tests/consistent-hashing.test.ts
-    ├── tests/replication.test.ts
-    └── tests/cluster.test.ts
-```
-
----
-
 ## Tech Stack
 
 | Layer | Công nghệ | Lý do chọn |
@@ -90,12 +27,8 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 | **Runtime** | Node.js | Non-blocking I/O, phù hợp network services |
 | **Network** | TCP sockets | Giao tiếp node-to-node, không phụ thuộc framework |
 | **Frontend** | React + Canvas | Visualization hash ring interactive |
-| **ORM** | Không dùng | In-memory cache, không cần DB cho core |
 | **Testing** | Jest | Industry standard, mocking tốt |
 | **Build** | tsup | Bundle nhanh, ES modules support |
-| **Monorepo** | npm workspaces | Quản lý multiple packages |
-
-> Chi tiết lý do chọn từng công nghệ: [docs/tech-stack.md](docs/tech-stack.md)
 
 ---
 
@@ -105,55 +38,83 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 distributed-cache/
 ├── src/
 │   ├── core/                      # Core logic
-│   │   ├── consistent-hashing.ts  # Hash ring implementation
-│   │   ├── node.ts                # Cache node logic
-│   │   ├── cluster.ts             # Cluster management
-│   │   └── replication.ts         # Data replication
-│   │
+│   │   ├── consistent-hashing.ts
+│   │   ├── node.ts
+│   │   ├── cluster.ts
+│   │   └── replication.ts
 │   ├── strategies/                # Cache strategies
-│   │   ├── lru.ts                 # Least Recently Used
-│   │   ├── lfu.ts                 # Least Frequently Used
-│   │   └── ttl.ts                 # Time-To-Live
-│   │
+│   │   ├── lru.ts
+│   │   ├── lfu.ts
+│   │   └── ttl.ts
 │   ├── server/                    # Network layer
-│   │   ├── cache-server.ts        # TCP server
-│   │   ├── protocol.ts            # Wire protocol
-│   │   └── client.ts              # Client library
-│   │
-│   ├── visualization/             # Frontend
-│   │   ├── hash-ring.tsx          # Hash ring renderer
-│   │   └── dashboard.tsx          # Metrics dashboard
-│   │
-│   └── benchmark/                 # Performance testing
-│       ├── throughput.ts          # Ops per second
-│       └── data-movement.ts       # Keys moved
+│   │   ├── cache-server.ts
+│   │   ├── protocol.ts
+│   │   └── client.ts
+│   └── visualization/            # Frontend
+│       ├── hash-ring.tsx
+│       └── dashboard.tsx
 │
-├── tests/                         # Unit tests
-│   ├── consistent-hashing.test.ts
-│   ├── replication.test.ts
-│   └── cluster.test.ts
-│
-├── docs/                          # Tài liệu
-│   ├── architecture.md            # Kiến trúc tổng quan
-│   ├── tech-stack.md              # Technology choices
-│   ├── concepts.md                # Giải thích khái niệm
-│   ├── consistent-hashing.md      # Deep dive
-│   ├── replication.md             # Deep dive
-│   ├── cache-invalidation.md      # Deep dive
-│   ├── setup.md                   # Hướng dẫn cài đặt
-│   └── contributing.md            # Quy trình contribution
+├── docs/
+│   ├── core/                      # Core concepts
+│   │   ├── concepts.md           # Giải thích khái niệm
+│   │   ├── consistent-hashing.md
+│   │   ├── replication.md
+│   │   └── cache-invalidation.md
+│   ├── architecture/              # Kiến trúc
+│   │   ├── architecture.md
+│   │   └── tech-stack.md
+│   ├── guides/                    # Hướng dẫn
+│   │   ├── setup.md
+│   │   └── contributing.md
+│   ├── design-system.md           # Design system
+│   └── design-patterns.md        # Design patterns
 │
 ├── agent/                         # Development workflow
-│   ├── COMMIT_CONVENTION.md       # Quy tắc commit
-│   ├── GIT_WORKFLOW.md            # Quy trình Git
-│   ├── CODE_STYLE.md              # Quy tắc code
-│   └── PR_TEMPLATE.md             # Template Pull Request
+│   ├── COMMIT_CONVENTION.md
+│   ├── GIT_WORKFLOW.md
+│   ├── CODE_STYLE.md
+│   └── PR_TEMPLATE.md
 │
+├── tests/
 ├── package.json
 ├── tsconfig.json
 ├── AGENTS.md
 └── README.md
 ```
+
+---
+
+## Documentation
+
+### Core Concepts
+
+| File | Nội dung |
+|---|---|
+| [concepts.md](docs/core/concepts.md) | Giải thích toàn bộ khái niệm distributed systems |
+| [consistent-hashing.md](docs/core/consistent-hashing.md) | Deep dive: hash ring, virtual nodes |
+| [replication.md](docs/core/replication.md) | Deep dive: primary/replica, leader election |
+| [cache-invalidation.md](docs/core/cache-invalidation.md) | Deep dive: TTL, write-through, event-driven |
+
+### Architecture
+
+| File | Nội dung |
+|---|---|
+| [architecture.md](docs/architecture/architecture.md) | Component diagram, data flow, design decisions |
+| [tech-stack.md](docs/architecture/tech-stack.md) | Technology choices và lý do |
+
+### Design
+
+| File | Nội dung |
+|---|---|
+| [design-system.md](docs/design-system.md) | Quy chuẩn thiết kế, naming, code structure |
+| [design-patterns.md](docs/design-patterns.md) | Strategy, Observer, Factory, Singleton... |
+
+### Guides
+
+| File | Nội dung |
+|---|---|
+| [setup.md](docs/guides/setup.md) | Hướng dẫn cài đặt và sử dụng |
+| [contributing.md](docs/guides/contributing.md) | Quy trình contribution |
 
 ---
 
@@ -181,14 +142,14 @@ npm run viz
 
 ## Learning Outcomes
 
-| Concept | Kiến thức | Trạng thái |
-|---|---|---|
-| **Consistent Hashing** | Hash ring, virtual nodes, key distribution | 🔲 Chưa implement |
-| **Data Replication** | Primary/replica, failover, leader election | 🔲 Chưa implement |
-| **Cache Invalidation** | TTL, write-through, event-driven | 🔲 Chưa implement |
-| **Eviction Policies** | LRU, LFU | 🔲 Chưa implement |
-| **Fault Tolerance** | Node failure detection, recovery | 🔲 Chưa implement |
-| **Benchmarking** | Throughput, latency, data movement | 🔲 Chưa implement |
+| Concept | Kiến thức |
+|---|---|
+| **Consistent Hashing** | Hash ring, virtual nodes, key distribution |
+| **Data Replication** | Primary/replica, failover, leader election |
+| **Cache Invalidation** | TTL, write-through, event-driven |
+| **Eviction Policies** | LRU, LFU |
+| **Fault Tolerance** | Node failure detection, recovery |
+| **Design Patterns** | Strategy, Observer, Factory, Singleton, Adapter, Proxy, Command |
 
 ---
 
@@ -205,21 +166,6 @@ Consistent Hashing:
 
 → Ít hơn 4 lần data movement
 ```
-
----
-
-## Docs
-
-| File | Nội dung |
-|---|---|
-| [architecture.md](docs/architecture.md) | Component diagram, data flow, design decisions |
-| [tech-stack.md](docs/tech-stack.md) | Technology choices và lý do |
-| [concepts.md](docs/concepts.md) | Giải thích toàn bộ khái niệm distributed systems |
-| [consistent-hashing.md](docs/consistent-hashing.md) | Deep dive: hash ring, virtual nodes |
-| [replication.md](docs/replication.md) | Deep dive: primary/replica, leader election |
-| [cache-invalidation.md](docs/cache-invalidation.md) | Deep dive: TTL, write-through, event-driven |
-| [setup.md](docs/setup.md) | Hướng dẫn cài đặt và sử dụng |
-| [contributing.md](docs/contributing.md) | Quy trình contribution |
 
 ---
 
