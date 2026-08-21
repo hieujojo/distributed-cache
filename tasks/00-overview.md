@@ -16,12 +16,12 @@ jest            ^29.7.0   (devDependency)
 ts-jest         ^29.1.0   (devDependency)
 tsx             ^4.0.0    (devDependency)
 @types/node     ^20.0.0   (devDependency)
+murmurhash      (Module 1: Consistent Hashing)
 ```
 
 ### Cần cài thêm ⬜
 
 ```
-murmurhash3     (Module 1: Consistent Hashing)
 react           (Module 8: Visualization)
 react-dom       (Module 8: Visualization)
 @types/react    (Module 8: Visualization)
@@ -38,51 +38,35 @@ mongoose        — In-memory cache
 
 ---
 
-## Files cần tạo trước khi code
-
-### Config files ⬜
+## Config files đã tạo ✅
 
 ```
-⬜ .gitignore
-     Nội dung:
-       node_modules/
-       dist/
-       coverage/
-       .env
-       .env.local
-       *.js (ngoài config files)
-       *.d.ts (ngoài generated)
-       .DS_Store
-     Cần thiết: Yes (trước Module 1)
-
-⬜ jest.config.ts
-     Nội dung:
-       module.exports = {
-         preset: 'ts-jest',
-         testEnvironment: 'node',
-         roots: ['<rootDir>/tests'],
-         testMatch: ['**/*.test.ts'],
-         collectCoverageFrom: ['src/**/*.ts'],
-         coverageThreshold: { global: { branches: 80, functions: 80, lines: 80 } }
-       }
-     Cần thiết: Yes (trước Module 1)
-
-⬜ tsconfig.json (đã có)
-     Đã tạo: Yes
-     Cần update: No
+✅ .gitignore
+✅ jest.config.cjs    ← Lưu ý: .cjs không phải .ts
+✅ tsconfig.json
+✅ package.json
 ```
 
-### Source structure ⬜
+---
+
+## Source structure
+
+### Đã tạo ✅
 
 ```
-⬜ src/core/types.ts           (Module 1)
-⬜ src/core/hash-helpers.ts    (Module 1)
-⬜ src/core/consistent-hashing.ts (Module 1)
-⬜ src/core/node.ts            (Module 1)
-⬜ src/strategies/index.ts     (Module 2)
-⬜ src/strategies/lru.ts       (Module 2)
-⬜ src/strategies/lfu.ts       (Module 2)
-⬜ src/strategies/fifo.ts      (Module 2)
+✅ src/core/types.ts           (Module 1)
+✅ src/core/hash-helpers.ts    (Module 1)
+✅ src/core/consistent-hashing.ts (Module 1)
+✅ src/core/node.ts            (Module 1)
+✅ src/strategies/index.ts     (Module 2)
+✅ src/strategies/lru.ts       (Module 2)
+✅ src/strategies/lfu.ts       (Module 2)
+✅ src/strategies/fifo.ts      (Module 2)
+```
+
+### Chưa tạo ⬜
+
+```
 ⬜ src/server/protocol.ts      (Module 3)
 ⬜ src/server/cache-server.ts  (Module 3)
 ⬜ src/server/client.ts        (Module 3)
@@ -104,45 +88,45 @@ mongoose        — In-memory cache
 ## Module Dependency Graph
 
 ```
-Module 1 (Core Foundation)
+Module 1 (Core Foundation) ✅
   ├── TẠO: types.ts, hash-helpers.ts, consistent-hashing.ts, node.ts
-  ├── Dependencies: murmurhash3
+  ├── Dependencies: murmurhash
   └── Không phụ thuộc module nào
 
-Module 2 (Eviction Strategies)
+Module 2 (Eviction Strategies) ✅
   ├── TẠO: index.ts, lru.ts, lfu.ts, fifo.ts
   ├── Dependencies: Không cần thêm
-  └── Phụ thuộc: Module 1 (types.ts — EvictionStrategy interface)
+  └── Phụ thuộc: Module 1 (types.ts)
 
-Module 3 (Network Layer)
+Module 3 (Network Layer) ⬜
   ├── TẠO: protocol.ts, cache-server.ts, client.ts
   ├── Dependencies: Không cần thêm (net module built-in)
-  └── Phụ thuộc: Module 1 (node.ts — CacheNode)
-
-Module 4 (Cluster Management)
-  ├── TẠO: cluster.ts, election.ts, failover.ts
-  ├── Dependencies: Không cần thêm
-  └── Phụ thuộc: Module 1 (consistent-hashing.ts, node.ts)
-
-Module 5 (Replication)
-  ├── TẠO: replication.ts
-  ├── Dependencies: Không cần thêm
-  └── Phụ thuộc: Module 1 (node.ts), Module 4 (cluster.ts)
-
-Module 6 (Cache Invalidation)
-  ├── TẠO: invalidation.ts
-  ├── Dependencies: Không cần thêm
   └── Phụ thuộc: Module 1 (node.ts)
 
-Module 7 (Benchmark)
+Module 4 (Cluster Management) ⬜
+  ├── TẠO: cluster.ts, election.ts, failover.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1, Module 3
+
+Module 5 (Replication) ⬜
+  ├── TẠO: replication.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1, Module 4
+
+Module 6 (Cache Invalidation) ⬜
+  ├── TẠO: invalidation.ts
+  ├── Dependencies: Không cần thêm
+  └── Phụ thuộc: Module 1
+
+Module 7 (Benchmark) ⬜
   ├── TẠO: throughput.ts, data-movement.ts, run.ts
   ├── Dependencies: Không cần thêm
-  └── Phụ thuộc: Module 1 (node.ts, consistent-hashing.ts)
+  └── Phụ thuộc: Module 1, Module 3
 
-Module 8 (Visualization)
+Module 8 (Visualization) ⬜
   ├── TẠO: hash-ring.tsx, dashboard.tsx, server.ts
   ├── Dependencies: react, react-dom, @types/react
-  └── Phụ thuộc: Module 1 (node.ts), Module 4 (cluster.ts)
+  └── Phụ thuộc: Module 1, Module 4
 ```
 
 ---
@@ -167,6 +151,7 @@ Module 1 → Module 8: KHÔNG (read-only)
 ## Changelog
 
 ```
-2026-08-21: Tạo tasks/ folder
-2026-08-21: Tạo 9 files tasks
+2026-08-21: Tạo tasks/ folder + 9 files
+2026-08-22: Fix murmurhash3 → murmurhash, jest.config.ts → jest.config.cjs
+2026-08-22: Đánh dấu Module 1-2 hoàn thành
 ```

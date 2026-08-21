@@ -16,19 +16,9 @@ Mỗi khi thay đổi code:
 3. Nếu KHÔNG → giải thích tại sao trong commit message
 ```
 
-### Ví dụ
-
-```
-Thay đổi API từ getNode(key) sang findNode(key)
-  → PHẢI update docs/architecture.md
-  → PHẢI update docs/core/consistent-hashing.md
-  → PHẢI update JSDoc trong code
-```
-
 ### Check procedure
 
 ```bash
-# Trước khi commit, kiểm tra docs có outdated không
 git diff --name-only | grep -E "\\.(ts|tsx)$"
 # Nếu có file code thay đổi → kiểm tra docs
 ```
@@ -42,50 +32,26 @@ git diff --name-only | grep -E "\\.(ts|tsx)$"
 ```
 Nếu docs nói "class ConsistentHash có method getNode()"
 → Code PHẢI có method getNode() trong class ConsistentHash
-
-Nếu docs nói "default TTL là 60s"
-→ Code PHẢI có default TTL = 60000ms
 ```
 
 ### Khi phát hiện không nhất quán
 
 ```
-1. GHI LẠI ngay trong CHANGELOG.md (mục "Known Issues")
+1. GHI LẠI ngay trong docs/reference/changelog.md
 2. Sửa code HOẶC sửa docs (tùy cái nào đúng)
-3. Commit với message: "fix: resolve inconsistency between docs and code"
+3. Commit: "fix: resolve inconsistency between docs and code"
 ```
 
 ---
 
-## 3. Commit message phải đúng format
+## 3. Commit phải đúng format
 
 ### Quy tắc
 
 ```
-Mọi commit PHẢI tuân theo agent/COMMIT_CONVENTION.md:
+Mọi commit PHẢI tuân theo agent/COMMIT_CONVENTION.md
 
-<type>(<scope>): <subject>
-
-Types: feat, fix, docs, test, bench, refactor, style, chore, opt
-Scopes: core, server, strategy, vis, docs, agent
-```
-
-### Ví dụ đúng
-
-```
-✅ feat(core): thêm consistent hashing implementation
-✅ fix(replication): xử lý leader election race condition
-✅ docs(architecture): cập nhật component diagram
-```
-
-### Ví dụ sai
-
-```
-❌ "add feature"
-❌ "fix bug"
-❌ "update code"
-❌ "WIP"
-❌ Có footer "Generated with Codebuff"
+Xem chi tiết tại: agent/COMMIT_CONVENTION.md
 ```
 
 ---
@@ -98,15 +64,8 @@ Scopes: core, server, strategy, vis, docs, agent
 Trước khi commit:
 1. npm test → TẤT CẢ tests phải pass
 2. npm run test:coverage → coverage >= 80%
-3. npm run lint → không có lỗi TypeScript
-```
 
-### Nếu test fail
-
-```
-1. Sửa test HOẶC sửa code
-2. KHÔNG BAO GIỜ commit khi test fail
-3. Nếu cần bỏ qua test → giải thích lý do trong commit message
+Xem chi tiết tại: docs/guides/testing.md
 ```
 
 ---
@@ -124,7 +83,6 @@ PHẢI comment khi:
 
 KHÔNG comment khi:
 - Code quá rõ ràng
-- "set value" → comment "set value" = redundant
 ```
 
 ### Ví dụ
@@ -133,7 +91,6 @@ KHÔNG comment khi:
 // PHẢI comment
 // Dùng binary search thay vì linear search
 // vì hash ring có thể chứa hàng nghìn nodes
-// O(log N) thay vì O(N)
 private binarySearch(hash: number): number { ... }
 
 // KHÔNG comment
@@ -148,10 +105,6 @@ this.cache.set(key, value);  // Redundant
 ### Quy tắc
 
 ```
-- Tên biến phải rõ nghĩa
-- Không dùng abbreviations trừ khi phổ biến (id, url, api)
-- Không dùng single letters trừ khi là loop variable
-
 ✅ const maxRetryCount = 3;
 ✅ const heartbeatInterval = 5000;
 
@@ -172,14 +125,6 @@ this.cache.set(key, value);  // Redundant
 - Không để console.log trong production code
 ```
 
-### Nếu cần giữ code cũ
-
-```
-1. Git đã lưu lịch sử → không cần giữ trong code
-2. Nếu cần reference → ghi trong CHANGELOG.md
-3. Nếu cần restore → dùng git checkout
-```
-
 ---
 
 ## 8. Security rules
@@ -187,7 +132,7 @@ this.cache.set(key, value);  // Redundant
 ### Quy tắc
 
 ```
-- Không hardcode secrets (API keys, passwords)
+- Không hardcode secrets
 - Không commit .env files
 - Validate tất cả input từ network
 - Không tin tưởng data từ client
@@ -202,7 +147,6 @@ this.cache.set(key, value);  // Redundant
 ```
 - Không optimize trước khi có benchmark proof
 - Profile trước khi optimize
-- Log performance metrics khi cần debug
 - Không blocking event loop
 ```
 
@@ -216,9 +160,10 @@ this.cache.set(key, value);  // Redundant
 - Không commit trực tiếp lên main
 - Luôn tạo feature branch
 - Branch naming: feature/<name>, fix/<name>, docs/<name>
-- Squash commits khi merge PR
 - KHÔNG chạy nhiều git commit song song (tránh index.lock)
 ```
+
+> Chi tiết xem: agent/GIT_WORKFLOW.md
 
 ---
 
@@ -237,19 +182,9 @@ File:      ≤ 2000 dòng (nếu chứa 1 class chính)
 ```
 ✅ Function: validateKey() — chỉ validate
 ✅ Function: hashKey() — chỉ hash
-✅ Function: storeKey() — chỉ store
 
 ✗ Function: processKey() — validate + hash + store
 → PHẢI tách ra 3 functions riêng
-```
-
-### Khi cần tách file
-
-```
-Khi file > 2000 dòng:
-  1. Tách theo responsibility
-  2. Tách helper functions ra file riêng
-  3. Giữ class chính trong file chính
 ```
 
 ---
@@ -262,104 +197,95 @@ Khi file > 2000 dòng:
 ✅ Module 1: TẠO src/core/node.ts
 ✅ Module 2: TẠO src/strategies/lru.ts
 
-✗ Module 1: TẠO src/core/node.ts
-✗ Module 2: SỬA src/core/node.ts  ← KHÔNG ĐƯỢC
+✗ Module 2: SỬA src/core/node.ts ← KHÔNG ĐƯỢC
 ```
 
 ### Rule 2: Nếu cần sửa file → discuss trước
 
 ```
 1. Ghi vào agent/PROGRESS.md (mục "Pending Changes")
-2. Giải thích tại sao cần sửa
+2. Giải thích tại sao
 3. User approve → mới sửa
-4. Commit: "refactor: update X based on Y"
 ```
 
 ### Rule 3: Injection thay vì Modification
 
 ```
-Thay vì sửa CacheNode để thêm eviction:
-  → CacheNode nhận EvictionStrategy qua constructor
-
+CacheNode nhận EvictionStrategy qua constructor
 → Module 1 không cần sửa khi Module 2 thêm strategy mới
 ```
 
 ### Rule 4: Interface-based Design
 
 ```
-Mọi module giao tiếp qua interfaces:
-  - src/core/types.ts chứa tất cả interfaces
-  - Module implement interface
-  - Module sử dụng interface
-
-→ Modules độc lập, không conflict
+Mọi module giao tiếp qua interfaces trong src/core/types.ts
 ```
 
 ---
 
-## 🐛 Lessons Learned (từ thực tế)
+## 🐛 Lessons Learned
 
-### L1. Jest config phải dùng .cjs (không phải .ts)
-
-```
-📅 Ngày: 2026-08-22
-🐛 Bug: jest.config.ts bị lỗi "Cannot use import statement"
-✅ Fix: Đổi sang jest.config.cjs (CommonJS)
-📝 Lesson: Jest chưa support native ESM config → dùng .cjs
-```
-
-### L2. murmurhash3 cần native build tools
+### L1. Jest config phải dùng .cjs
 
 ```
-📅 Ngày: 2026-08-22
-🐛 Bug: npm install murmurhash3 bị lỗi (cần Visual Studio)
-✅ Fix: Dùng package 'murmurhash' (pure JS, không cần native build)
-📝 Lesson: Windows environment có thể缺少 native build tools → ưu tiên pure JS packages
+📅 2026-08-22
+🐛 jest.config.ts bị lỗi "Cannot use import statement"
+✅ Đổi sang jest.config.cjs
+📝 Jest dùng CommonJS → config phải là .cjs
 ```
 
-### L3. Import phải dùng extension .js trong TypeScript
+### L2. Ưu tiên pure JS packages
 
 ```
-📅 Ngày: 2026-08-22
-🐛 Bug: import './types' bị lỗi "Cannot find module"
-✅ Fix: import './types.js' (kể cả file .ts)
-📝 Lesson: TypeScript with moduleResolution=node cần .js extension
+📅 2026-08-22
+🐛 murmurhash3 cần Visual Studio để build
+✅ Dùng package 'murmurhash' (pure JS)
+📝 Windows thường thiếu native build tools
 ```
 
-### L4. CommonJS exports phải dùng module.exports
+### L3. Import phải dùng .js extension
 
 ```
-📅 Ngày: 2026-08-22
-🐛 Bug: export default bị lỗi khi Jest import
-✅ Fix: Dùng module.exports = {...} thay vì export default
-📝 Lesson: Jest dùng CommonJS → phải exports accordingly
+📅 2026-08-22
+🐛 import './types' bị lỗi "Cannot find module"
+✅ import './types.js'
+📝 TypeScript with moduleResolution=node cần .js extension
 ```
 
-### L5. Small commits per scope (không phải 1 commit = 1 module)
+### L4. Jest dùng CommonJS exports
 
 ```
-📅 Ngày: 2026-08-22
-🐛 Bug: Module 2 commit 7 files trong 1 commit
-✅ Fix: Mỗi file 1 commit riêng biệt
-📝 Lesson: Small commits giúp review easier, revert easier, understand history better
+📅 2026-08-22
+🐛 export default bị lỗi khi Jest import
+✅ module.exports = {...}
+📝 Jest config và test files phải dùng CommonJS
+```
+
+### L5. Small commits per scope
+
+```
+📅 2026-08-22
+🐛 1 commit = 7 files quá khó review
+✅ Mỗi file 1 commit riêng
+📝 Small commits: easier review, easier revert, better history
 ```
 
 ---
 
 ## Tóm tắt
 
-| # | Quy tắc | Khi nào áp dụng |
+| # | Quy tắc | Khi nào |
 |---|---|---|
-| 1 | Docs phải mới nhất | Mỗi khi thay đổi code |
-| 2 | Nhất quán docs-code | Mỗi khi review |
-| 3 | Commit message đúng format | Mỗi khi commit |
-| 4 | Test phải pass | Mỗi khi commit |
-| 5 | Comments khi cần | Khi viết code phức tạp |
+| 1 | Docs mới nhất | Mỗi khi code changed |
+| 2 | Nhất quán docs-code | Khi review |
+| 3 | Commit đúng format | Xem COMMIT_CONVENTION.md |
+| 4 | Test phải pass | Xem testing.md |
+| 5 | Comments khi cần | Code phức tạp |
 | 6 | Naming rõ ràng | Luôn |
 | 7 | Không code chết | Luôn |
 | 8 | Security | Luôn |
 | 9 | Performance | Khi optimize |
-| 10 | Git workflow | Luôn |
+| 10 | Git workflow | Xem GIT_WORKFLOW.md |
 | 11 | Code Structure | Khi viết code |
-| 12 | Conflict Prevention | Khi làm việc với modules |
-| L1-L5 | Lessons Learned | Tham chiếu khi gặp vấn đề tương tự |
+| 12 | Conflict Prevention | Khi làm modules |
+| L1-L5 | Lessons Learned | Tham chiếu khi cần |

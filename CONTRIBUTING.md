@@ -40,15 +40,7 @@ git push origin feature/your-feature
 | **Code style** | Xem agent/CODE_STYLE.md |
 | **PR template** | Xem agent/PR_TEMPLATE.md |
 | **Rules** | Xem docs/guides/rules.md |
-
----
-
-## Testing
-
-```bash
-npm test                    # Chạy tests
-npm run test:coverage       # Check coverage (>= 80%)
-```
+| **Testing** | Xem docs/guides/testing.md |
 
 ---
 
