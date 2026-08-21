@@ -31,6 +31,7 @@ BƯỚC 3: Code
   □ Tạo files theo thứ tự trong tasks file
   □ Mỗi file: viết code → viết test → chạy test
   □ Đảm bảo: function ≤ 100 dòng, class ≤ 1000 dòng
+  □ SAU KHI XONG 1 FILE: tick ✅ trong tasks/<module>.md
 
 BƯỚC 4: Test
   □ Chạy tests: npm test
@@ -52,7 +53,8 @@ BƯỚC 7: Merge
   □ Xóa feature branch
 
 BƯỚC 8: Update progress
-  □ Tick ✅ trong agent/PROGRESS.md
+  □ Tick ✅ trong tasks/<module>.md (mỗi file đã xong)
+  □ Tick ✅ trong agent/PROGRESS.md (module đã hoàn thành)
   □ Ghi changelog trong tasks/<module>.md
 ```
 
