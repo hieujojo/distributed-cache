@@ -38,25 +38,13 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 distributed-cache/
 ├── src/
 │   ├── core/                      # Core logic
-│   │   ├── consistent-hashing.ts
-│   │   ├── node.ts
-│   │   ├── cluster.ts
-│   │   └── replication.ts
 │   ├── strategies/                # Cache strategies
-│   │   ├── lru.ts
-│   │   ├── lfu.ts
-│   │   └── ttl.ts
 │   ├── server/                    # Network layer
-│   │   ├── cache-server.ts
-│   │   ├── protocol.ts
-│   │   └── client.ts
-│   └── visualization/            # Frontend
-│       ├── hash-ring.tsx
-│       └── dashboard.tsx
+│   └── visualization/             # Frontend
 │
 ├── docs/
 │   ├── core/                      # Core concepts
-│   │   ├── concepts.md           # Giải thích khái niệm
+│   │   ├── concepts.md           # 17 khái niệm distributed systems
 │   │   ├── consistent-hashing.md
 │   │   ├── replication.md
 │   │   └── cache-invalidation.md
@@ -67,15 +55,14 @@ distributed-cache/
 │   │   ├── setup.md
 │   │   └── contributing.md
 │   ├── design-system.md           # Design system
-│   └── design-patterns.md        # Design patterns
+│   ├── design-patterns.md         # Design patterns
+│   ├── rules.md                   # Quy tắc cần tuân thủ
+│   ├── changelog.md               # Bugs & lessons learned
+│   ├── edge-cases.md              # Xử lý trường hợp đặc biệt
+│   ├── knowledge-base.md          # Kiến thức trọng tâm
+│   └── diagrams.md                # Sơ đồ minh họa
 │
 ├── agent/                         # Development workflow
-│   ├── COMMIT_CONVENTION.md
-│   ├── GIT_WORKFLOW.md
-│   ├── CODE_STYLE.md
-│   └── PR_TEMPLATE.md
-│
-├── tests/
 ├── package.json
 ├── tsconfig.json
 ├── AGENTS.md
@@ -86,35 +73,40 @@ distributed-cache/
 
 ## Documentation
 
-### Core Concepts
+### Kiến thức cốt lõi
 
 | File | Nội dung |
 |---|---|
-| [concepts.md](docs/core/concepts.md) | Giải thích toàn bộ khái niệm distributed systems |
+| [knowledge-base.md](docs/knowledge-base.md) | **Kiến thức trọng tâm** — Đọc file này trước tiên |
+| [concepts.md](docs/core/concepts.md) | Giải thích 17 khái niệm distributed systems |
 | [consistent-hashing.md](docs/core/consistent-hashing.md) | Deep dive: hash ring, virtual nodes |
 | [replication.md](docs/core/replication.md) | Deep dive: primary/replica, leader election |
 | [cache-invalidation.md](docs/core/cache-invalidation.md) | Deep dive: TTL, write-through, event-driven |
 
-### Architecture
+### Kiến trúc & Design
 
 | File | Nội dung |
 |---|---|
 | [architecture.md](docs/architecture/architecture.md) | Component diagram, data flow, design decisions |
 | [tech-stack.md](docs/architecture/tech-stack.md) | Technology choices và lý do |
-
-### Design
-
-| File | Nội dung |
-|---|---|
 | [design-system.md](docs/design-system.md) | Quy chuẩn thiết kế, naming, code structure |
 | [design-patterns.md](docs/design-patterns.md) | Strategy, Observer, Factory, Singleton... |
 
-### Guides
+### Quy tắc & Quy trình
 
 | File | Nội dung |
 |---|---|
+| [rules.md](docs/rules.md) | Các quy tắc BẮT BUỘC khi làm việc với project |
 | [setup.md](docs/guides/setup.md) | Hướng dẫn cài đặt và sử dụng |
 | [contributing.md](docs/guides/contributing.md) | Quy trình contribution |
+
+### Troubleshooting & Reference
+
+| File | Nội dung |
+|---|---|
+| [edge-cases.md](docs/edge-cases.md) | Xử lý tràn RAM, timeout, crash... |
+| [changelog.md](docs/changelog.md) | Ghi nhận bugs để tránh lặp lại |
+| [diagrams.md](docs/diagrams.md) | Sơ đồ use case, relationship, flow |
 
 ---
 
