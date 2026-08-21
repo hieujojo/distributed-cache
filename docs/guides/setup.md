@@ -136,15 +136,3 @@ ring.addNode({ id: 'node-2', host: 'localhost', port: 3002 });
 const node = ring.getNode('user:123');
 console.log(node); // { id: 'node-1', host: 'localhost', port: 3001 }
 ```
-
-```typescript
-// Circuit Breaker
-import { CircuitBreaker } from 'distributed-cache';
-
-const breaker = new CircuitBreaker({
-  failureThreshold: 5,
-  resetTimeout: 30000,
-});
-
-const data = await breaker.execute(() => fetchFromAPI());
-```

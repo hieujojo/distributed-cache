@@ -7,31 +7,30 @@
 ```
 BƯỚC 1 — Hiểu big picture:
   1. README.md (bạn đang đọc)
-  2. docs/core/knowledge-base.md
+  2. docs/core/knowledge-base.md         ← Đọc TRƯỚC TIÊN
 
 BƯỚC 2 — Hiểu kiến trúc:
   3. docs/architecture/architecture.md
   4. docs/architecture/tech-stack.md
 
 BƯỚC 3 — Hiểu core algorithms:
-  5. docs/core/concepts.md
-  6. docs/core/consistent-hashing.md
-  7. docs/core/replication.md
-  8. docs/core/cache-invalidation.md
+  5. docs/core/consistent-hashing.md
+  6. docs/core/replication.md
+  7. docs/core/cache-invalidation.md
 
 BƯỚC 4 — Biết quy tắc code:
-  9.  docs/guides/rules.md
-  10. docs/architecture/design-system.md
-  11. docs/architecture/design-patterns.md
+  8.  docs/guides/rules.md
+  9.  docs/architecture/design-system.md
+  10. docs/architecture/design-patterns.md
 
 BƯỚC 5 — Biết cách contribute:
-  12. docs/guides/setup.md
-  13. docs/guides/contributing.md
+  11. docs/guides/setup.md
+  12. docs/guides/contributing.md
 
 BƯỚC 6 — Reference khi cần:
-  14. docs/reference/diagrams.md
-  15. docs/reference/edge-cases.md
-  16. docs/reference/changelog.md
+  13. docs/reference/diagrams.md
+  14. docs/reference/edge-cases.md
+  15. docs/reference/changelog.md
 ```
 
 ---
@@ -48,6 +47,10 @@ distributed-cache/
 │
 ├── docs/
 │   ├── core/              # Kiến thức cốt lõi
+│   │   ├── knowledge-base.md    ← Đọc trước tiên
+│   │   ├── consistent-hashing.md
+│   │   ├── replication.md
+│   │   └── cache-invalidation.md
 │   ├── architecture/      # Kiến trúc & design
 │   ├── guides/            # Hướng dẫn & quy tắc
 │   └── reference/         # Reference khi cần
@@ -55,7 +58,10 @@ distributed-cache/
 ├── agent/                 # Git workflow & conventions
 ├── package.json
 ├── tsconfig.json
-└── AGENTS.md
+├── AGENTS.md
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+└── LICENSE
 ```
 
 ---
@@ -76,7 +82,7 @@ distributed-cache/
 ## Trạng thái
 
 ```
-✅ Đã có: Documentation (16 files), package.json, tsconfig.json
+✅ Đã có: Documentation (15 files), package.json, tsconfig.json
 🔲 Chưa có: Source code implementation
 ```
 

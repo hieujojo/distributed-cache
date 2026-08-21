@@ -198,7 +198,10 @@ Node3_v1 (120°), Node3_v2 (240°), Node3_v3 (0°)
 → Keys phân bố đều hơn
 → Thêm/xóa node vẫn minimal data movement
 
-Default: 150 virtual nodes per physical node
+Số lượng virtual nodes tùy chỉnh được:
+  Ít (10-50): Ít cân bằng, ít memory
+  Trung bình (100-200): Cân bằng tốt, phổ biến nhất
+  Nhiều (500+): Rất cân bằng, nhiều memory
 ```
 
 ---
