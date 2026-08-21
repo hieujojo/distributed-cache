@@ -14,6 +14,130 @@ Cập nhật:    2026-08-21
 
 ---
 
+## Quy tắc Code Structure
+
+### Size Guidelines
+
+```
+Function:  ≤ 100 dòng (nếu làm đúng 1 việc)
+Class:     ≤ 1000 dòng (nếu làm đúng 1 việc)
+File:      ≤ 2000 dòng (nếu chứa 1 class chính)
+```
+
+### Quy tắc thực sự
+
+```
+1. Function làm 1 việc → length không quan trọng
+2. Class làm 1 việc → length không quan trọng
+3. File chứa 1 class chính → length không quan trọng
+
+Nếu vượt → examine lại:
+  - Có đang làm nhiều việc không?
+  - Có thể tách helper functions không?
+  - Có thể tách ra file mới không?
+```
+
+### Single Responsibility
+
+```
+✅ Function: validateKey() — chỉ validate
+✅ Function: hashKey() — chỉ hash
+✅ Function: storeKey() — chỉ store
+
+✗ Function: processKey() — validate + hash + store
+→ PHẢI tách ra 3 functions riêng
+```
+
+### Khi cần tách file
+
+```
+Khi file > 2000 dòng:
+  1. Tách theo responsibility
+  2. Tách helper functions ra file riêng
+  3. Giữ class chính trong file chính
+
+Ví dụ:
+  src/core/consistent-hashing.ts (2500 dòng)
+  → Tách thành:
+    src/core/consistent-hashing.ts (class chính)
+    src/core/hash-helpers.ts (helper functions)
+```
+
+---
+
+## Conflict Prevention Rules
+
+### Rule 1: Mỗi task chỉ TẠO file mới
+
+```
+✅ Module 1: TẠO src/core/node.ts
+✅ Module 2: TẠO src/strategies/lru.ts
+✅ Module 3: TẠO src/server/cache-server.ts
+
+✗ Module 1: TẠO src/core/node.ts
+✗ Module 2: SỬA src/core/node.ts  ← KHÔNG ĐƯỢC
+```
+
+### Rule 2: Nếu cần sửa file → discuss trước
+
+```
+Khi cần sửa file đã tồn tại:
+  1. Ghi vào PROGRESS.md (mục "Pending Changes")
+  2. Giải thích tại sao cần sửa
+  3. User approve → mới sửa
+  4. Commit với message: "refactor: update X based on Y"
+```
+
+### Rule 3: Injection thay vì Modification
+
+```
+Thay vì sửa CacheNode để thêm eviction:
+  → CacheNode nhận EvictionStrategy qua constructor
+
+Trước (sửa code cũ):
+  class CacheNode {
+    evict() {
+      // Hardcoded LRU logic
+    }
+  }
+
+Sau (inject dependency):
+  class CacheNode {
+    constructor(private strategy: EvictionStrategy) {}
+    evict() {
+      this.strategy.onEvict();  // Delegate to strategy
+    }
+  }
+
+→ Module 1 không cần sửa khi Module 2 thêm strategy mới
+```
+
+### Rule 4: Interface-based Design
+
+```
+Mọi module giao tiếp qua interfaces:
+
+// src/core/types.ts
+export interface EvictionStrategy {
+  onAccess(key: string): void;
+  onInsert(key: string): void;
+  onEvict(): string | null;
+}
+
+// Module 2 implements interface
+export class LRUStrategy implements EvictionStrategy { ... }
+
+// Module 1 uses interface
+class CacheNode {
+  constructor(private strategy: EvictionStrategy) {}
+}
+
+→ Module 1 và Module 2 độc lập
+→ Thêm strategy mới = thêm class mới, KHÔNG sửa code cũ
+```
+
+---
+
 ## Module Breakdown
 
 ### Module 1: Core Foundation ⬜ Chưa bắt đầu
@@ -22,45 +146,19 @@ Cập nhật:    2026-08-21
 Scope: src/core/
 Mục tiêu: Implement consistent hashing + cache node cơ bản
 
-Tasks:
-  ⬜ Tạo src/core/consistent-hashing.ts
-     ├── Implement hash ring (Map<number, Node>)
-     ├── Implement hash function (murmurhash3)
-     ├── Implement getNode() — binary search O(log N)
-     ├── Implement addNode() — thêm node với virtual nodes
-     ├── Implement removeNode() — xóa node, redistribute keys
-     ├── Implement getKeyDistribution() — thống kê phân phối
-     └── JSDoc cho mọi public API
-
-  ⬜ Tạo src/core/node.ts
-     ├── Implement CacheNode class
-     ├── Implement get(key) — check TTL, return value
-     ├── Implement set(key, value, ttl?) — store + apply TTL
-     ├── Implement delete(key) — remove key
-     ├── Implement getSize(), getMaxSize()
-     └── JSDoc cho mọi public API
-
-  ⬜ Tạo tests/core/consistent-hashing.test.ts
-     ├── Test: hash function determinist
-     ├── Test: getNode trả về node đúng
-     ├── Test: addNode — keys shift minimal
-     ├── Test: removeNode — keys redistribute
-     ├── Test: virtual nodes — distribution đều
-     └── Test: edge case — 1 node, 0 nodes
-
-  ⬜ Tạo tests/core/node.test.ts
-     ├── Test: set/get/delete
-     ├── Test: TTL expiration
-     ├── Test: cache full — eviction
-     └── Test: edge case — null value, empty key
+Files sẽ TẠO:
+  ⬜ src/core/types.ts           — Interfaces chung
+  ⬜ src/core/consistent-hashing.ts — Hash ring
+  ⬜ src/core/node.ts            — Cache node
+  ⬜ src/core/hash-helpers.ts    — Helper functions
+  ⬜ tests/core/consistent-hashing.test.ts
+  ⬜ tests/core/node.test.ts
 
 Dependencies:
-  ✅ murmurhash3 (npm install)
-  ✅ @types/node
+  ✅ murmurhash3 (cần cài thêm)
 
 Docs cần update:
-  ⬜ docs/core/consistent-hashing.md (nếu cần thêm chi tiết)
-  ⬜ docs/architecture/architecture.md (nếu interface thay đổi)
+  ⬜ README.md (Trạng thái)
 ```
 
 ---
@@ -71,43 +169,20 @@ Docs cần update:
 Scope: src/strategies/
 Mục tiêu: Implement LRU, LFU, FIFO eviction policies
 
-Tasks:
-  ⬜ Tạo src/strategies/lru.ts
-     ├── Implement LRUStrategy class
-     ├── Implement onAccess(key) — move to front
-     ├── Implement onInsert(key) — add to front
-     ├── Implement onEvict() — remove last
-     └── JSDoc
-
-  ⬜ Tạo src/strategies/lfu.ts
-     ├── Implement LFUStrategy class
-     ├── Implement onAccess(key) — increment frequency
-     ├── Implement onInsert(key) — set frequency = 1
-     ├── Implement onEvict() — remove lowest frequency
-     └── JSDoc
-
-  ⬜ Tạo src/strategies/fifo.ts
-     ├── Implement FIFOStrategy class
-     ├── Implement onAccess(key) — no-op
-     ├── Implement onInsert(key) — add to queue
-     ├── Implement onEvict() — remove oldest
-     └── JSDoc
-
-  ⬜ Tạo src/strategies/index.ts
-     ├── Export tất cả strategies
-     └── Export EvictionStrategy interface
-
-  ⬜ Tạo tests/strategies/*.test.ts
-     ├── Test LRU: eviction order
-     ├── Test LFU: frequency tracking
-     ├── Test FIFO: insertion order
-     └── Test: switch strategy runtime
+Files sẽ TẠO:
+  ⬜ src/strategies/index.ts     — Export + interface
+  ⬜ src/strategies/lru.ts       — LRU strategy
+  ⬜ src/strategies/lfu.ts       — LFU strategy
+  ⬜ src/strategies/fifo.ts      — FIFO strategy
+  ⬜ tests/strategies/lru.test.ts
+  ⬜ tests/strategies/lfu.test.ts
+  ⬜ tests/strategies/fifo.test.ts
 
 Dependencies:
   ✅ Không cần thêm
 
-Docs cần update:
-  ⬜ docs/architecture/design-patterns.md (Strategy pattern section)
+Conflict với Module 1:
+  ✅ KHÔNG — inject strategy qua constructor
 ```
 
 ---
@@ -118,38 +193,19 @@ Docs cần update:
 Scope: src/server/
 Mục tiêu: TCP server + client library
 
-Tasks:
-  ⬜ Tạo src/server/protocol.ts
-     ├── Implement wire protocol parser
-     ├── Implement serialize/deserialize
-     ├── Hỗ trợ commands: SET, GET, DEL, PING, REPLICATE, ELECT
-     └── JSDoc
-
-  ⬜ Tạo src/server/cache-server.ts
-     ├── Implement TCP server (net.createServer)
-     ├── Implement connection handling
-     ├── Implement request routing
-     ├── Implement heartbeat sender/receiver
-     └── JSDoc
-
-  ⬜ Tạo src/server/client.ts
-     ├── Implement CacheClient class
-     ├── Implement connect(), disconnect()
-     ├── Implement get(), set(), del()
-     ├── Implement retry logic
-     └── JSDoc
-
-  ⬜ Tạo tests/server/*.test.ts
-     ├── Test protocol parse/serialize
-     ├── Test server accept connection
-     ├── Test client send/receive
-     └── Test: connection timeout
+Files sẽ TẠO:
+  ⬜ src/server/protocol.ts      — Wire protocol
+  ⬜ src/server/cache-server.ts  — TCP server
+  ⬜ src/server/client.ts        — Client library
+  ⬜ tests/server/protocol.test.ts
+  ⬜ tests/server/cache-server.test.ts
+  ⬜ tests/server/client.test.ts
 
 Dependencies:
   ✅ Không cần thêm (dùng net module built-in)
 
-Docs cần update:
-  ⬜ docs/architecture/architecture.md (Network Layer section)
+Conflict với Module 1, 2:
+  ✅ KHÔNG — sử dụng interfaces từ Module 1
 ```
 
 ---
@@ -157,43 +213,22 @@ Docs cần update:
 ### Module 4: Cluster Management ⬜ Chưa bắt đầu
 
 ```
-Scope: src/core/cluster.ts
+Scope: src/core/
 Mục tiêu: Cluster manager + leader election + failover
 
-Tasks:
-  ⬜ Tạo src/core/cluster.ts
-     ├── Implement ClusterManager class (Singleton)
-     ├── Implement addNode(), removeNode()
-     ├── Implement getNode(key) — route via consistent hashing
-     ├── Implement getHealthyNodes()
-     ├── Implement heartbeat monitoring
-     └── JSDoc
-
-  ⬜ Tạo src/core/election.ts
-     ├── Implement leader election (Bully algorithm)
-     ├── Implement election timeout
-     ├── Implement vote request/response
-     └── JSDoc
-
-  ⬜ Tạo src/core/failover.ts
-     ├── Implement automatic failover
-     ├── Implement graceful failover
-     ├── Implement recovery handling
-     └── JSDoc
-
-  ⬜ Tạo tests/core/cluster.test.ts
-     ├── Test: add/remove node
-     ├── Test: route key to correct node
-     ├── Test: leader election
-     ├── Test: failover on primary death
-     └── Test: node recovery
+Files sẽ TẠO:
+  ⬜ src/core/cluster.ts         — Cluster manager (Singleton)
+  ⬜ src/core/election.ts        — Leader election
+  ⬜ src/core/failover.ts        — Failover handling
+  ⬜ tests/core/cluster.test.ts
+  ⬜ tests/core/election.test.ts
+  ⬜ tests/core/failover.test.ts
 
 Dependencies:
   ✅ Không cần thêm
 
-Docs cần update:
-  ⬜ docs/core/replication.md (nếu cần thêm chi tiết)
-  ⬜ docs/reference/edge-cases.md (thêm cluster edge cases)
+Conflict với Module 1, 2, 3:
+  ✅ KHÔNG — sử dụng interfaces từ Module 1
 ```
 
 ---
@@ -201,29 +236,18 @@ Docs cần update:
 ### Module 5: Replication ⬜ Chưa bắt đầu
 
 ```
-Scope: src/core/replication.ts
+Scope: src/core/
 Mục tiêu: Data replication + sync
 
-Tasks:
-  ⬜ Tạo src/core/replication.ts
-     ├── Implement ReplicationManager class
-     ├── Implement replicate(key, value) — sync to replicas
-     ├── Implement syncFromLeader(leader) — full sync
-     ├── Implement getReplicas(key) — list replicas
-     ├── Implement sync strategies (sync, async, hybrid)
-     └── JSDoc
-
-  ⬜ Tạo tests/core/replication.test.ts
-     ├── Test: replicate data to replicas
-     ├── Test: sync from leader after recovery
-     ├── Test: replication factor
-     └── Test: sync lag measurement
+Files sẽ TẠO:
+  ⬜ src/core/replication.ts     — Replication manager
+  ⬜ tests/core/replication.test.ts
 
 Dependencies:
   ✅ Không cần thêm
 
-Docs cần update:
-  ⬜ docs/core/replication.md (nếu cần thêm chi tiết)
+Conflict với Module 1-4:
+  ✅ KHÔNG — sử dụng interfaces từ Module 1
 ```
 
 ---
@@ -231,29 +255,18 @@ Docs cần update:
 ### Module 6: Cache Invalidation ⬜ Chưa bắt đầu
 
 ```
-Scope: src/core/invalidation.ts
+Scope: src/core/
 Mục tiêu: TTL + event-driven invalidation
 
-Tasks:
-  ⬜ Tạo src/core/invalidation.ts
-     ├── Implement InvalidationManager class
-     ├── Implement setTTL(key, ttl) — set expiration
-     ├── Implement checkTTL(key) — check if expired
-     ├── Implement invalidate(key) — manual invalidation
-     ├── Implement onDatabaseChange(event) — event-driven
-     └── JSDoc
-
-  ⬜ Tạo tests/core/invalidation.test.ts
-     ├── Test: TTL expiration
-     ├── Test: manual invalidation
-     ├── Test: event-driven invalidation
-     └── Test: concurrent invalidation
+Files sẽ TẠO:
+  ⬜ src/core/invalidation.ts    — Invalidation manager
+  ⬜ tests/core/invalidation.test.ts
 
 Dependencies:
   ✅ Không cần thêm
 
-Docs cần update:
-  ⬜ docs/core/cache-invalidation.md (nếu cần thêm chi tiết)
+Conflict với Module 1-5:
+  ✅ KHÔNG — sử dụng interfaces từ Module 1
 ```
 
 ---
@@ -264,26 +277,16 @@ Docs cần update:
 Scope: src/benchmark/
 Mục tiêu: Performance testing + comparison
 
-Tasks:
-  ⬜ Tạo src/benchmark/throughput.ts
-     ├── Benchmark: operations per second
-     ├── Compare: consistent vs naive hashing
-     └── Output: console table
-
-  ⬜ Tạo src/benchmark/data-movement.ts
-     ├── Benchmark: % keys moved when adding node
-     ├── Compare: consistent vs naive hashing
-     └── Output: console table
-
-  ⬜ Tạo src/benchmark/run.ts
-     ├── Run all benchmarks
-     └── Output: summary report
+Files sẽ TẠO:
+  ⬜ src/benchmark/throughput.ts
+  ⬜ src/benchmark/data-movement.ts
+  ⬜ src/benchmark/run.ts
 
 Dependencies:
   ✅ Không cần thêm
 
-Docs cần update:
-  ⬜ README.md (Benchmark section — thêm kết quả thực)
+Conflict với Module 1-6:
+  ✅ KHÔNG — chỉ đọc data từ cache, không sửa
 ```
 
 ---
@@ -294,29 +297,18 @@ Docs cần update:
 Scope: src/visualization/
 Mục tiêu: Hash ring visualization + dashboard
 
-Tasks:
-  ⬜ Tạo src/visualization/hash-ring.tsx
-     ├── Implement Canvas renderer
-     ├── Implement hash ring drawing
-     ├── Implement node animation
-     └── Implement interactive (click node)
-
-  ⬜ Tạo src/visualization/dashboard.tsx
-     ├── Implement cluster stats display
-     ├── Implement node health status
-     └── Implement real-time updates
-
-  ⬜ Tạo src/visualization/server.ts
-     ├── Dev server cho visualization
-     └── Proxy requests đến cache server
+Files sẽ TẠO:
+  ⬜ src/visualization/hash-ring.tsx
+  ⬜ src/visualization/dashboard.tsx
+  ⬜ src/visualization/server.ts
 
 Dependencies:
-  ⬜ react (npm install)
-  ⬜ react-dom (npm install)
-  ⬜ @types/react (npm install)
+  ⬜ react (cần cài thêm)
+  ⬜ react-dom (cần cài thêm)
+  ⬜ @types/react (cần cài thêm)
 
-Docs cần update:
-  ⬜ docs/architecture/tech-stack.md (React section)
+Conflict với Module 1-7:
+  ✅ KHÔNG — chỉ đọc data, không sửa
 ```
 
 ---
@@ -365,13 +357,20 @@ Docs cần update:
 ✅ Không có breaking changes
 ```
 
+### Pending Changes
+
+```
+> Chưa có pending changes nào
+```
+
 ### Khi phát hiện conflict
 
 ```
 1. Ghi vào đây NGAY
 2. Mô tả: file nào, dòng nào, vấn đề gì
 3. Giải pháp: sửa code hay sửa docs
-4. Commit với message: "fix: resolve conflict between X và Y"
+4. User approve → mới sửa
+5. Commit với message: "fix: resolve conflict between X và Y"
 ```
 
 ---
@@ -392,11 +391,13 @@ Docs cần update:
 □ Đọc docs liên quan
 □ Kiểm tra dependencies đã cài chưa
 □ Tạo feature branch
-□ Viết code
+□ Kiểm tra: chỉ TẠO file mới, KHÔNG sửa file cũ
+□ Viết code (tối đa 100 dòng/function, 1000 dòng/class)
 □ Viết tests
 □ Chạy tests — pass
 □ Chạy lint — pass
 □ Cập nhật docs nếu cần
+□ Cập nhật PROGRESS.md (tick tasks)
 □ Commit với convention
 □ Merge vào main
 ```
