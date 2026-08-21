@@ -86,9 +86,9 @@ distributed-cache/
 ├── package.json
 ├── tsconfig.json
 ├── README.md
-├── AGENTS.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
+├── SECURITY.md
 └── LICENSE
 ```
 
@@ -110,7 +110,7 @@ distributed-cache/
 ## Trạng thái
 
 ```
-✅ Đã có: Documentation (24 files), package.json, tsconfig.json
+✅ Đã có: Documentation, package.json, tsconfig.json
 🔲 Chưa có: Source code implementation
 ```
 
@@ -124,6 +124,12 @@ cd distributed-cache
 npm install
 npm test
 ```
+
+---
+
+## Security
+
+Xem SECURITY.md để biết các security considerations.
 
 ---
 
