@@ -27,14 +27,23 @@ Fixes #
 
 <!-- Mô tả chi tiết changes -->
 
-### Core Changes
+### Source Files
 - 
 
-### Tests
+### Test Files
 - 
 
-### Documentation
+### Config/Docs
 - 
+
+## Commit History
+
+<!-- Liệt kê commits trong PR này -->
+
+- [ ] Commit 1: 
+- [ ] Commit 2: 
+- [ ] Commit 3: 
+- [ ] Commit 4: 
 
 ## Testing
 
@@ -45,26 +54,25 @@ Fixes #
 - [ ] Manual testing completed
 - [ ] Benchmark completed (nếu có performance impact)
 
-## Benchmark Results
-
-<!-- Nếu có performance impact, điền kết quả benchmark -->
-
-| Metric | Before | After | Change |
-|---|---|---|---|
-| Throughput (ops/s) | | | |
-| Latency (ms) | | | |
-| Memory (MB) | | | |
-
 ## Checklist
 
+### Code Quality
 - [ ] Code compiles without errors
 - [ ] All tests pass
 - [ ] Test coverage >= 80%
 - [ ] No console.log in production code
 - [ ] JSDoc cho mọi public API
-- [ ] README updated (nếu cần)
 - [ ] Code follows style guide
-- [ ] No security vulnerabilities
+
+### Documentation
+- [ ] README updated (nếu cần)
+- [ ] tasks/*.md updated với ✅
+- [ ] agent/PROGRESS.md updated
+
+### Commits
+- [ ] Commits nhỏ theo scope (không 1 commit 1 module)
+- [ ] Commit message đúng format
+- [ ] Không có WIP commits
 
 ## Screenshots
 

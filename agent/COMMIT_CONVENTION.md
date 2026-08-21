@@ -10,37 +10,75 @@
 <footer>
 ```
 
+---
+
+## Quy tắc quan trọng: Small Commits per Scope
+
+```
+Mỗi module chia thành nhiều commits nhỏ:
+
+✅ ĐÚNG: 4 commits cho Module 1
+  feat(core): add types and interfaces
+  feat(core): add hash helpers
+  feat(core): add consistent hashing implementation
+  feat(core): add cache node implementation
+
+❌ SAI: 1 commit cho cả module
+  feat(core): add everything for module 1
+```
+
+### Tại sao small commits?
+
+```
+1. Dễ review: Mỗi commit chỉ 1-3 files
+2. Dễ revert: Nếu bug, revert 1 commit nhỏ
+3. Dễ hiểu: Git history rõ ràng
+4. Dễ debug: Biết chính xác commit nào gây bug
+```
+
+### Rule
+
+```
+1 commit = 1 file hoặc 1 nhóm files liên quan trực tiếp
+Tối đa: 3 files trong 1 commit
+```
+
+---
+
 ## Examples
 
-```
-feat(core): add consistent hashing implementation
-
-- Implement hash ring with virtual nodes
-- Add O(log N) lookup using binary search
-- Add unit tests for node addition/removal
-
-Benchmark: 80% less data movement vs naive hashing
-
-Closes #12
-```
+### ✅ Small commits pattern
 
 ```
-fix(replication): handle leader election race condition
+feat(strategy): add eviction strategy interface
 
-- Add mutex lock during election
-- Prevent split brain with quorum check
-- Add test for concurrent election
+- Add EvictionStrategy interface in src/strategies/index.ts
+- Define onAccess, onInsert, onEvict, onRemove methods
 
-Fixes #45
+---
+
+feat(strategy): add LRU eviction strategy
+
+- Add LRUStrategy class in src/strategies/lru.ts
+- Track access order with array
+- Evict least recently used key
+
+---
+
+feat(strategy): add LRU tests
+
+- Add tests/strategies/lru.test.ts
+- Test eviction order, access tracking, edge cases
+
+---
+
+test(strategy): add LFU and FIFO tests
+
+- Add tests/strategies/lfu.test.ts
+- Add tests/strategies/fifo.test.ts
 ```
 
-```
-docs(architecture): add system design documentation
-
-- Add component diagram
-- Add data flow diagrams
-- Add design decisions section
-```
+---
 
 ## Types
 
@@ -95,27 +133,4 @@ docs(architecture): add system design documentation
 ```
 - Reference issues: Closes #12, Fixes #45
 - Breaking changes: BREAKING CHANGE: mô tả
-```
-
-## Breaking Changes
-
-```
-feat(core): change cache API signature
-
-BREAKING CHANGE: CacheNode.get() now returns Promise<Value | null>
-instead of Value | null
-
-Migration:
-- Before: const value = node.get('key')
-- After: const value = await node.get('key')
-```
-
-## Auto-formatting
-
-```bash
-# Format code trước khi commit
-npm run format
-
-# Lint code
-npm run lint
 ```
