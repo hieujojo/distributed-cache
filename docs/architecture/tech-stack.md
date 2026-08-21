@@ -11,7 +11,6 @@
 | Visualization | Canvas API | built-in | Render hash ring |
 | Testing | Jest | 29.x | Industry standard |
 | Build | tsup | latest | Bundle nhanh, ESM support |
-| Monorepo | npm workspaces | built-in | Đơn giản, không cần tool mới |
 
 ---
 
