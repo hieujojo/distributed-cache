@@ -8,14 +8,79 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 
 ### Các tính năng chính
 
-| Tính năng | Mô tả |
-|---|---|
-| **Consistent Hashing** | Phân phối data trên ring, thêm/xóa node chỉ ảnh hưởng ~1/N keys |
-| **Data Replication** | Nhân bản data, leader election tự động khi node dies |
-| **Cache Invalidation** | TTL, write-through, event-driven invalidation |
-| **Eviction Policies** | LRU, LFU khi cache đầy |
-| **Visualization** | Hiển thị hash ring real-time trên browser |
-| **Benchmark** | Đo throughput, latency, data movement |
+| Tính năng | Mô tả | Trạng thái |
+|---|---|---|
+| **Consistent Hashing** | Phân phối data trên ring, thêm/xóa node chỉ ảnh hưởng ~1/N keys | 🔲 Chưa implement |
+| **Data Replication** | Nhân bản data, leader election tự động khi node dies | 🔲 Chưa implement |
+| **Cache Invalidation** | TTL, write-through, event-driven invalidation | 🔲 Chưa implement |
+| **Eviction Policies** | LRU, LFU khi cache đầy | 🔲 Chưa implement |
+| **Visualization** | Hiển thị hash ring real-time trên browser | 🔲 Chưa implement |
+| **Benchmark** | Đo throughput, latency, data movement | 🔲 Chưa implement |
+
+---
+
+## Trạng thái hiện tại
+
+### ✅ Đã có
+
+```
+├── Documentation
+│   ├── README.md                    ← Bạn đang đọc
+│   ├── docs/architecture.md         ← Kiến trúc tổng quan
+│   ├── docs/tech-stack.md           ← Technology choices
+│   ├── docs/concepts.md             ← Giải thích khái niệm
+│   ├── docs/consistent-hashing.md   ← Deep dive hashing
+│   ├── docs/replication.md          ← Deep dive replication
+│   ├── docs/cache-invalidation.md   ← Deep dive invalidation
+│   ├── docs/setup.md                ← Hướng dẫn cài đặt
+│   └── docs/contributing.md         ← Quy trình contribution
+│
+├── Agent Workflow
+│   ├── agent/COMMIT_CONVENTION.md   ← Quy tắc commit
+│   ├── agent/GIT_WORKFLOW.md        ← Quy trình Git
+│   ├── agent/CODE_STYLE.md          ← Quy tắc code
+│   └── agent/PR_TEMPLATE.md         ← Template PR
+│
+└── Infrastructure
+    ├── package.json                 ← Dependencies
+    ├── tsconfig.json                ← TypeScript config
+    └── AGENTS.md                    ← Hướng dẫn cho AI
+```
+
+### 🔲 Chưa có (cần implement)
+
+```
+├── Core Logic
+│   ├── src/core/consistent-hashing.ts  ← TIÊN CHỈ
+│   ├── src/core/node.ts
+│   ├── src/core/cluster.ts
+│   └── src/core/replication.ts
+│
+├── Cache Strategies
+│   ├── src/strategies/lru.ts
+│   ├── src/strategies/lfu.ts
+│   └── src/strategies/ttl.ts
+│
+├── Network Layer
+│   ├── src/server/cache-server.ts
+│   ├── src/server/protocol.ts
+│   └── src/server/client.ts
+│
+├── Visualization
+│   ├── src/visualization/hash-ring.tsx
+│   └── src/visualization/dashboard.tsx
+│
+├── Benchmark
+│   ├── src/benchmark/throughput.ts
+│   └── src/benchmark/data-movement.ts
+│
+└── Tests
+    ├── tests/consistent-hashing.test.ts
+    ├── tests/replication.test.ts
+    └── tests/cluster.test.ts
+```
+
+---
 
 ## Tech Stack
 
@@ -29,6 +94,10 @@ Hầu hết developer chỉ **sử dụng** Redis mà không **hiểu** nó ho�
 | **Testing** | Jest | Industry standard, mocking tốt |
 | **Build** | tsup | Bundle nhanh, ES modules support |
 | **Monorepo** | npm workspaces | Quản lý multiple packages |
+
+> Chi tiết lý do chọn từng công nghệ: [docs/tech-stack.md](docs/tech-stack.md)
+
+---
 
 ## Cấu trúc thư mục
 
@@ -44,8 +113,7 @@ distributed-cache/
 │   ├── strategies/                # Cache strategies
 │   │   ├── lru.ts                 # Least Recently Used
 │   │   ├── lfu.ts                 # Least Frequently Used
-│   │   ├── ttl.ts                 # Time-To-Live
-│   │   └── write-through.ts       # Write-through
+│   │   └── ttl.ts                 # Time-To-Live
 │   │
 │   ├── server/                    # Network layer
 │   │   ├── cache-server.ts        # TCP server
@@ -54,23 +122,21 @@ distributed-cache/
 │   │
 │   ├── visualization/             # Frontend
 │   │   ├── hash-ring.tsx          # Hash ring renderer
-│   │   ├── node-map.tsx           # Node status
 │   │   └── dashboard.tsx          # Metrics dashboard
 │   │
 │   └── benchmark/                 # Performance testing
 │       ├── throughput.ts          # Ops per second
-│       ├── latency.ts             # Response time
 │       └── data-movement.ts       # Keys moved
 │
 ├── tests/                         # Unit tests
 │   ├── consistent-hashing.test.ts
 │   ├── replication.test.ts
-│   ├── cache-invalidation.test.ts
 │   └── cluster.test.ts
 │
 ├── docs/                          # Tài liệu
 │   ├── architecture.md            # Kiến trúc tổng quan
 │   ├── tech-stack.md              # Technology choices
+│   ├── concepts.md                # Giải thích khái niệm
 │   ├── consistent-hashing.md      # Deep dive
 │   ├── replication.md             # Deep dive
 │   ├── cache-invalidation.md      # Deep dive
@@ -83,19 +149,13 @@ distributed-cache/
 │   ├── CODE_STYLE.md              # Quy tắc code
 │   └── PR_TEMPLATE.md             # Template Pull Request
 │
-├── benchmark/
-│   └── results/                   # Kết quả benchmark
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                 # Lint + Test + Build
-│       └── benchmark.yml          # Performance benchmark
-│
 ├── package.json
 ├── tsconfig.json
-├── .gitignore
+├── AGENTS.md
 └── README.md
 ```
+
+---
 
 ## Quick Start
 
@@ -114,19 +174,23 @@ npm test
 npm run benchmark
 
 # Start visualization
-npm run dev
+npm run viz
 ```
+
+---
 
 ## Learning Outcomes
 
-| Concept | Kiến thức |
-|---|---|
-| **Consistent Hashing** | Hash ring, virtual nodes, key distribution |
-| **Data Replication** | Primary/replica, failover, leader election |
-| **Cache Invalidation** | TTL, write-through, event-driven |
-| **Eviction Policies** | LRU, LFU |
-| **Fault Tolerance** | Node failure detection, recovery |
-| **Benchmarking** | Throughput, latency, data movement |
+| Concept | Kiến thức | Trạng thái |
+|---|---|---|
+| **Consistent Hashing** | Hash ring, virtual nodes, key distribution | 🔲 Chưa implement |
+| **Data Replication** | Primary/replica, failover, leader election | 🔲 Chưa implement |
+| **Cache Invalidation** | TTL, write-through, event-driven | 🔲 Chưa implement |
+| **Eviction Policies** | LRU, LFU | 🔲 Chưa implement |
+| **Fault Tolerance** | Node failure detection, recovery | 🔲 Chưa implement |
+| **Benchmarking** | Throughput, latency, data movement | 🔲 Chưa implement |
+
+---
 
 ## Benchmark Preview
 
@@ -141,6 +205,23 @@ Consistent Hashing:
 
 → Ít hơn 4 lần data movement
 ```
+
+---
+
+## Docs
+
+| File | Nội dung |
+|---|---|
+| [architecture.md](docs/architecture.md) | Component diagram, data flow, design decisions |
+| [tech-stack.md](docs/tech-stack.md) | Technology choices và lý do |
+| [concepts.md](docs/concepts.md) | Giải thích toàn bộ khái niệm distributed systems |
+| [consistent-hashing.md](docs/consistent-hashing.md) | Deep dive: hash ring, virtual nodes |
+| [replication.md](docs/replication.md) | Deep dive: primary/replica, leader election |
+| [cache-invalidation.md](docs/cache-invalidation.md) | Deep dive: TTL, write-through, event-driven |
+| [setup.md](docs/setup.md) | Hướng dẫn cài đặt và sử dụng |
+| [contributing.md](docs/contributing.md) | Quy trình contribution |
+
+---
 
 ## License
 

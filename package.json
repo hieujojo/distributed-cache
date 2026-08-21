@@ -1,0 +1,46 @@
+{
+  "name": "distributed-cache",
+  "version": "0.1.0",
+  "description": "A lightweight distributed cache system implementing consistent hashing, data replication, and cache invalidation strategies",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "tsc --noEmit",
+    "benchmark": "tsx src/benchmark/run.ts",
+    "viz": "tsx src/visualization/server.ts"
+  },
+  "keywords": [
+    "distributed-cache",
+    "consistent-hashing",
+    "cache",
+    "typescript",
+    "distributed-systems"
+  ],
+  "author": "hieujojo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hieujojo/distributed-cache.git"
+  }
+}
