@@ -158,7 +158,7 @@ Pure HTML/CSS:
 **Tại sao chọn:**
 ```
 + Industry standard
-  → Gear Games JD yêu cầu Jest
+  → Industry standard cho Node.js testing
   → Phổ biến nhất trong Node.js ecosystem
 
 + Built-in mocking
