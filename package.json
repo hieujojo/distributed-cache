@@ -42,5 +42,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/hieujojo/distributed-cache.git"
+  },
+  "dependencies": {
+    "murmurhash": "^2.0.1"
   }
 }

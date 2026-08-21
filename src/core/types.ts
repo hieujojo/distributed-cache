@@ -1,0 +1,51 @@
+/**
+ * Types và interfaces chung cho distributed cache system
+ */
+
+/**
+ * Giá trị có thể lưu trong cache
+ */
+export type Value = string | number | boolean | object | null;
+
+/**
+ * Entry lưu trong cache node
+ */
+export interface CacheEntry {
+  /** Key của entry */
+  key: string;
+  /** Giá trị lưu trữ */
+  value: Value;
+  /** Thời gian tạo */
+  createdAt: number;
+  /** Thời gian hết hạn (null = không hết hạn) */
+  expiresAt: number | null;
+  /** Số lần truy cập */
+  accessCount: number;
+  /** Thời gian truy cập cuối cùng */
+  lastAccessedAt: number;
+}
+
+/**
+ * Config cho CacheNode
+ */
+export interface NodeConfig {
+  /** Số lượng key tối đa */
+  maxSize: number;
+  /** TTL mặc định (ms) */
+  defaultTtl: number;
+}
+
+/**
+ * Config cho ConsistentHash
+ */
+export interface HashConfig {
+  /** Số lượng virtual nodes */
+  virtualNodes: number;
+  /** Hash function tùy chỉnh (optional) */
+  hashFunction?: HashFunction;
+}
+
+/**
+ * Hash function type
+ */
+export type HashFunction = (key: string) => number;

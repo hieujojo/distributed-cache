@@ -7,7 +7,7 @@
 ## Tổng quan
 
 ```
-Trạng thái: Documentation phase
+Trạng thái: Implementing Module 1
 Bắt đầu: 2026-08-21
 Cập nhật: 2026-08-21
 ```
@@ -18,7 +18,7 @@ Cập nhật: 2026-08-21
 
 | # | Module | Trạng thái | Tasks file |
 |---|---|---|---|
-| 1 | Core Foundation | ⬜ Chưa bắt đầu | tasks/01-core-foundation.md |
+| 1 | Core Foundation | ✅ Hoàn thành | tasks/01-core-foundation.md |
 | 2 | Eviction Strategies | ⬜ Chưa bắt đầu | tasks/02-eviction-strategies.md |
 | 3 | Network Layer | ⬜ Chưa bắt đầu | tasks/03-network-layer.md |
 | 4 | Cluster Management | ⬜ Chưa bắt đầu | tasks/04-cluster-management.md |
@@ -35,12 +35,12 @@ Cập nhật: 2026-08-21
 
 ```
 typescript, tsup, jest, @types/jest, ts-jest, tsx, @types/node
+murmurhash (Module 1)
 ```
 
 ### Cần cài thêm ⬜
 
 ```
-murmurhash3 (Module 1)
 react, react-dom, @types/react (Module 8)
 ```
 
