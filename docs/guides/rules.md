@@ -228,6 +228,81 @@ this.cache.set(key, value);  // Redundant
 
 ---
 
+## 11. Code Structure Rules
+
+### Size Guidelines
+
+```
+Function:  ≤ 100 dòng (nếu làm đúng 1 việc)
+Class:     ≤ 1000 dòng (nếu làm đúng 1 việc)
+File:      ≤ 2000 dòng (nếu chứa 1 class chính)
+```
+
+### Single Responsibility
+
+```
+✅ Function: validateKey() — chỉ validate
+✅ Function: hashKey() — chỉ hash
+✅ Function: storeKey() — chỉ store
+
+✗ Function: processKey() — validate + hash + store
+→ PHẢI tách ra 3 functions riêng
+```
+
+### Khi cần tách file
+
+```
+Khi file > 2000 dòng:
+  1. Tách theo responsibility
+  2. Tách helper functions ra file riêng
+  3. Giữ class chính trong file chính
+```
+
+---
+
+## 12. Conflict Prevention Rules
+
+### Rule 1: Mỗi task chỉ TẠO file mới
+
+```
+✅ Module 1: TẠO src/core/node.ts
+✅ Module 2: TẠO src/strategies/lru.ts
+
+✗ Module 1: TẠO src/core/node.ts
+✗ Module 2: SỬA src/core/node.ts  ← KHÔNG ĐƯỢC
+```
+
+### Rule 2: Nếu cần sửa file → discuss trước
+
+```
+1. Ghi vào agent/PROGRESS.md (mục "Pending Changes")
+2. Giải thích tại sao cần sửa
+3. User approve → mới sửa
+4. Commit: "refactor: update X based on Y"
+```
+
+### Rule 3: Injection thay vì Modification
+
+```
+Thay vì sửa CacheNode để thêm eviction:
+  → CacheNode nhận EvictionStrategy qua constructor
+
+→ Module 1 không cần sửa khi Module 2 thêm strategy mới
+```
+
+### Rule 4: Interface-based Design
+
+```
+Mọi module giao tiếp qua interfaces:
+  - src/core/types.ts chứa tất cả interfaces
+  - Module implement interface
+  - Module sử dụng interface
+
+→ Modules độc lập, không conflict
+```
+
+---
+
 ## Tóm tắt
 
 | # | Quy tắc | Khi nào áp dụng |
@@ -242,3 +317,5 @@ this.cache.set(key, value);  // Redundant
 | 8 | Security | Luôn |
 | 9 | Performance | Khi optimize |
 | 10 | Git workflow | Luôn |
+| 11 | Code Structure | Khi viết code |
+| 12 | Conflict Prevention | Khi làm việc với modules |
