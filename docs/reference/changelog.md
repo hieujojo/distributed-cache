@@ -1,6 +1,7 @@
 # Changelog — Bugs & Lessons Learned
 
 > Ghi nhận các bugs đã gặp, nguyên nhân, và cách xử lý để tránh lặp lại.
+> Format lấy cảm hứng từ Void Runner CHANGELOG.md.
 
 ---
 
@@ -28,9 +29,100 @@ Bài học rút ra để tránh lặp lại
 
 ## Bugs đã ghi nhận
 
-### [Chưa có bug nào]
+### [2026-08-22] — Jest config lỗi "Cannot use import statement"
 
-> Chưa có bug nào được ghi nhận. Khi gặp bug, thêm vào đây theo format trên.
+**Mô tả:** `jest.config.ts` bị lỗi khi chạy test
+
+**Nguyên nhân:** Jest chưa support native ESM config. File `.ts` bị parse as ESM → lỗi import syntax.
+
+**Cách xử lý:**
+```
+1. Đổi jest.config.ts → jest.config.cjs
+2. Dùng module.exports thay vì export default
+```
+
+**Lessons learned:** Jest dùng CommonJS → config phải là `.cjs` hoặc `.js`
+
+**Severity:** Medium
+
+---
+
+### [2026-08-22] — murmurhash3 cần native build tools
+
+**Mô tả:** `npm install murmurhash3` bị lỗi "node-gyp" trên Windows
+
+**Nguyên nhân:** murmurhash3 cần Visual Studio C++ build tools để compile native addon. Windows thường không có sẵn.
+
+**Cách xử lý:**
+```
+1. npm uninstall murmurhash3
+2. npm install murmurhash (pure JS, không cần native build)
+3. Cập nhật import trong code
+```
+
+**Lessons learned:** Ưu tiên pure JS packages trên Windows environment
+
+**Severity:** High
+
+---
+
+### [2026-08-22] — Import lỗi "Cannot find module"
+
+**Mô tả:** `import { types } from './types'` bị lỗi
+
+**Nguyên nhân:** TypeScript with `moduleResolution: "node"` yêu cầu `.js` extension trong import, kể cả khi file là `.ts`
+
+**Cách xử lý:**
+```
+// Trước
+import { types } from './types';
+
+// Sau
+import { types } from './types.js';
+```
+
+**Lessons learned:** Luôn dùng `.js` extension trong imports khi dùng Jest + TypeScript
+
+**Severity:** Medium
+
+---
+
+### [2026-08-22] — Module.exports lỗi với TypeScript
+
+**Mô tả:** `export default` bị lỗi khi Jest import
+
+**Nguyên nhân:** Jest dùng CommonJS, không support ES module exports
+
+**Cách xử lý:**
+```
+// Trước
+export default { testMatch: [...] };
+
+// Sau
+module.exports = { testMatch: [...] };
+```
+
+**Lessons learned:** Jest config và test files phải dùng CommonJS exports
+
+**Severity:** Medium
+
+---
+
+### [2026-08-22] — LRU test logic sai
+
+**Mô tả:** Test expect LRU xóa key "a" khi capacity = 2, nhưng thực tế xóa key "b"
+
+**Nguyên nhân:** Test case sai logic — LRU xóa least recently used, không phải first inserted
+
+**Cách xử lý:**
+```
+1. Sửa test case để match đúng LRU behavior
+2. Hoặc sửa implementation (nếu logic sai)
+```
+
+**Lessons learned:** Kiểm tra test logic trước khi viết assertion
+
+**Severity:** Low
 
 ---
 
@@ -59,6 +151,15 @@ Bài học rút ra để tránh lặp lại
 ## Prevention Checklist
 
 > Checklist để tránh bug thường gặp
+
+### TypeScript + Jest
+
+```
+□ Jest config dùng .cjs (không phải .ts)
+□ Imports dùng .js extension
+□ module.exports thay vì export default
+□ Đã chạy npx tsc --noEmit trước khi test
+```
 
 ### Consistent Hashing
 
@@ -167,7 +268,7 @@ Ví dụ:
 
 Giải pháp:
   - Background refresh trước khi expire
-  - probabilistic early expiration
+  - Probabilistic early expiration
   - Circuit breaker
 ```
 

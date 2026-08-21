@@ -1,6 +1,7 @@
 # Rules — Các quy tắc cần tuân thủ
 
 > Các quy tắc BẮT BUỘC khi làm việc với project này. Vi phạm = code review fail.
+> Format rules: **Mỗi rule có nguyên nhân + ví dụ sai + cách tránh lặp lại**
 
 ---
 
@@ -24,11 +25,11 @@ Thay đổi API từ getNode(key) sang findNode(key)
   → PHẢI update JSDoc trong code
 ```
 
-### Kiểm tra
+### Check procedure
 
 ```bash
 # Trước khi commit, kiểm tra docs có outdated không
-git diff --name-only | grep -E "\.(ts|tsx)$"
+git diff --name-only | grep -E "\\.(ts|tsx)$"
 # Nếu có file code thay đổi → kiểm tra docs
 ```
 
@@ -54,15 +55,6 @@ Nếu docs nói "default TTL là 60s"
 3. Commit với message: "fix: resolve inconsistency between docs and code"
 ```
 
-### Check procedure
-
-```bash
-# Khi review code, luôn hỏi:
-# 1. Docs có nói đúng về code không?
-# 2. Code có đúng như docs mô tả không?
-# 3. Nếu khác nhau → SỬA NGAY
-```
-
 ---
 
 ## 3. Commit message phải đúng format
@@ -74,16 +66,16 @@ Mọi commit PHẢI tuân theo agent/COMMIT_CONVENTION.md:
 
 <type>(<scope>): <subject>
 
-Types: feat, fix, docs, test, bench, refactor, style, chore
+Types: feat, fix, docs, test, bench, refactor, style, chore, opt
 Scopes: core, server, strategy, vis, docs, agent
 ```
 
 ### Ví dụ đúng
 
 ```
-✅ feat(core): add consistent hashing implementation
-✅ fix(replication): handle leader election race condition
-✅ docs(architecture): update component diagram
+✅ feat(core): thêm consistent hashing implementation
+✅ fix(replication): xử lý leader election race condition
+✅ docs(architecture): cập nhật component diagram
 ```
 
 ### Ví dụ sai
@@ -93,6 +85,7 @@ Scopes: core, server, strategy, vis, docs, agent
 ❌ "fix bug"
 ❌ "update code"
 ❌ "WIP"
+❌ Có footer "Generated with Codebuff"
 ```
 
 ---
@@ -184,7 +177,7 @@ this.cache.set(key, value);  // Redundant
 ```
 1. Git đã lưu lịch sử → không cần giữ trong code
 2. Nếu cần reference → ghi trong CHANGELOG.md
-3. Nếu cần恢复 → dùng git checkout
+3. Nếu cần restore → dùng git checkout
 ```
 
 ---
@@ -224,6 +217,7 @@ this.cache.set(key, value);  // Redundant
 - Luôn tạo feature branch
 - Branch naming: feature/<name>, fix/<name>, docs/<name>
 - Squash commits khi merge PR
+- KHÔNG chạy nhiều git commit song song (tránh index.lock)
 ```
 
 ---
@@ -303,6 +297,55 @@ Mọi module giao tiếp qua interfaces:
 
 ---
 
+## 🐛 Lessons Learned (từ thực tế)
+
+### L1. Jest config phải dùng .cjs (không phải .ts)
+
+```
+📅 Ngày: 2026-08-22
+🐛 Bug: jest.config.ts bị lỗi "Cannot use import statement"
+✅ Fix: Đổi sang jest.config.cjs (CommonJS)
+📝 Lesson: Jest chưa support native ESM config → dùng .cjs
+```
+
+### L2. murmurhash3 cần native build tools
+
+```
+📅 Ngày: 2026-08-22
+🐛 Bug: npm install murmurhash3 bị lỗi (cần Visual Studio)
+✅ Fix: Dùng package 'murmurhash' (pure JS, không cần native build)
+📝 Lesson: Windows environment có thể缺少 native build tools → ưu tiên pure JS packages
+```
+
+### L3. Import phải dùng extension .js trong TypeScript
+
+```
+📅 Ngày: 2026-08-22
+🐛 Bug: import './types' bị lỗi "Cannot find module"
+✅ Fix: import './types.js' (kể cả file .ts)
+📝 Lesson: TypeScript with moduleResolution=node cần .js extension
+```
+
+### L4. CommonJS exports phải dùng module.exports
+
+```
+📅 Ngày: 2026-08-22
+🐛 Bug: export default bị lỗi khi Jest import
+✅ Fix: Dùng module.exports = {...} thay vì export default
+📝 Lesson: Jest dùng CommonJS → phải exports accordingly
+```
+
+### L5. Small commits per scope (không phải 1 commit = 1 module)
+
+```
+📅 Ngày: 2026-08-22
+🐛 Bug: Module 2 commit 7 files trong 1 commit
+✅ Fix: Mỗi file 1 commit riêng biệt
+📝 Lesson: Small commits giúp review easier, revert easier, understand history better
+```
+
+---
+
 ## Tóm tắt
 
 | # | Quy tắc | Khi nào áp dụng |
@@ -319,3 +362,4 @@ Mọi module giao tiếp qua interfaces:
 | 10 | Git workflow | Luôn |
 | 11 | Code Structure | Khi viết code |
 | 12 | Conflict Prevention | Khi làm việc với modules |
+| L1-L5 | Lessons Learned | Tham chiếu khi gặp vấn đề tương tự |

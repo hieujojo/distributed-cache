@@ -8,9 +8,11 @@
 
 ```
 1. Đọc file này (WORKFLOW.md)
-2. Đọc agent/PROGRESS.md → xem module nào cần làm tiếp
-3. Đọc tasks/<module>.md → xem chi tiết cần làm gì
-4. Đọc docs/guides/rules.md → nhớ quy tắc
+2. Đọc HANDOVER.md → xem session trước làm gì
+3. Đọc agent/PROGRESS.md → xem module nào cần làm tiếp
+4. Đọc tasks/<module>.md → xem chi tiết cần làm gì
+5. Đọc docs/guides/rules.md → nhớ quy tắc
+6. Đọc docs/guides/decisions.md → hiểu tại sao chọn tech X
 ```
 
 ---
@@ -37,13 +39,14 @@ BƯỚC 4: Test
   □ Chạy tests: npm test
   □ Chạy coverage: npm run test:coverage
   □ Đảm bảo coverage ≥ 80%
+  □ Tham khảo docs/guides/testing.md khi cần debug
 
 BƯỚC 5: Update docs
   □ Kiểm tra docs có cần update không
   □ Nếu có → update trước khi commit
 
 BƯỚC 6: Commit
-  □ Git add các files
+  □ Git add các files (mỗi file 1 commit riêng)
   □ Git commit với convention: feat(<scope>): <description>
   □ Push: git push origin feature/<module-name>
 
@@ -56,6 +59,10 @@ BƯỚC 8: Update progress
   □ Tick ✅ trong tasks/<module>.md (mỗi file đã xong)
   □ Tick ✅ trong agent/PROGRESS.md (module đã hoàn thành)
   □ Ghi changelog trong tasks/<module>.md
+
+BƯỚC 9: Kết thúc session
+  □ Ghi context vào HANDOVER.md
+  □ Ghi những gì đã làm, đang làm dở, cần làm tiếp
 ```
 
 ---
@@ -88,13 +95,26 @@ BƯỚC 8: Update progress
 
 ---
 
+## Quy trình khi gặp bug
+
+```
+1. Ghi vào docs/reference/changelog.md (theo format có sẵn)
+2. Ghi nguyên nhân + cách xử lý + lessons learned
+3. Thêm vào Prevention Checklist nếu là bug thường gặp
+4. Update docs/guides/rules.md nếu cần thêm rule
+```
+
+---
+
 ## Thứ tự đọc khi bắt đầu ngày mới
 
 ```
-1. agent/WORKFLOW.md     ← Quy trình (bạn đang đọc)
-2. agent/PROGRESS.md     ← Xem progress hiện tại
-3. tasks/<module>.md     ← Xem task tiếp theo
-4. docs/guides/rules.md  ← Nhớ quy tắc
+1. HANDOVER.md              ← Context từ session trước
+2. agent/WORKFLOW.md        ← Quy trình (bạn đang đọc)
+3. agent/PROGRESS.md        ← Xem progress hiện tại
+4. tasks/<module>.md        ← Xem task tiếp theo
+5. docs/guides/rules.md     ← Nhớ quy tắc
+6. docs/guides/decisions.md ← Hiểu design decisions
 ```
 
 ---
@@ -103,6 +123,7 @@ BƯỚC 8: Update progress
 
 | File | Mục đích | Khi nào đọc |
 |---|---|---|
+| HANDOVER.md | Context handoff | Lúc đầu |
 | agent/WORKFLOW.md | Quy trình tổng hợp | Lúc đầu |
 | agent/PROGRESS.md | Track progress | Mỗi lần bắt đầu |
 | agent/MODULES.md | Tổng quan modules | Khi cần hiểu module |
@@ -112,10 +133,13 @@ BƯỚC 8: Update progress
 | agent/PR_TEMPLATE.md | Template PR | Khi tạo PR |
 | tasks/00-overview.md | Dependencies chung | Khi cần xem dependencies |
 | tasks/<module>.md | Chi tiết module | Khi làm module đó |
-| docs/guides/rules.md | Rules | Luôn |
+| docs/guides/rules.md | Rules + lessons learned | Luôn |
+| docs/guides/decisions.md | Design decisions | Khi cần hiểu lý do |
+| docs/guides/testing.md | Testing guide | Khi cần debug |
 | docs/guides/setup.md | Hướng dẫn cài đặt | Lần đầu |
 | docs/core/knowledge-base.md | Kiến thức cốt lõi | Khi cần hiểu concepts |
 | docs/architecture/architecture.md | Kiến trúc | Khi cần hiểu architecture |
+| docs/reference/changelog.md | Bug tracking | Khi gặp bug |
 
 ---
 
@@ -124,13 +148,13 @@ BƯỚC 8: Update progress
 ```
 <type>(<scope>): <subject>
 
-Types: feat, fix, docs, test, bench, refactor, style, chore
+Types: feat, fix, docs, test, bench, refactor, style, chore, opt
 Scopes: core, server, strategy, vis, docs, agent
 
 Ví dụ:
-feat(core): add consistent hashing implementation
-fix(replication): handle leader election race condition
-docs(architecture): update component diagram
+feat(core): thêm consistent hashing implementation
+fix(replication): xử lý leader election race condition
+docs(architecture): cập nhật component diagram
 ```
 
 > Chi tiết xem: agent/COMMIT_CONVENTION.md

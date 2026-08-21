@@ -19,18 +19,20 @@ BƯỚC 3 — Hiểu core algorithms:
   7. docs/core/cache-invalidation.md
 
 BƯỚC 4 — Biết quy tắc code:
-  8. docs/guides/rules.md
-  9. docs/architecture/design-system.md
-  10. docs/architecture/design-patterns.md
+  8. docs/guides/rules.md                ← Rules + lessons learned
+  9. docs/guides/decisions.md            ← Design decisions
+  10. docs/guides/testing.md             ← Testing guide
+  11. docs/architecture/design-system.md
+  12. docs/architecture/design-patterns.md
 
 BƯỚC 5 — Biết cách contribute:
-  11. CONTRIBUTING.md
-  12. docs/guides/setup.md
+  13. CONTRIBUTING.md
+  14. docs/guides/setup.md
 
 BƯỚC 6 — Reference khi cần:
-  13. docs/reference/diagrams.md
-  14. docs/reference/edge-cases.md
-  15. docs/reference/changelog.md
+  15. docs/reference/diagrams.md
+  16. docs/reference/edge-cases.md
+  17. docs/reference/changelog.md        ← Bug tracking
 ```
 
 ---
@@ -38,10 +40,11 @@ BƯỚC 6 — Reference khi cần:
 ## Khi bắt đầu code
 
 ```
-1. Đọc agent/WORKFLOW.md     ← Quy trình
-2. Đọc agent/PROGRESS.md     ← Xem progress
-3. Đọc tasks/<module>.md     ← Chi tiết task
-4. Code theo tasks file
+1. Đọc HANDOVER.md          ← Context từ session trước
+2. Đọc agent/WORKFLOW.md     ← Quy trình
+3. Đọc agent/PROGRESS.md     ← Xem progress
+4. Đọc tasks/<module>.md     ← Chi tiết task
+5. Code theo tasks file
 ```
 
 ---
@@ -50,68 +53,73 @@ BƯỚC 6 — Reference khi cần:
 
 ```
 distributed-cache/
-├── src/                          # SOURCE CODE (chưa tạo)
-│   ├── core/                     # Core logic
-│   ├── strategies/               # Cache strategies
-│   ├── server/                   # Network layer
-│   ├── visualization/            # Frontend
-│   └── benchmark/                # Performance testing
+├── src/                          # SOURCE CODE
+│   ├── core/                     # Core logic (✅ Module 1)
+│   ├── strategies/               # Cache strategies (✅ Module 2)
+│   ├── server/                   # Network layer (⬜ Module 3)
+│   ├── visualization/            # Frontend (⬜ Module 8)
+│   └── benchmark/                # Performance testing (⬜ Module 7)
 │
 ├── docs/                         # DOCUMENTATION
-│   ├── core/                     # Kiến thức cốt lõi
-│   ├── architecture/             # Kiến trúc & design
-│   ├── guides/                   # Hướng dẫn & quy tắc
-│   └── reference/                # Reference khi cần
+│   ├── core/                     # Kiến thức cốt lõi (4 files)
+│   ├── architecture/             # Kiến trúc & design (4 files)
+│   ├── guides/                   # Hướng dẫn & quy tắc (4 files)
+│   └── reference/                # Reference khi cần (3 files)
 │
-├── agent/                        # AI WORKFLOW
+├── agent/                        # AI WORKFLOW (7 files)
 │   ├── WORKFLOW.md               ← Quy trình tổng hợp
-│   ├── PROGRESS.md               ← Track progress
+│   ├── PROGRESS.md               ← Track progress + milestones
 │   ├── MODULES.md                ← Tổng quan modules
 │   ├── COMMIT_CONVENTION.md      ← Quy tắc commit
 │   ├── GIT_WORKFLOW.md           ← Git workflow
 │   ├── CODE_STYLE.md             ← Code style
 │   └── PR_TEMPLATE.md            ← Template PR
 │
-├── tasks/                        # TASK TRACKING
+├── tasks/                        # TASK TRACKING (9 files)
 │   ├── 00-overview.md            ← Dependencies chung
-│   ├── 01-core-foundation.md     ← Module 1
-│   ├── 02-eviction-strategies.md ← Module 2
-│   ├── 03-network-layer.md       ← Module 3
-│   ├── 04-cluster-management.md  ← Module 4
-│   ├── 05-replication.md         ← Module 5
-│   ├── 06-cache-invalidation.md  ← Module 6
-│   ├── 07-benchmark.md           ← Module 7
-│   └── 08-visualization.md       ← Module 8
+│   └── 01-08 modules             ← Chi tiết từng module
 │
-├── package.json
-├── tsconfig.json
-├── README.md
+├── tests/                        # TESTS
+│   ├── core/                     # Core tests (✅ 30 tests)
+│   └── strategies/               # Strategy tests (✅ 22 tests)
+│
+├── HANDOVER.md                   ← Context handoff giữa sessions
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── SECURITY.md
-└── LICENSE
+├── LICENSE
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer | Công nghệ |
-|---|---|
-| Language | TypeScript |
-| Runtime | Node.js |
-| Network | TCP sockets |
-| Frontend | React + Canvas |
-| Testing | Jest |
-| Build | tsup |
+| Layer | Công nghệ | Lý do |
+|---|---|---|
+| Language | TypeScript | Type safety, IDE support |
+| Runtime | Node.js | Ecosystem, compatibility |
+| Hash | murmurhash | Performance, proven in Redis/Cassandra |
+| Network | TCP sockets | Low latency, Redis-compatible |
+| Frontend | React + Canvas | Popular, efficient rendering |
+| Testing | Jest | Standard for Node.js |
+| Build | tsup | Fast bundler |
 
 ---
 
 ## Trạng thái
 
 ```
-✅ Đã có: Documentation, package.json, tsconfig.json
-🔲 Chưa có: Source code implementation
+✅ Module 1: Core Foundation (consistent hashing, cache node)
+✅ Module 2: Eviction Strategies (LRU, LFU, FIFO)
+⬜ Module 3: Network Layer
+⬜ Module 4: Cluster Management
+⬜ Module 5: Replication
+⬜ Module 6: Cache Invalidation
+⬜ Module 7: Benchmark
+⬜ Module 8: Visualization
 ```
 
 ---
@@ -130,6 +138,12 @@ npm test
 ## Security
 
 Xem SECURITY.md để biết các security considerations.
+
+---
+
+## Design Decisions
+
+Xem docs/guides/decisions.md để hiểu tại sao chọn tech stack và patterns hiện tại.
 
 ---
 
