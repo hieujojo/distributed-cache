@@ -57,28 +57,23 @@
 
 ## 📝 History
 
-### Session 2026-08-22 — Hoàn thành Module 3 (Network Layer)
+### Session 2026-08-22 — Hoàn thành Module 3 + 4
 **Trạng thái:** Hoàn thành
-**Module hiện tại:** Module 3 — Network Layer
+**Module hiện tại:** Module 4 — Cluster Management
 **Đã làm:**
-- [x] Tạo src/server/protocol.ts: wire protocol parser/serializer
-- [x] Tạo src/server/cache-server.ts: TCP server với consistent hashing routing
-- [x] Tạo src/server/client.ts: client library với retry + timeout
-- [x] Tạo tests/server/protocol.test.ts (47 tests)
-- [x] Tạo tests/server/cache-server.test.ts (13 tests)
-- [x] Tạo tests/server/client.test.ts (17 tests)
-- [x] Update tasks/03-network-layer.md
-- [x] Update agent/PROGRESS.md, tasks/00-overview.md, README.md
+- [x] Module 3: Network Layer (protocol, cache-server, client) — 77 tests
+- [x] Module 4: Cluster Management (cluster, election, failover) — 46 tests
+- [x] Update docs: PROGRESS, tasks/00-overview, README, HANDOVER
 
 **Kết quả:**
-- 126 tests pass, 8 test suites
-- 7 commits cho Module 3
+- 172 tests pass, 11 test suites
+- ~15 commits cho Module 3 + 4
 
 **Vấn đề gặp phải:**
-- Type error: Value | undefined không assign được cho Value → fix serializeValue接受 undefined
-- Jest không resolve .js extension → bỏ .js trong imports
-- server.stop() timeout vì connection chưa đóng → thêm connection tracking + destroy
+- Module 3: Type error Value | undefined, Jest .js extension, server.stop() timeout
+- Module 4: triggerFailover cần check primary TRƯỚC khi remove node, tests cần 2+ nodes
 
 **Cần làm tiếp:**
-- Module 4: Cluster Management (cluster.ts, election.ts, failover.ts)
+- Module 5: Replication (replication.ts)
+- Module 6: Cache Invalidation (invalidation.ts)
 

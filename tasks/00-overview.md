@@ -65,14 +65,14 @@ mongoose        — In-memory cache
 ✅ src/server/protocol.ts      (Module 3)
 ✅ src/server/cache-server.ts  (Module 3)
 ✅ src/server/client.ts        (Module 3)
+✅ src/core/cluster.ts         (Module 4)
+✅ src/core/election.ts        (Module 4)
+✅ src/core/failover.ts        (Module 4)
 ```
 
 ### Chưa tạo ⬜
 
 ```
-⬜ src/core/cluster.ts         (Module 4)
-⬜ src/core/election.ts        (Module 4)
-⬜ src/core/failover.ts        (Module 4)
 ⬜ src/core/replication.ts     (Module 5)
 ⬜ src/core/invalidation.ts    (Module 6)
 ⬜ src/benchmark/throughput.ts (Module 7)
@@ -103,7 +103,7 @@ Module 3 (Network Layer) ✅
   ├── Dependencies: Không cần thêm (net module built-in)
   └── Phụ thuộc: Module 1 (node.ts)
 
-Module 4 (Cluster Management) ⬜
+Module 4 (Cluster Management) ✅
   ├── TẠO: cluster.ts, election.ts, failover.ts
   ├── Dependencies: Không cần thêm
   └── Phụ thuộc: Module 1, Module 3
@@ -155,4 +155,5 @@ Module 1 → Module 8: KHÔNG (read-only)
 2026-08-22: Fix murmurhash3 → murmurhash, jest.config.ts → jest.config.cjs
 2026-08-22: Đánh dấu Module 1-2 hoàn thành
 2026-08-22: Hoàn thành Module 3 (Network Layer)
+2026-08-22: Hoàn thành Module 4 (Cluster Management)
 ```
