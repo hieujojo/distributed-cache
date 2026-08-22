@@ -56,7 +56,7 @@ distributed-cache/
 ├── src/                          # SOURCE CODE
 │   ├── core/                     # Core logic (✅ Module 1)
 │   ├── strategies/               # Cache strategies (✅ Module 2)
-│   ├── server/                   # Network layer (⬜ Module 3)
+│   ├── server/                   # Network layer (✅ Module 3)
 │   ├── visualization/            # Frontend (⬜ Module 8)
 │   └── benchmark/                # Performance testing (⬜ Module 7)
 │
@@ -81,7 +81,8 @@ distributed-cache/
 │
 ├── tests/                        # TESTS
 │   ├── core/                     # Core tests (✅ 30 tests)
-│   └── strategies/               # Strategy tests (✅ 22 tests)
+│   ├── strategies/               # Strategy tests (✅ 19 tests)
+│   └── server/                   # Server tests (✅ 77 tests)
 │
 ├── HANDOVER.md                   ← Context handoff giữa sessions
 ├── CONTRIBUTING.md
@@ -114,7 +115,7 @@ distributed-cache/
 ```
 ✅ Module 1: Core Foundation (consistent hashing, cache node)
 ✅ Module 2: Eviction Strategies (LRU, LFU, FIFO)
-⬜ Module 3: Network Layer
+✅ Module 3: Network Layer (TCP server, client, protocol)
 ⬜ Module 4: Cluster Management
 ⬜ Module 5: Replication
 ⬜ Module 6: Cache Invalidation

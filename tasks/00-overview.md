@@ -62,14 +62,14 @@ mongoose        — In-memory cache
 ✅ src/strategies/lru.ts       (Module 2)
 ✅ src/strategies/lfu.ts       (Module 2)
 ✅ src/strategies/fifo.ts      (Module 2)
+✅ src/server/protocol.ts      (Module 3)
+✅ src/server/cache-server.ts  (Module 3)
+✅ src/server/client.ts        (Module 3)
 ```
 
 ### Chưa tạo ⬜
 
 ```
-⬜ src/server/protocol.ts      (Module 3)
-⬜ src/server/cache-server.ts  (Module 3)
-⬜ src/server/client.ts        (Module 3)
 ⬜ src/core/cluster.ts         (Module 4)
 ⬜ src/core/election.ts        (Module 4)
 ⬜ src/core/failover.ts        (Module 4)
@@ -98,7 +98,7 @@ Module 2 (Eviction Strategies) ✅
   ├── Dependencies: Không cần thêm
   └── Phụ thuộc: Module 1 (types.ts)
 
-Module 3 (Network Layer) ⬜
+Module 3 (Network Layer) ✅
   ├── TẠO: protocol.ts, cache-server.ts, client.ts
   ├── Dependencies: Không cần thêm (net module built-in)
   └── Phụ thuộc: Module 1 (node.ts)
@@ -154,4 +154,5 @@ Module 1 → Module 8: KHÔNG (read-only)
 2026-08-21: Tạo tasks/ folder + 9 files
 2026-08-22: Fix murmurhash3 → murmurhash, jest.config.ts → jest.config.cjs
 2026-08-22: Đánh dấu Module 1-2 hoàn thành
+2026-08-22: Hoàn thành Module 3 (Network Layer)
 ```

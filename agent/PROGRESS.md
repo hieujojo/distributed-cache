@@ -8,11 +8,11 @@
 ## Tổng quan
 
 ```
-Trạng thái: Module 1-2 hoàn thành
+Trạng thái: Module 1-3 hoàn thành
 Bắt đầu: 2026-08-21
 Cập nhật: 2026-08-22
-Tổng commits: ~15
-Tổng tests: 52 (Module 1: 30, Module 2: 22)
+Tổng commits: ~22
+Tổng tests: 126 (Module 1: 30, Module 2: 19, Module 3: 77)
 ```
 
 ---
@@ -39,13 +39,14 @@ Tests: 22 passed (8 LRU + 8 LFU + 6 FIFO)
 Files: src/strategies/*, tests/strategies/*
 ```
 
-### Milestone 3: Network Layer ⬜ (upcoming)
+### Milestone 3: Network Layer ✅ (2026-08-22)
 
 ```
-Trạng thái: CHƯA BẮT ĐẦU
+Trạng thái: HOÀN THÀNH
 Module: 3 — Network Layer
-Dependencies: Module 1, 2
-Ưu tiên: Cao (cần cho Module 4, 5)
+Commits: feat(server), test(server)...
+Tests: 77 passed (protocol: 47, server: 13, client: 17)
+Files: src/server/*, tests/server/*
 ```
 
 ### Milestone 4: Cluster Management ⬜
@@ -101,7 +102,7 @@ Dependencies: Module 1
 |---|---|---|---|
 | 1 | Core Foundation | ✅ Hoàn thành | tasks/01-core-foundation.md |
 | 2 | Eviction Strategies | ✅ Hoàn thành | tasks/02-eviction-strategies.md |
-| 3 | Network Layer | ⬜ Chưa bắt đầu | tasks/03-network-layer.md |
+| 3 | Network Layer | ✅ Hoàn thành | tasks/03-network-layer.md |
 | 4 | Cluster Management | ⬜ Chưa bắt đầu | tasks/04-cluster-management.md |
 | 5 | Replication | ⬜ Chưa bắt đầu | tasks/05-replication.md |
 | 6 | Cache Invalidation | ⬜ Chưa bắt đầu | tasks/06-cache-invalidation.md |
@@ -122,7 +123,6 @@ murmurhash (Module 1)
 ### Cần cài thêm ⬜
 
 ```
-Module 3: (tbd — có thể không cần thêm)
 Module 8: react, react-dom, @types/react
 ```
 

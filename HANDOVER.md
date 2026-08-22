@@ -57,5 +57,28 @@
 
 ## 📝 History
 
-<!-- Thêm entries mới nhất ở đây -->
+### Session 2026-08-22 — Hoàn thành Module 3 (Network Layer)
+**Trạng thái:** Hoàn thành
+**Module hiện tại:** Module 3 — Network Layer
+**Đã làm:**
+- [x] Tạo src/server/protocol.ts: wire protocol parser/serializer
+- [x] Tạo src/server/cache-server.ts: TCP server với consistent hashing routing
+- [x] Tạo src/server/client.ts: client library với retry + timeout
+- [x] Tạo tests/server/protocol.test.ts (47 tests)
+- [x] Tạo tests/server/cache-server.test.ts (13 tests)
+- [x] Tạo tests/server/client.test.ts (17 tests)
+- [x] Update tasks/03-network-layer.md
+- [x] Update agent/PROGRESS.md, tasks/00-overview.md, README.md
+
+**Kết quả:**
+- 126 tests pass, 8 test suites
+- 7 commits cho Module 3
+
+**Vấn đề gặp phải:**
+- Type error: Value | undefined không assign được cho Value → fix serializeValue接受 undefined
+- Jest không resolve .js extension → bỏ .js trong imports
+- server.stop() timeout vì connection chưa đóng → thêm connection tracking + destroy
+
+**Cần làm tiếp:**
+- Module 4: Cluster Management (cluster.ts, election.ts, failover.ts)
 
