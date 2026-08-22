@@ -57,23 +57,27 @@
 
 ## 📝 History
 
-### Session 2026-08-22 — Hoàn thành Module 3 + 4
+### Session 2026-08-22 — Hoàn thành Module 5-8
 **Trạng thái:** Hoàn thành
-**Module hiện tại:** Module 4 — Cluster Management
+**Module hiện tại:** Module 8 — Visualization
 **Đã làm:**
-- [x] Module 3: Network Layer (protocol, cache-server, client) — 77 tests
-- [x] Module 4: Cluster Management (cluster, election, failover) — 46 tests
+- [x] Module 5: Replication (replication.ts) — 18 tests
+- [x] Module 6: Cache Invalidation (invalidation.ts) — 20 tests
+- [x] Module 7: Benchmark (throughput.ts, data-movement.ts, run.ts)
+- [x] Module 8: Visualization (hash-ring.tsx, dashboard.tsx, server.ts)
+- [x] Cài dependencies: react, react-dom, @types/react, @types/react-dom
 - [x] Update docs: PROGRESS, tasks/00-overview, README, HANDOVER
 
 **Kết quả:**
-- 172 tests pass, 11 test suites
-- ~15 commits cho Module 3 + 4
+- 210 tests pass, 13 test suites
+- Benchmark: 1.4M ops/sec (balanced), 18% data movement
 
 **Vấn đề gặp phải:**
-- Module 3: Type error Value | undefined, Jest .js extension, server.stop() timeout
-- Module 4: triggerFailover cần check primary TRƯỚC khi remove node, tests cần 2+ nodes
+- Module 7: require.main === module lỗi trong ESM → bỏ check, chạy trực tiếp
+- Module 8: Không có lỗi
 
-**Cần làm tiếp:**
-- Module 5: Replication (replication.ts)
-- Module 6: Cache Invalidation (invalidation.ts)
+**Dự án đã hoàn thành:**
+- Tất cả 8 modules đã xong
+- Có thể chạy benchmark: npm run benchmark
+- Có thể chạy visualization: npm run viz
 

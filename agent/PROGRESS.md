@@ -89,13 +89,14 @@ Tests: 210 passed (benchmark không cần unit tests)
 Files: src/benchmark/throughput.ts, src/benchmark/data-movement.ts, src/benchmark/run.ts
 ```
 
-### Milestone 8: Visualization ⬜
+### Milestone 8: Visualization ✅ (2026-08-22)
 
 ```
-Trạng thái: CHƯA BẮT ĐẦU
+Trạng thái: HOÀN THÀNH
 Module: 8 — Visualization
-Dependencies: Module 1
-Ưu tiên: Thấp
+Commits: feat(vis)...
+Tests: 210 passed (visualization không cần unit tests)
+Files: src/visualization/hash-ring.tsx, src/visualization/dashboard.tsx, src/visualization/server.ts
 ```
 
 ---
@@ -111,7 +112,7 @@ Dependencies: Module 1
 | 5 | Replication | ✅ Hoàn thành | tasks/05-replication.md |
 | 6 | Cache Invalidation | ✅ Hoàn thành | tasks/06-cache-invalidation.md |
 | 7 | Benchmark | ✅ Hoàn thành | tasks/07-benchmark.md |
-| 8 | Visualization | ⬜ Chưa bắt đầu | tasks/08-visualization.md |
+| 8 | Visualization | ✅ Hoàn thành | tasks/08-visualization.md |
 
 ---
 
@@ -127,7 +128,7 @@ murmurhash (Module 1)
 ### Cần cài thêm ⬜
 
 ```
-Module 8: react, react-dom, @types/react
+Không có
 ```
 
 ---

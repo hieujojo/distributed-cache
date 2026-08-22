@@ -22,9 +22,7 @@ murmurhash      (Module 1: Consistent Hashing)
 ### Cần cài thêm ⬜
 
 ```
-react           (Module 8: Visualization)
-react-dom       (Module 8: Visualization)
-@types/react    (Module 8: Visualization)
+Không có
 ```
 
 ### Không cần cài ❌
@@ -78,9 +76,9 @@ mongoose        — In-memory cache
 ✅ src/benchmark/throughput.ts (Module 7)
 ✅ src/benchmark/data-movement.ts (Module 7)
 ✅ src/benchmark/run.ts        (Module 7)
-⬜ src/visualization/hash-ring.tsx (Module 8)
-⬜ src/visualization/dashboard.tsx (Module 8)
-⬜ src/visualization/server.ts (Module 8)
+✅ src/visualization/hash-ring.tsx (Module 8)
+✅ src/visualization/dashboard.tsx (Module 8)
+✅ src/visualization/server.ts (Module 8)
 ```
 
 ---

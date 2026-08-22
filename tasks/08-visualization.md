@@ -22,7 +22,7 @@ Cần cài:
 
 ## Files sẽ tạo
 
-### ⬜ src/visualization/hash-ring.tsx
+### ✅ src/visualization/hash-ring.tsx
 
 ```
 Mục đích: Render hash ring lên Canvas
@@ -78,7 +78,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/visualization/dashboard.tsx
+### ✅ src/visualization/dashboard.tsx
 
 ```
 Mục đích: Hiển thị cluster statistics
@@ -119,7 +119,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/visualization/server.ts
+### ✅ src/visualization/server.ts
 
 ```
 Mục đích: Dev server cho visualization
