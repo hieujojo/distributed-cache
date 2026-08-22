@@ -8,11 +8,11 @@
 ## Tổng quan
 
 ```
-Trạng thái: Module 1-4 hoàn thành
+Trạng thái: Module 1-8 HOÀN THÀNH
 Bắt đầu: 2026-08-21
 Cập nhật: 2026-08-22
-Tổng commits: ~30
-Tổng tests: 172 (Module 1: 30, Module 2: 19, Module 3: 77, Module 4: 46)
+Tổng commits: ~40
+Tổng tests: 210 (Module 1: 30, Module 2: 19, Module 3: 77, Module 4: 46, Module 5: 18, Module 6: 20)
 ```
 
 ---
