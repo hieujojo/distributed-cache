@@ -270,6 +270,16 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 📝 Small commits: easier review, easier revert, better history
 ```
 
+### L6. Luôn tạo feature branch trước khi làm module mới
+
+```
+📅 2026-08-22
+🐛 Commit trực tiếp lên main khi làm Module 3, 4
+✅ Luôn tạo feature branch: git checkout -b feature/<module-name>
+📝 Workflow yêu cầu: branch → commit → PR → merge
+📝 Không được skip bước tạo branch dù chỉ có 1 người
+```
+
 ---
 
 ## Tóm tắt
