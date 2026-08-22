@@ -119,7 +119,7 @@ distributed-cache/
 ✅ Module 4: Cluster Management (cluster, election, failover)
 ✅ Module 5: Replication
 ✅ Module 6: Cache Invalidation
-⬜ Module 7: Benchmark
+✅ Module 7: Benchmark
 ⬜ Module 8: Visualization
 ```
 

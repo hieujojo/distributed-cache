@@ -79,13 +79,14 @@ Tests: 20 passed
 Files: src/core/invalidation.ts, tests/core/invalidation.test.ts
 ```
 
-### Milestone 7: Benchmark ⬜
+### Milestone 7: Benchmark ✅ (2026-08-22)
 
 ```
-Trạng thái: CHƯA BẮT ĐẦU
+Trạng thái: HOÀN THÀNH
 Module: 7 — Benchmark
-Dependencies: Module 1, 2, 3
-Ưu tiên: Thấp (sau khi core hoàn thành)
+Commits: feat(bench)...
+Tests: 210 passed (benchmark không cần unit tests)
+Files: src/benchmark/throughput.ts, src/benchmark/data-movement.ts, src/benchmark/run.ts
 ```
 
 ### Milestone 8: Visualization ⬜
@@ -109,7 +110,7 @@ Dependencies: Module 1
 | 4 | Cluster Management | ✅ Hoàn thành | tasks/04-cluster-management.md |
 | 5 | Replication | ✅ Hoàn thành | tasks/05-replication.md |
 | 6 | Cache Invalidation | ✅ Hoàn thành | tasks/06-cache-invalidation.md |
-| 7 | Benchmark | ⬜ Chưa bắt đầu | tasks/07-benchmark.md |
+| 7 | Benchmark | ✅ Hoàn thành | tasks/07-benchmark.md |
 | 8 | Visualization | ⬜ Chưa bắt đầu | tasks/08-visualization.md |
 
 ---

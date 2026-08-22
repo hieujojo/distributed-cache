@@ -20,7 +20,7 @@ Không cần cài thêm
 
 ## Files sẽ tạo
 
-### ⬜ src/benchmark/throughput.ts
+### ✅ src/benchmark/throughput.ts
 
 ```
 Mục đích: Đo throughput (operations per second)
@@ -61,7 +61,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/benchmark/data-movement.ts
+### ✅ src/benchmark/data-movement.ts
 
 ```
 Mục đích: Đo % keys bị di chuyển khi thêm node
@@ -99,7 +99,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/benchmark/run.ts
+### ✅ src/benchmark/run.ts
 
 ```
 Mục đích: Runner cho tất cả benchmarks
