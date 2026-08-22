@@ -20,7 +20,7 @@ Không cần cài thêm
 
 ## Files sẽ tạo
 
-### ⬜ src/core/replication.ts
+### ✅ src/core/replication.ts
 
 ```
 Mục đích: Quản lý replication data giữa nodes
@@ -89,7 +89,7 @@ Sửa đổi: Không (file mới)
 
 ## Tests sẽ tạo
 
-### ⬜ tests/core/replication.test.ts
+### ✅ tests/core/replication.test.ts
 
 ```
 Test cases:

@@ -59,13 +59,14 @@ Tests: 46 passed (cluster: 17, election: 13, failover: 16)
 Files: src/core/cluster.ts, src/core/election.ts, src/core/failover.ts
 ```
 
-### Milestone 5: Replication ⬜
+### Milestone 5: Replication ✅ (2026-08-22)
 
 ```
-Trạng thái: CHƯA BẮT ĐẦU
+Trạng thái: HOÀN THÀNH
 Module: 5 — Replication
-Dependencies: Module 3, 4
-Ưu tiên: Trung bình
+Commits: feat(core), test(core)...
+Tests: 18 passed
+Files: src/core/replication.ts, tests/core/replication.test.ts
 ```
 
 ### Milestone 6: Cache Invalidation ⬜
@@ -105,7 +106,7 @@ Dependencies: Module 1
 | 2 | Eviction Strategies | ✅ Hoàn thành | tasks/02-eviction-strategies.md |
 | 3 | Network Layer | ✅ Hoàn thành | tasks/03-network-layer.md |
 | 4 | Cluster Management | ✅ Hoàn thành | tasks/04-cluster-management.md |
-| 5 | Replication | ⬜ Chưa bắt đầu | tasks/05-replication.md |
+| 5 | Replication | ✅ Hoàn thành | tasks/05-replication.md |
 | 6 | Cache Invalidation | ⬜ Chưa bắt đầu | tasks/06-cache-invalidation.md |
 | 7 | Benchmark | ⬜ Chưa bắt đầu | tasks/07-benchmark.md |
 | 8 | Visualization | ⬜ Chưa bắt đầu | tasks/08-visualization.md |
