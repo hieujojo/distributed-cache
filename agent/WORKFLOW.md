@@ -22,7 +22,6 @@
 BƯỚC 1: Chuẩn bị
   □ Đọc tasks/<module>.md
   □ Kiểm tra dependencies cần cài
-  □ Tạo feature branch: git checkout -b feature/<module-name>
 
 BƯỚC 2: Setup (nếu cần)
   □ Cài dependencies: npm install <package>
@@ -43,22 +42,17 @@ BƯỚC 5: Update docs
   □ Kiểm tra docs có cần update không
   □ Nếu có → update trước khi commit
 
-BƯỚC 6: Commit
+BƯỚC 6: Commit & Push
   □ Mỗi file 1 commit riêng
   □ Tuân theo agent/COMMIT_CONVENTION.md
-  □ Push: git push origin feature/<module-name>
+  □ Push: git push origin main
 
-BƯỚC 7: Merge
-  □ Tạo Pull Request trên GitHub
-  □ Sau khi approve → merge vào main
-  □ Xóa feature branch
-
-BƯỚC 8: Update progress
+BƯỚC 7: Update progress
   □ Tick ✅ trong tasks/<module>.md
   □ Tick ✅ trong agent/PROGRESS.md
   □ Ghi changelog trong tasks/<module>.md
 
-BƯỚC 9: Kết thúc session
+BƯỚC 8: Kết thúc session
   □ Ghi context vào HANDOVER.md
 ```
 

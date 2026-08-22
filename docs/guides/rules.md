@@ -154,12 +154,12 @@ this.cache.set(key, value);  // Redundant
 
 ## 10. Git rules
 
-### Quy tắc
+### Quy tắc (Solo project)
 
 ```
-- Không commit trực tiếp lên main
-- Luôn tạo feature branch
-- Branch naming: feature/<name>, fix/<name>, docs/<name>
+- Commit + push thẳng vào main
+- Không cần feature branch hay PR
+- Mỗi file 1 commit riêng
 - KHÔNG chạy nhiều git commit song song (tránh index.lock)
 ```
 
@@ -270,14 +270,13 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 📝 Small commits: easier review, easier revert, better history
 ```
 
-### L6. Luôn tạo feature branch trước khi làm module mới
+### L6. Solo project: commit trực tiếp vào main
 
 ```
 📅 2026-08-22
-🐛 Commit trực tiếp lên main khi làm Module 3, 4
-✅ Luôn tạo feature branch: git checkout -b feature/<module-name>
-📝 Workflow yêu cầu: branch → commit → PR → merge
-📝 Không được skip bước tạo branch dù chỉ có 1 người
+✅ Dự án solo → commit + push thẳng vào main
+✅ Không cần feature branch hay PR
+📝 Nếu có多人发展 → mới cần branch + PR
 ```
 
 ---
