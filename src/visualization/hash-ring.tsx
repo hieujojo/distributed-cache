@@ -151,10 +151,11 @@ export function HashRing({
 
       // Tìm node gần nhất
       const angleStep = (Math.PI * 2) / nodes.length;
-      let closestNode: CacheNode | null = null;
+      let foundNode: CacheNode | undefined;
       let closestDistance = Infinity;
 
-      nodes.forEach((node, index) => {
+      for (const node of nodes) {
+        const index = nodes.indexOf(node);
         const angle = angleStep * index - Math.PI / 2;
         const nodeX = centerX + radius * Math.cos(angle);
         const nodeY = centerY + radius * Math.sin(angle);
@@ -165,12 +166,12 @@ export function HashRing({
 
         if (distance < closestDistance && distance < 30) {
           closestDistance = distance;
-          closestNode = node;
+          foundNode = node;
         }
-      });
+      }
 
-      if (closestNode) {
-        onNodeClick(closestNode.id);
+      if (foundNode) {
+        onNodeClick(foundNode.id);
       }
     },
     [nodes, onNodeClick, width, height]

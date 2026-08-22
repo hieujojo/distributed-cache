@@ -101,7 +101,7 @@ function proxyToCacheServer(
  * Serve static file
  */
 function serveStaticFile(
-  req: http.IncomingMessage,
+  _req: http.IncomingMessage,
   res: http.ServerResponse,
   staticDir: string,
   url: string
