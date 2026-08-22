@@ -18,9 +18,9 @@ Không cần cài thêm (dùng net module built-in của Node.js)
 
 ---
 
-## Files sẽ tạo
+## Files đã tạo
 
-### ⬜ src/server/protocol.ts
+### ✅ src/server/protocol.ts
 
 ```
 Mục đích: Wire protocol cho TCP communication
@@ -60,7 +60,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/server/cache-server.ts
+### ✅ src/server/cache-server.ts
 
 ```
 Mục đích: TCP server nhận requests từ clients và nodes khác
@@ -132,7 +132,7 @@ Tham chiếu:
 Sửa đổi: Không (file mới)
 ```
 
-### ⬜ src/server/client.ts
+### ✅ src/server/client.ts
 
 ```
 Mục đích: Client library để gửi requests đến cache server
@@ -208,9 +208,9 @@ Sửa đổi: Không (file mới)
 
 ---
 
-## Tests sẽ tạo
+## Tests đã tạo
 
-### ⬜ tests/server/protocol.test.ts
+### ✅ tests/server/protocol.test.ts
 
 ```
 Test cases:
@@ -229,7 +229,7 @@ Test cases:
        - it('should serialize PONG response')
 ```
 
-### ⬜ tests/server/cache-server.test.ts
+### ✅ tests/server/cache-server.test.ts
 
 ```
 Test cases:
@@ -247,7 +247,7 @@ Test cases:
        - it('should handle timeout')
 ```
 
-### ⬜ tests/server/client.test.ts
+### ✅ tests/server/client.test.ts
 
 ```
 Test cases:
@@ -267,11 +267,25 @@ Test cases:
 
 ---
 
+## Kết quả
+
+```
+Test Suites: 3 passed, 3 total
+Tests:       77 passed, 77 total (Module 3 only)
+Total:       126 passed, 8 suites (toàn bộ project)
+```
+
 ## Changelog
 
 ```
 2026-08-21: Tạo file tasks
-```
+2026-08-22: Hoàn thành Module 3
+  - Tạo src/server/protocol.ts: wire protocol parser/serializer
+  - Tạo src/server/cache-server.ts: TCP server với consistent hashing routing
+  - Tạo src/server/client.ts: client library với retry + timeout
+  - Tạo 3 test files: 77 tests cho module 3
+  - Fix connection cleanup issue trong server.stop()
+  ```
 
 ---
 
