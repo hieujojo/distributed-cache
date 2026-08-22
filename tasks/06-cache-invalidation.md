@@ -20,7 +20,7 @@ Không cần cài thêm
 
 ## Files sẽ tạo
 
-### ⬜ src/core/invalidation.ts
+### ✅ src/core/invalidation.ts
 
 ```
 Mục đích: Quản lý TTL và event-driven invalidation
@@ -86,7 +86,7 @@ Sửa đổi: Không (file mới)
 
 ## Tests sẽ tạo
 
-### ⬜ tests/core/invalidation.test.ts
+### ✅ tests/core/invalidation.test.ts
 
 ```
 Test cases:

@@ -74,7 +74,7 @@ mongoose        — In-memory cache
 
 ```
 ✅ src/core/replication.ts     (Module 5)
-⬜ src/core/invalidation.ts    (Module 6)
+✅ src/core/invalidation.ts    (Module 6)
 ⬜ src/benchmark/throughput.ts (Module 7)
 ⬜ src/benchmark/data-movement.ts (Module 7)
 ⬜ src/benchmark/run.ts        (Module 7)

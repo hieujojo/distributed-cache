@@ -118,7 +118,7 @@ distributed-cache/
 ✅ Module 3: Network Layer (TCP server, client, protocol)
 ✅ Module 4: Cluster Management (cluster, election, failover)
 ✅ Module 5: Replication
-⬜ Module 6: Cache Invalidation
+✅ Module 6: Cache Invalidation
 ⬜ Module 7: Benchmark
 ⬜ Module 8: Visualization
 ```
