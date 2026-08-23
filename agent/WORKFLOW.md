@@ -8,7 +8,7 @@
 
 ```
 1. Đọc file này (WORKFLOW.md)
-2. Đọc HANDOVER.md → xem session trước làm gì
+2. Đọc agent/HANDOVER.md → xem session trước làm gì
 3. Đọc agent/PROGRESS.md → xem module nào cần làm tiếp
 4. Đọc tasks/<module>.md → xem chi tiết cần làm gì
 5. Đọc docs/guides/rules.md → nhớ quy tắc
@@ -53,7 +53,7 @@ BƯỚC 7: Update progress
   □ Ghi changelog trong tasks/<module>.md
 
 BƯỚC 8: Kết thúc session
-  □ Ghi context vào HANDOVER.md
+  □ Ghi context vào agent/HANDOVER.md
 ```
 
 ---
@@ -93,7 +93,7 @@ BƯỚC 8: Kết thúc session
 ## Thứ tự đọc khi bắt đầu ngày mới
 
 ```
-1. HANDOVER.md              ← Context từ session trước
+1. agent/HANDOVER.md        ← Context từ session trước
 2. agent/WORKFLOW.md        ← Quy trình
 3. agent/PROGRESS.md        ← Progress hiện tại
 4. tasks/<module>.md        ← Task tiếp theo
@@ -106,7 +106,7 @@ BƯỚC 8: Kết thúc session
 
 | File | Mục đích |
 |---|---|
-| HANDOVER.md | Context handoff |
+| agent/HANDOVER.md | Context handoff |
 | agent/WORKFLOW.md | Quy trình tổng hợp |
 | agent/PROGRESS.md | Track progress |
 | agent/MODULES.md | Tổng quan modules |

@@ -40,7 +40,7 @@ BƯỚC 6 — Reference khi cần:
 ## Khi bắt đầu code
 
 ```
-1. Đọc HANDOVER.md          ← Context từ session trước
+1. Đọc agent/HANDOVER.md    ← Context từ session trước
 2. Đọc agent/WORKFLOW.md     ← Quy trình
 3. Đọc agent/PROGRESS.md     ← Xem progress
 4. Đọc tasks/<module>.md     ← Chi tiết task
@@ -84,7 +84,8 @@ distributed-cache/
 │   ├── strategies/               # Strategy tests (✅ 19 tests)
 │   └── server/                   # Server tests (✅ 77 tests)
 │
-├── HANDOVER.md                   ← Context handoff giữa sessions
+├── agent/
+│   └── HANDOVER.md               ← Context handoff giữa sessions
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── SECURITY.md
