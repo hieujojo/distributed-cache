@@ -352,8 +352,8 @@ A - Availability:     Mọi request đều được trả lời
 P - Partition tolerant: Hệ thống hoạt động khi network partition
 
 Chọn 2 trong 3:
-  CP: Consistent + Partition tolerant (牺牲 availability)
-  AP: Available + Partition tolerant (牺牲 consistency)
+  CP: Consistent + Partition tolerant (hi sinh availability)
+  AP: Available + Partition tolerant (hi sinh consistency)
   CA: Consistent + Available (không partition tolerant → useless)
 
 Project này: AP (Available + Partition tolerant)
