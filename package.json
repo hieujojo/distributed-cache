@@ -14,7 +14,9 @@
     "lint": "tsc --noEmit",
     "benchmark": "tsx src/benchmark/run.ts",
     "viz": "tsx src/visualization/server.ts",
-    "demo": "tsx src/demo-quick.ts"
+    "demo": "tsx src/demo/quick.ts",
+    "demo:full": "tsx src/demo/index.ts",
+    "memory": "tsx src/benchmark/memory.ts"
   },
   "keywords": [
     "distributed-cache",
