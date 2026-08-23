@@ -290,6 +290,65 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 
 ---
 
+## Rules từ Changelog (C-rules)
+
+> Derived từ bugs đã fix trong docs/reference/changelog.md
+
+### C1. Setup & Config
+
+```
+C1.1: Jest config PHẢI dùng .cjs (không phải .ts)
+C1.2: Ưu tiên pure JS packages trên Windows (tránh native addon)
+C1.3: Import extension phụ thuộc moduleResolution trong tsconfig
+```
+
+### C2. TypeScript
+
+```
+C3.1: moduleResolution: "bundler" cần explicit types field
+C3.2: Kiểm tra TypeScript release notes khi upgrade
+C3.3: Khi thêm types field, PHẢI list ĐỦ tất cả types cần thiết
+```
+
+### C3. File & Structure
+
+```
+C4.1: Packages dev/test → devDependencies (không phải dependencies)
+C4.2: Kiểm tra cấu trúc thư mục TRƯỚC khi tạo file mới
+C4.3: Khi di chuyển file → git add -A (staged cả deletion)
+C4.4: File mới PHẢI đặt vào đúng folder theo module
+```
+
+### C4. Language & Convention
+
+```
+C5.1: Không mixed language trong source (quét regex check)
+C5.2: Rules phải reflect code thật, update khi code thay đổi
+```
+
+### C5. Safety
+
+```
+C6.1: KHÔNG kill processes bằng -IM, CHỈ dùng -PID
+C8.1: Scripts có server PHẢI có process.exit(0)
+C8.2: Dùng port unusual cho demo scripts (5555, 7777)
+```
+
+### C6. Build
+
+```
+C7.1: Kiểm tra consistency package.json vs source files
+C7.2: Build tool PHẢI có config file
+```
+
+### C7. Code Quality
+
+```
+C9.1: Kiểm tra tên class/exact export TRƯỚC khi import
+```
+
+---
+
 ## Tóm tắt
 
 | # | Quy tắc | Khi nào |

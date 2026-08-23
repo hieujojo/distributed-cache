@@ -1,469 +1,344 @@
-# Changelog — Bugs & Lessons Learned
+# CHANGELOG — Nhật ký lỗi đã sửa (Lessons Learned)
 
-> Ghi nhận các bugs đã gặp, nguyên nhân, và cách xử lý để tránh lặp lại.
+> **Mục đích:** ghi lại mọi lỗi/warning đã gặp trong quá trình phát triển, cách fix và cách tránh lặp lại.
 > Format lấy cảm hứng từ Void Runner CHANGELOG.md.
+> Cập nhật mỗi lần fix lỗi, trước khi commit.
 
 ---
 
-## Format
+## 2026-08-22 — Jest config lỗi "Cannot use import statement"
 
-```
-### [Ngày] — Tên bug
+> User: setup project, chạy `npm test` bị lỗi.
 
-**Mô tả:**
-Mô tả ngắn gọn bug
-
-**Nguyên nhân:**
-Tại sao bug xảy ra
-
-**Cách xử lý:**
-Cách fix bug
-
-**Lessons learned:**
-Bài học rút ra để tránh lặp lại
-
-**Severity:** Low | Medium | High | Critical
-```
+- **Triệu chứng:** `jest.config.ts` bị lỗi `Cannot use import statement` khi chạy test.
+- **Root cause:** Jest chưa support native ESM config. File `.ts` bị parse as ESM → lỗi import syntax. Jest dùng CommonJS internally.
+- **Fix:** Đổi `jest.config.ts` → `jest.config.cjs`. Dùng `module.exports` thay vì `export default`.
+- **Bài học (C1.1):** Jest config PHẢI dùng `.cjs` hoặc `.js` (không phải `.ts`) vì Jest internally dùng CommonJS. Trước khi tạo config file, kiểm tra Jest docs xem format nào được hỗ trợ.
 
 ---
 
-## Bugs đã ghi nhận
+## 2026-08-22 — murmurhash3 cần native build tools
 
-### [2026-08-22] — Jest config lỗi "Cannot use import statement"
+> User: `npm install murmurhash3` bị lỗi "node-gyp" trên Windows.
 
-**Mô tả:** `jest.config.ts` bị lỗi khi chạy test
-
-**Nguyên nhân:** Jest chưa support native ESM config. File `.ts` bị parse as ESM → lỗi import syntax.
-
-**Cách xử lý:**
-```
-1. Đổi jest.config.ts → jest.config.cjs
-2. Dùng module.exports thay vì export default
-```
-
-**Lessons learned:** Jest dùng CommonJS → config phải là `.cjs` hoặc `.js`
-
-**Severity:** Medium
+- **Triệu chứng:** `npm install murmurhash3` fail với lỗi `node-gyp` — yêu cầu Visual Studio C++ build tools.
+- **Root cause:** murmurhash3 cần Visual Studio C++ build tools để compile native addon. Windows thường không có sẵn.
+- **Fix:** `npm uninstall murmurhash3` → `npm install murmurhash` (pure JS, không cần native build). Cập nhật import trong code.
+- **Bài học (C1.2):** Ưu tiên pure JS packages trên Windows environment. Trước khi install package, kiểm tra xem có native addon không (`node-gyp`, `.node` files). Nếu có → tìm alternative pure JS.
 
 ---
 
-### [2026-08-22] — murmurhash3 cần native build tools
+## 2026-08-22 — Import lỗi "Cannot find module"
 
-**Mô tả:** `npm install murmurhash3` bị lỗi "node-gyp" trên Windows
+> User: chạy test bị lỗi import.
 
-**Nguyên nhân:** murmurhash3 cần Visual Studio C++ build tools để compile native addon. Windows thường không có sẵn.
-
-**Cách xử lý:**
-```
-1. npm uninstall murmurhash3
-2. npm install murmurhash (pure JS, không cần native build)
-3. Cập nhật import trong code
-```
-
-**Lessons learned:** Ưu tiên pure JS packages trên Windows environment
-
-**Severity:** High
+- **Triệu chứng:** `import { types } from './types'` bị lỗi `Cannot find module`.
+- **Root cause:** TypeScript with `moduleResolution: "node"` yêu cầu `.js` extension trong import, kể cả khi file là `.ts`. Tuy nhiên, sau đó đã đổi sang `moduleResolution: "bundler"` → bỏ `.js` extension.
+- **Fix:** Ban đầu thêm `.js` extension. Sau đó đổi moduleResolution → bỏ `.js`.
+- **Bài học (C1.3):** Import extension phụ thuộc vào `moduleResolution` trong tsconfig. Kiểm tra config trước khi quyết định dùng `.js` hay không.
 
 ---
 
-### [2026-08-22] — Import lỗi "Cannot find module"
+## 2026-08-22 — module.exports lỗi với TypeScript
 
-**Mô tả:** `import { types } from './types'` bị lỗi
+> User: Jest import bị lỗi.
 
-**Nguyên nhân:** TypeScript with `moduleResolution: "node"` yêu cầu `.js` extension trong import, kể cả khi file là `.ts`
-
-**Cách xử lý:**
-```
-// Trước
-import { types } from './types';
-
-// Sau
-import { types } from './types.js';
-```
-
-**Lessons learned:** Luôn dùng `.js` extension trong imports khi dùng Jest + TypeScript
-
-**Severity:** Medium
+- **Triệu chứng:** `export default` bị lỗi khi Jest import.
+- **Root cause:** Jest dùng CommonJS, không support ES module exports.
+- **Fix:** Dùng `module.exports` thay vì `export default` trong Jest config.
+- **Bài học (C1.4):** Jest config và test files phải dùng CommonJS exports (`module.exports`), không dùng ES module (`export default`).
 
 ---
 
-### [2026-08-22] — Module.exports lỗi với TypeScript
+## 2026-08-22 — LRU test logic sai
 
-**Mô tả:** `export default` bị lỗi khi Jest import
+> User: test expect LRU xóa key "a" nhưng thực tế xóa key "b".
 
-**Nguyên nhân:** Jest dùng CommonJS, không support ES module exports
-
-**Cách xử lý:**
-```
-// Trước
-export default { testMatch: [...] };
-
-// Sau
-module.exports = { testMatch: [...] };
-```
-
-**Lessons learned:** Jest config và test files phải dùng CommonJS exports
-
-**Severity:** Medium
+- **Triệu chứng:** Test expect LRU xóa key "a" khi capacity = 2, nhưng thực tế xóa key "b".
+- **Root cause:** Test case sai logic — LRU xóa least recently used (key "b"), không phải first inserted (key "a"). Test đã viết sai từ đầu.
+- **Fix:** Sửa test case để match đúng LRU behavior.
+- **Bài học (C2.1):** Kiểm tra test logic trước khi viết assertion. Đọc kỹ spec của algorithm trước khi test.
 
 ---
 
-### [2026-08-22] — LRU test logic sai
+## 2026-08-23 — tsconfig.json thiếu types field
 
-**Mô tả:** Test expect LRU xóa key "a" khi capacity = 2, nhưng thực tế xóa key "b"
+> User: IDE báo lỗi `Cannot find name 'Buffer'` trong protocol.ts.
 
-**Nguyên nhân:** Test case sai logic — LRU xóa least recently used, không phải first inserted
-
-**Cách xử lý:**
-```
-1. Sửa test case để match đúng LRU behavior
-2. Hoặc sửa implementation (nếu logic sai)
-```
-
-**Lessons learned:** Kiểm tra test logic trước khi viết assertion
-
-**Severity:** Low
+- **Triệu chứng:** IDE (VS Code) hiện 6 lỗi `Cannot find name 'Buffer' (ts2591)` trong `src/server/protocol.ts`.
+- **Root cause:** `moduleResolution: "bundler"` không tự load `@types/node`. IDE không tìm được type definitions cho Buffer. Tuy nhiên `tsc --noEmit` vẫn pass (compiler tự resolve).
+- **Fix:** Thêm `"types": ["node", "jest"]` vào compilerOptions trong tsconfig.json.
+- **Bài học (C3.1):** Khi dùng `moduleResolution: "bundler"`, cần explicit `types` field để IDE tìm được type definitions. Nếu IDE báo lỗi nhưng `tsc` pass → thường là thiếu `types` field.
 
 ---
 
-### [2026-08-23] — tsconfig.json thiếu types field
+## 2026-08-23 — tsconfig.json dùng baseUrl deprecated
 
-**Mô tả:** IDE báo lỗi `Cannot find name 'Buffer'` trong protocol.ts
+> User: IDE báo lỗi `Option 'baseUrl' has been removed (ts5102)`.
 
-**Nguyên nhân:** `moduleResolution: "bundler"` không tự load `@types/node`. IDE không tìm được type definitions.
-
-**Cách xử lý:**
-```
-thêm "types": ["node", "jest"] vào compilerOptions
-```
-
-**Lessons learned:** Khi dùng `moduleResolution: "bundler"`, cần explicit `types` field
-
-**Severity:** Medium
+- **Triệu chứng:** Lỗi `Option 'baseUrl' has been removed. Please remove it from your configuration. (ts5102)` trong tsconfig.json.
+- **Root cause:** TypeScript 5.5+ đã remove `baseUrl` option. Dùng `paths` thay thế.
+- **Fix:** Xóa `"baseUrl": "."` khỏi tsconfig.json.
+- **Bài học (C3.2):** Kiểm tra TypeScript release notes khi upgrade. Deprecated options sẽ bị remove trong versions tiếp theo.
 
 ---
 
-### [2026-08-23] — tsconfig.json dùng baseUrl deprecated
+## 2026-08-23 — react nằm trong dependencies thay vì devDependencies
 
-**Mô tả:** Lỗi `Option 'baseUrl' has been removed (ts5102)`
+> User: kiểm tra package.json thấy react trong dependencies.
 
-**Nguyên nhân:** TypeScript 5.5+ đã remove `baseUrl` option. Dùng `paths` thay thế.
-
-**Cách xử lý:**
-```
-Xóa "baseUrl": "." khỏi tsconfig.json
-```
-
-**Lessons learned:** Kiểm tra TypeScript release notes khi upgrade
-
-**Severity:** Low
+- **Triệu chứng:** `react` và `react-dom` nằm trong `dependencies` thay vì `devDependencies`.
+- **Root cause:** Khi cài react, npm mặc định bỏ vào dependencies. React chỉ dùng cho visualization module (dev time), không phải runtime dependency.
+- **Fix:** `npm install --save-dev react react-dom` → `npm uninstall react react-dom`.
+- **Bài học (C4.1):** Packages chỉ dùng cho dev/test/build → đặt vào `devDependencies`. Kiểm tra sau khi cài package: `dependencies` vs `devDependencies` đã đúng chưa.
 
 ---
 
-### [2026-08-23] — react nằm trong dependencies thay vì devDependencies
+## 2026-08-23 — HANDOVER.md không nằm trong agent/
 
-**Mô tả:** `npm install` sẽ cài react cho tất cả users, dù chỉ dùng cho visualization
+> User: thấy HANDOVER.md ở root folder.
 
-**Nguyên nhân:** Khi cài react, npm mặc định bỏ vào dependencies
-
-**Cách xử lý:**
-```
-npm install --save-dev react react-dom
-npm uninstall react react-dom
-```
-
-**Lessons learned:** Packages chỉ dùng cho dev/test → đặt vào devDependencies
-
-**Severity:** Low
+- **Triệu chứng:** File `HANDOVER.md` nằm ở root thay vì trong `agent/`.
+- **Root cause:** Khi tạo file, không để ý cấu trúc thư mục đã định nghĩa.
+- **Fix:** `mv HANDOVER.md agent/HANDOVER.md`. Cập nhật references trong WORKFLOW.md và README.md.
+- **Bài học (C4.2):** Kiểm tra cấu trúc thư mục đã định nghĩa TRƯỚC khi tạo file mới. Đọc `tasks/00-overview.md` hoặc `README.md` để biết file nào nằm ở đâu.
 
 ---
 
-### [2026-08-23] — HANDOVER.md không nằm trong agent/
+## 2026-08-23 — Chữ Trung Quốc trong source code và docs
 
-**Mô tả:** File HANDOVER.md để ở root, lộn xộn
+> User: thấy nhiều chữ Trung Quốc xuất hiện trong code.
 
-**Nguyên nhân:** Khi tạo file, không để ý cấu trúc thư mục
-
-**Cách xử lý:**
-```
-mv HANDOVER.md agent/HANDOVER.md
-Cập nhật references trong WORKFLOW.md, README.md
-```
-
-**Lessons learned:** Kiểm tra cấu trúc thư mục trước khi tạo file mới
-
-**Severity:** Low
+- **Triệu chứng:** Nhiều file có chữ Trung Quốc: 我们 (election.ts), 功 (replication.ts), 知道 (design-patterns.md), 扔 (design-system.md), 少 (tech-stack.md), 短暂 (cache-invalidation.md, edge-cases.md), 非/高频操作/继承 (decisions.md), 旧 (changelog.md), 牺牲 (knowledge-base.md).
+- **Root cause:** Có thể copy từ tài liệu tiếng Trung hoặc AI generating mixed language.
+- **Fix:** Dùng node script quét toàn bộ source (`node -e "..."` với regex `[\u4e00-\u9fff]`), thay thế từng file, verify không còn chữ Trung Quốc.
+- **Bài học (C5.1):** Luôn kiểm tra language consistency trong source. Sau khi tạo file mới, chạy regex check cho mixed language. Labels, comments phải tiếng Việt hoặc tiếng Anh, KHÔNG được mixed.
 
 ---
 
-### [2026-08-23] — Chữ Trung Quốc trong source code và docs
+## 2026-08-23 — rules.md ghi sai convention
 
-**Mô tả:** Nhiều file có chữ Trung Quốc (我们, 功, 知道, 扔, 少, 短暂, 非, 高频操作, 继承, 旧)
+> User: rules L3 ghi "phải dùng .js extension" nhưng code thật KHÔNG dùng.
 
-**Nguyên nhân:** Có thể copy từ tài liệu tiếng Trung hoặc AI generating mixed language
-
-**Cách xử lý:**
-```
-1. Dùng node script quét toàn bộ source
-2. Thay thế từng file
-3. Verify không còn chữ Trung Quốc
-```
-
-**Lessons learned:** Luôn kiểm tra language consistency trong source, dùng linter cho i18n
-
-**Severity:** Medium
+- **Triệu chứng:** Rule L3 trong `docs/guides/rules.md` ghi "Import phải dùng .js extension" nhưng toàn bộ codebase KHÔNG dùng `.js` extension.
+- **Root cause:** Rules được viết trước khi code, không match với implementation thật. Rules dựa trên5`moduleResolution: "node"` nhưng code đã đổi sang `moduleResolution: "bundler"`.
+- **Fix:** Sửa rule L3: import KHÔNG dùng `.js` extension.
+- **Bài học (C5.2):** Rules phải update khi code thay đổi. Không để rules "mơ hồ" — rules phải reflect code thật, không phải lý thuyết. Sau khi đổi config (moduleResolution, tsconfig), kiểm tra lại rules.
 
 ---
 
-### [2026-08-23] — Import rules.md ghi sai convention
+## 2026-08-23 — taskkill //F //IM bash.exe gây crash tool
 
-**Mô tả:** Rule L3 ghi "phải dùng .js extension" nhưng code thật KHÔNG dùng
+> User: tool crash, hiện ký tự lạ khi chạy taskkill.
 
-**Nguyên nhân:** Rules được viết trước khi code, không match với implementation thật
-
-**Cách xử lý:**
-```
-Sửa rule L3: import KHÔNG dùng .js extension
-```
-
-**Lessons learned:** Rules phải update khi code thay đổi, không để rules "mơ hồ"
-
-**Severity:** Low
+- **Triệu chứng:** `taskkill //F //IM bash.exe` kill tất cả bash processes → tool crash → hiện ký tự lạ trong terminal → user phải tắt terminal bật lại.
+- **Root cause:** `taskkill //F //IM bash.exe` kill TẤT CẢ bash processes, kể cả bash đang chạy tool. Tool mất process parent → crash.
+- **Fix:** ❌ `taskkill //F //IM bash.exe` → ✅ `taskkill //F //PID <specific-pid>`. Nếu bị kẹt → đóng terminal, mở lại.
+- **Bài học (C6.1 — CRITICAL):** KHÔNG bao giờ kill processes bằng `-IM` (image name) vì sẽ kill nhầm processes liên quan. CHỈ dùng `-PID` (process ID cụ thể). Nếu bị kẹt → đóng terminal, mở lại, KHÔNG tự ý kill.
 
 ---
 
-### [2026-08-23] — taskkill //F //IM bash.exe gây crash tool
+## 2026-08-23 — HANDOVER.md chưa xóa khỏi git tree
 
-**Mô tả:** Kill tất cả bash processes khiến tool crash, hiện ký tự lạ
+> User: vẫn thấy HANDOVER.md ở root trên GitHub.
 
-**Nguyên nhân:** `taskkill //F //IM bash.exe` kill cả bash đang chạy tool
-
-**Cách xử lý:**
-```
-❌ taskkill //F //IM bash.exe
-✅ taskkill //F //PID 12345
-
-Nếu bị kẹt → đóng terminal, mở lại
-```
-
-**Lessons learned:** KHÔNG bao giờ kill processes bằng IM (image name), chỉ dùng PID
-
-**Severity:** Critical
+- **Triệu chứng:** Sau khi `mv HANDOVER.md agent/HANDOVER.md`, git status hiện `deleted: HANDOVER.md` nhưng commit trước đó chỉ thêm `agent/HANDOVER.md` mà KHÔNG xóa root `HANDOVER.md`.
+- **Root cause:** `git add agent/HANDOVER.md` chỉ staged file mới, không staged deletion của file cũ. Commit thiếu bước `git rm HANDOVER.md`.
+- **Fix:** `git rm HANDOVER.md` → commit → push.
+- **Bài học (C4.3):** Khi di chuyển file (`mv`), PHẢI chạy `git add -A` hoặc `git add <old> <new>` để staged CẢ deletion lẫn addition. Kiểm tra `git status` trước khi commit.
 
 ---
 
-## Template khi gặp bug
+## 2026-08-23 — Tests fail sau khi thêm types field
 
-```markdown
-### [YYYY-MM-DD] — [Tên bug]
+> User: chạy test bị lỗi `Cannot find name 'describe'`.
 
-**Mô tả:**
-[Mô tả ngắn gọn bug là gì]
+- **Triệu chứng:** Sau khi thêm `"types": ["node"]` vào tsconfig, tests fail với lỗi `Cannot find name 'describe'` — Jest types không được load.
+- **Root cause:** Khi dùng `types` field, TypeScript CHỈ load các types được listing. Thêm `"types": ["node"]` → chỉ load `@types/node`, bỏ qua `@types/jest`.
+- **Fix:** Đổi `"types": ["node"]` → `"types": ["node", "jest"]`.
+- **Bài học (C3.3):** Khi thêm `types` field vào tsconfig, PHẢI list ĐỦ tất cả types cần thiết. Nếu thiếu 1 type → IDE/compiler không tìm được. Kiểm tra: sau khi đổi `types`, chạy `tsc --noEmit` VÀ `npm test`.
 
-**Nguyên nhân:**
-[Giải thích tại sao bug xảy ra]
+---
 
-**Cách xử lý:**
-[Các bước đã làm để fix]
+## 2026-08-23 — src/index.ts thiếu nhưng package.json trỏ đến
 
-**Lessons learned:**
-[Bài học rút ra]
+> User: kiểm tra project thấy package.json trỏ `dist/index.js` nhưng không có `src/index.ts`.
 
-**Severity:** [Low/Medium/High/Critical]
-```
+- **Triệu chứng:** `package.json` có `"main": "dist/index.js"` nhưng `src/index.ts` không tồn tại → `npm run build` sẽ fail.
+- **Root cause:** Khi tạo project, định nghĩa entry point trong package.json nhưng quên tạo file source.
+- **Fix:** Tạo `src/index.ts` export tất cả modules.
+- **Bài học (C7.1):** Kiểm tra consistency giữa `package.json` (`main`, `types`) và source files. Nếu `main` trỏ đến `dist/X.js` thì PHẢI có `src/X.ts`.
+
+---
+
+## 2026-08-23 — tsup.config.ts thiếu nhưng build dùng
+
+> User: `npm run build` dùng tsup nhưng không có config.
+
+- **Triệu chứng:** `npm run build` chạy `tsup` nhưng không có `tsup.config.ts` → tsup dùng defaults, không biết entry point nào.
+- **Root cause:** Quên tạo config file khi setup build tool.
+- **Fix:** Tạo `tsup.config.ts` với entry point, format (CJS + ESM + DTS).
+- **Bài học (C7.2):** Khi thêm build tool, PHẢI tạo config file. Kiểm tra: `npm run build` chạy thành công + output có đủ files.
+
+---
+
+## 2026-08-23 — demo.ts timeout vì TCP server giữ process
+
+> User: chạy demo bị timeout.
+
+- **Triệu chứng:** `npx tsx src/demo.ts` timeout sau 30s.
+- **Root cause:** TCP server giữ Node.js event loop alive. `server.stop()` có thể bị block nếu connection chưa đóng hết. `process.exit(0)` cần thiết để force exit.
+- **Fix:** Thêm `process.exit(0)` sau cleanup. Thêm `Promise.race` với timeout 3s cho cleanup.
+- **Bài học (C8.1):** Scripts có TCP server/HTTP server PHẢI có `process.exit(0)` ở cuối. Nếu không → process treo. Cleanup cần timeout để tránh block.
+
+---
+
+## 2026-08-23 — Port conflict khi chạy demo
+
+> User: chạy demo bị lỗi `EADDRINUSE`.
+
+- **Triệu chứng:** `Error: listen EADDRINUSE: address already in use 127.0.0.1:3000`
+- **Root cause:** Port 3000 (và 4000) đang bị dùng bởi processes khác.
+- **Fix:** Đổi sang port 5555 (unusual port, ít conflict).
+- **Bài học (C8.2):** Khi tạo demo script, dùng port unusual (5555, 7777, 9999) thay vì port mặc định (3000, 4000, 8080) để tránh conflict.
+
+---
+
+## 2026-08-23 — demo-quick.ts import sai tên class
+
+> User: chạy demo bị lỗi `LruStrategy is not a constructor`.
+
+- **Triệu chứng:** `TypeError: LruStrategy is not a constructor` khi chạy demo.
+- **Root cause:** Class trong `src/strategies/lru.ts` tên là `LRUStrategy` (viết hoa), không phải `LruStrategy`.
+- **Fix:** Đổi import `LruStrategy` → `LRUStrategy`.
+- **Bài học (C9.1):** Kiểm tra tên class/exact export TRƯỚC khi import. Dùng IDE auto-import hoặc `grep export class` để tìm tên đúng.
+
+---
+
+## 2026-08-23 — Demo không sắp xếp file vào đúng folder
+
+> User: các file demo, benchmark để ở root src/.
+
+- **Triệu chứng:** `src/check-memory.ts`, `src/demo.ts`, `src/demo-quick.ts` nằm ở root `src/` thay vì trong folder riêng.
+- **Root cause:** Khi tạo file, không để ý cấu trúc thư mục.
+- **Fix:** Di chuyển: `demo.ts → src/demo/index.ts`, `demo-quick.ts → src/demo/quick.ts`, `check-memory.ts → src/benchmark/memory.ts`. Cập nhật scripts trong package.json.
+- **Bài học (C4.4):** Khi tạo file mới, PHẢI đặt vào đúng folder theo module. Kiểm tra `tasks/00-overview.md` hoặc `README.md` để biết cấu trúc thư mục.
+
+---
+
+## Rules rút ra từ Changelog
+
+### Nhóm C1: Setup & Config
+
+| Rule | Mô tả |
+|------|-------|
+| **C1.1** | Jest config PHẢI dùng `.cjs` hoặc `.js` (không phải `.ts`) |
+| **C1.2** | Ưu tiên pure JS packages trên Windows (tránh native addon) |
+| **C1.3** | Import extension phụ thuộc `moduleResolution` trong tsconfig |
+
+### Nhóm C2: Testing
+
+| Rule | Mô tả |
+|------|-------|
+| **C2.1** | Kiểm tra test logic trước khi viết assertion |
+
+### Nhóm C3: TypeScript
+
+| Rule | Mô tả |
+|------|-------|
+| **C3.1** | `moduleResolution: "bundler"` cần explicit `types` field |
+| **C3.2** | Kiểm tra TypeScript release notes khi upgrade |
+| **C3.3** | Khi thêm `types` field, PHẢI list ĐỦ tất cả types cần thiết |
+
+### Nhóm C4: File & Structure
+
+| Rule | Mô tả |
+|------|-------|
+| **C4.1** | Packages dev/test → `devDependencies` |
+| **C4.2** | Kiểm tra cấu trúc thư mục TRƯỚC khi tạo file mới |
+| **C4.3** | Khi di chuyển file, `git add -A` để staged cả deletion |
+| **C4.4** | File mới PHẢI đặt vào đúng folder theo module |
+
+### Nhóm C5: Language & Convention
+
+| Rule | Mô tả |
+|------|-------|
+| **C5.1** | Kiểm tra language consistency, KHÔNG mixed language |
+| **C5.2** | Rules phải reflect code thật, update khi code thay đổi |
+
+### Nhóm C6: Safety
+
+| Rule | Mô tả |
+|------|-------|
+| **C6.1** | KHÔNG kill processes bằng `-IM`, CHỈ dùng `-PID` |
+
+### Nhóm C7: Build & Package
+
+| Rule | Mô tả |
+|------|-------|
+| **C7.1** | Kiểm tra consistency `package.json` vs source files |
+| **C7.2** | Build tool PHẢI có config file |
+
+### Nhóm C8: Scripts & Runtime
+
+| Rule | Mô tả |
+|------|-------|
+| **C8.1** | Scripts có server PHẢI có `process.exit(0)` |
+| **C8.2** | Dùng port unusual cho demo scripts |
+
+### Nhóm C9: Code Quality
+
+| Rule | Mô tả |
+|------|-------|
+| **C9.1** | Kiểm tra tên class/exact export TRƯỚC khi import |
 
 ---
 
 ## Prevention Checklist
 
-> Checklist để tránh bug thường gặp
-
 ### TypeScript + Jest
 
 ```
 □ Jest config dùng .cjs (không phải .ts)
-□ Imports dùng .js extension
 □ module.exports thay vì export default
 □ Đã chạy npx tsc --noEmit trước khi test
+□ types field list đủ node + jest
+□ Import name đúng exact export
 ```
 
-### Consistent Hashing
+### File & Structure
 
 ```
-□ Test case: Thêm node → kiểm tra data redistribution
-□ Test case: Xóa node → kiểm tra data không mất
-□ Test case: Hash collision → xử lý đúng
-□ Edge case: Chỉ có 1 node
-□ Edge case: Tất cả nodes đều down
+□ File mới đặt đúng folder theo module
+□ package.json main/types trỏ đúng source files
+□ tsup/webpack config có entry point đúng
+□ Sau khi di chuyển file: git add -A (không thiếu deletion)
 ```
 
-### Replication
+### Language
 
 ```
-□ Test case: Primary dies → leader election hoạt động
-□ Test case: Network partition → split brain prevention
-□ Test case: Replica sync sau khi recover
-□ Edge case: Tất cả replicas die cùng lúc
-□ Edge case: Primary recover sau khi elected mới
+□ Không mixed language trong source (quét regex)
+□ Rules reflect code thật (không lý thuyết suông)
+□ Comments tiếng Việt hoặc tiếng Anh
 ```
 
-### Cache Invalidation
-
-```
-□ Test case: TTL expired → key bị xóa
-□ Test case: Cache full → eviction hoạt động
-□ Test case: Concurrent writes → race condition
-□ Edge case: TTL = 0
-□ Edge case: Cache size = 0
-```
-
-### Network
-
-```
-□ Test case: Connection timeout → retry logic
-□ Test case: Connection refused → graceful degradation
-□ Test case: Partial data received → buffer handling
-□ Edge case: Network partition
-□ Edge case: All connections drop simultaneously
-```
-
-### Language & Encoding
-
-```
-□ Kiểm tra chữ Trung Quốc trong source (node script quét)
-□ Labels, comments phải tiếng Việt hoặc tiếng Anh
-□ Không mixed language trong1 file
-```
-
-### Safety Rules
+### Safety
 
 ```
 ❌ KHÔNG: taskkill //F //IM bash.exe
 ❌ KHÔNG: taskkill //F //IM node.exe
 ✅ CHỈ: taskkill //F //PID <specific-pid>
-□ Nếu bị kẹt → đóng terminal, mở lại
+□ Scripts có server → có process.exit(0)
+□ Port unusual cho demo (5555, 7777)
 ```
 
----
-
-## Common Pitfalls
-
-> Các lỗi thường gặp khi phát triển distributed systems
-
-### 1. Race Conditions
+### Build
 
 ```
-Vấn đề: 2 processes cùng sửa 1 data cùng lúc
-
-Ví dụ:
-  Process A: reads count = 5
-  Process B: reads count = 5
-  Process A: writes count = 6
-  Process B: writes count = 6  → Sai! Phải là 7
-
-Giải pháp:
-  - Dùng locks (mutex, semaphore)
-  - Dùng atomic operations
-  - Dùng optimistic locking (version numbers)
-```
-
-### 2. Split Brain
-
-```
-Vấn đề: Network partition → 2 nodes đều nghĩ mình là leader
-
-Ví dụ:
-  Node A: "Mất connection với B, tôi là leader"
-  Node B: "Mất connection với A, tôi là leader"
-  → Cả 2 ghi data → DATA INCONSISTENCY
-
-Giải pháp:
-  - Majority quorum (cần N/2 + 1 nodes đồng ý)
-  - Fencing tokens
-  - Lease-based leadership
-```
-
-### 3. Thundering Herd
-
-```
-Vấn đề: Khi cache expires, tất cả requests cùng query database
-
-Ví dụ:
-  Cache key "user:123" expires
-  100 requests cùng đến cùng lúc
-  → Tất cả query database → database overload
-
-Giải pháp:
-  - Lock khi cache miss, chỉ 1 request query DB
-  - Stale-while-revalidate
-  - Request coalescing
-```
-
-### 4. Cache Stampede
-
-```
-Vấn đề: Khi 1 hot key expire, tất cả requests fail
-
-Ví dụ:
-  Hot key "product:featured" expire
-  1000 requests cùng lúc → cache miss → DB query
-  → DB overload → timeout → cascade failure
-
-Giải pháp:
-  - Background refresh trước khi expire
-  - Probabilistic early expiration
-  - Circuit breaker
-```
-
-### 5. Memory Leak
-
-```
-Vấn đề: Memory không được release, gradually tăng
-
-Ví dụ:
-  - Timer không được clear
-  - Event listeners không unsubscribed
-  - Cache không evict data cũ
-
-Giải pháp:
-  - Monitor memory usage
-  - Set memory limits
-  - Regular cleanup intervals
-```
-
----
-
-## Debugging Tips
-
-### Khi debug distributed systems
-
-```
-1. Log EVERYTHING (trong development)
-   → Thêm logs ở mọi step
-   → Sau khi fix, xóa logs thừa
-
-2. Reproduce trong controlled environment
-   → Đừng debug production trực tiếp
-   → Tạo test case reproduce bug
-
-3. Think about timing
-   → Distributed bugs thường liên quan timing
-   → Thử với delays, retries, concurrent operations
-
-4. Check edge cases
-   → 0 nodes, 1 node, N nodes
-   → All down, partial down
-   → Network partition, slow network
-```
-
-### Tools để debug
-
-```
-- Node.js debugger: node --inspect-brk
-- Chrome DevTools: connect to Node.js process
-- Logging: structured logging với timestamps
-- Metrics: throughput, latency, error rates
-- Network: Wireshark, tcpdump
+□ npm run build chạy thành công
+□ Output có đủ files (CJS + ESM + DTS)
+□ npm test vẫn pass sau khi đổi tsconfig
 ```
 
 ---
@@ -471,8 +346,8 @@ Giải pháp:
 ## Update Policy
 
 ```
-1. Khi gặp bug → ghi vào đây NGAY
-2. Khi fix bug → cập nhật "Cách xử lý" và "Lessons learned"
-3. Khi review code → check "Prevention Checklist"
-4. Hàng tháng → review bugs, update "Common Pitfalls"
+1. Khi gặp bug → ghi vào đây NGAY (format Void Runner)
+2. Root cause PHẢI chính xác (không guess)
+3. Rules phải cụ thể, có thể action được
+4. Sau khi fix → chạy test → verify → commit
 ```
