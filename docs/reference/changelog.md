@@ -126,6 +126,132 @@ module.exports = { testMatch: [...] };
 
 ---
 
+### [2026-08-23] — tsconfig.json thiếu types field
+
+**Mô tả:** IDE báo lỗi `Cannot find name 'Buffer'` trong protocol.ts
+
+**Nguyên nhân:** `moduleResolution: "bundler"` không tự load `@types/node`. IDE không tìm được type definitions.
+
+**Cách xử lý:**
+```
+thêm "types": ["node", "jest"] vào compilerOptions
+```
+
+**Lessons learned:** Khi dùng `moduleResolution: "bundler"`, cần explicit `types` field
+
+**Severity:** Medium
+
+---
+
+### [2026-08-23] — tsconfig.json dùng baseUrl deprecated
+
+**Mô tả:** Lỗi `Option 'baseUrl' has been removed (ts5102)`
+
+**Nguyên nhân:** TypeScript 5.5+ đã remove `baseUrl` option. Dùng `paths` thay thế.
+
+**Cách xử lý:**
+```
+Xóa "baseUrl": "." khỏi tsconfig.json
+```
+
+**Lessons learned:** Kiểm tra TypeScript release notes khi upgrade
+
+**Severity:** Low
+
+---
+
+### [2026-08-23] — react nằm trong dependencies thay vì devDependencies
+
+**Mô tả:** `npm install` sẽ cài react cho tất cả users, dù chỉ dùng cho visualization
+
+**Nguyên nhân:** Khi cài react, npm mặc định bỏ vào dependencies
+
+**Cách xử lý:**
+```
+npm install --save-dev react react-dom
+npm uninstall react react-dom
+```
+
+**Lessons learned:** Packages chỉ dùng cho dev/test → đặt vào devDependencies
+
+**Severity:** Low
+
+---
+
+### [2026-08-23] — HANDOVER.md không nằm trong agent/
+
+**Mô tả:** File HANDOVER.md để ở root, lộn xộn
+
+**Nguyên nhân:** Khi tạo file, không để ý cấu trúc thư mục
+
+**Cách xử lý:**
+```
+mv HANDOVER.md agent/HANDOVER.md
+Cập nhật references trong WORKFLOW.md, README.md
+```
+
+**Lessons learned:** Kiểm tra cấu trúc thư mục trước khi tạo file mới
+
+**Severity:** Low
+
+---
+
+### [2026-08-23] — Chữ Trung Quốc trong source code và docs
+
+**Mô tả:** Nhiều file có chữ Trung Quốc (我们, 功, 知道, 扔, 少, 短暂, 非, 高频操作, 继承, 旧)
+
+**Nguyên nhân:** Có thể copy từ tài liệu tiếng Trung hoặc AI generating mixed language
+
+**Cách xử lý:**
+```
+1. Dùng node script quét toàn bộ source
+2. Thay thế từng file
+3. Verify không còn chữ Trung Quốc
+```
+
+**Lessons learned:** Luôn kiểm tra language consistency trong source, dùng linter cho i18n
+
+**Severity:** Medium
+
+---
+
+### [2026-08-23] — Import rules.md ghi sai convention
+
+**Mô tả:** Rule L3 ghi "phải dùng .js extension" nhưng code thật KHÔNG dùng
+
+**Nguyên nhân:** Rules được viết trước khi code, không match với implementation thật
+
+**Cách xử lý:**
+```
+Sửa rule L3: import KHÔNG dùng .js extension
+```
+
+**Lessons learned:** Rules phải update khi code thay đổi, không để rules "mơ hồ"
+
+**Severity:** Low
+
+---
+
+### [2026-08-23] — taskkill //F //IM bash.exe gây crash tool
+
+**Mô tả:** Kill tất cả bash processes khiến tool crash, hiện ký tự lạ
+
+**Nguyên nhân:** `taskkill //F //IM bash.exe` kill cả bash đang chạy tool
+
+**Cách xử lý:**
+```
+❌ taskkill //F //IM bash.exe
+✅ taskkill //F //PID 12345
+
+Nếu bị kẹt → đóng terminal, mở lại
+```
+
+**Lessons learned:** KHÔNG bao giờ kill processes bằng IM (image name), chỉ dùng PID
+
+**Severity:** Critical
+
+---
+
 ## Template khi gặp bug
 
 ```markdown
@@ -199,6 +325,23 @@ module.exports = { testMatch: [...] };
 □ Test case: Partial data received → buffer handling
 □ Edge case: Network partition
 □ Edge case: All connections drop simultaneously
+```
+
+### Language & Encoding
+
+```
+□ Kiểm tra chữ Trung Quốc trong source (node script quét)
+□ Labels, comments phải tiếng Việt hoặc tiếng Anh
+□ Không mixed language trong1 file
+```
+
+### Safety Rules
+
+```
+❌ KHÔNG: taskkill //F //IM bash.exe
+❌ KHÔNG: taskkill //F //IM node.exe
+✅ CHỈ: taskkill //F //PID <specific-pid>
+□ Nếu bị kẹt → đóng terminal, mở lại
 ```
 
 ---
