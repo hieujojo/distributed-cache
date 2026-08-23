@@ -46,8 +46,6 @@
     "url": "https://github.com/hieujojo/distributed-cache.git"
   },
   "dependencies": {
-    "murmurhash": "^2.0.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "murmurhash": "^2.0.1"
   }
 }
