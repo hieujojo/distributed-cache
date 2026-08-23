@@ -1,7 +1,7 @@
 /**
  * Demo — Chạy thử distributed cache system
  *
- * Cách chạy: npx tsx src/demo.ts
+ * Cách chạy: npx tsx src/demo/index.ts
  */
 
 import { CacheNode } from './core/node';

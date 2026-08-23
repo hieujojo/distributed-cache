@@ -58,7 +58,8 @@ distributed-cache/
 │   ├── strategies/               # Cache strategies (✅ Module 2)
 │   ├── server/                   # Network layer (✅ Module 3)
 │   ├── visualization/            # Frontend (✅ Module 8)
-│   └── benchmark/                # Performance testing (✅ Module 7)
+│   ├── benchmark/                # Performance testing (✅ Module 7)
+│   └── demo/                     # Demo scripts
 │
 ├── docs/                         # DOCUMENTATION
 │   ├── core/                     # Kiến thức cốt lõi (4 files)
@@ -82,7 +83,8 @@ distributed-cache/
 ├── tests/                        # TESTS
 │   ├── core/                     # Core tests (✅ 93 tests)
 │   ├── strategies/               # Strategy tests (✅ 19 tests)
-│   └── server/                   # Server tests (✅ 77 tests)
+│   ├── server/                   # Server tests (✅ 77 tests)
+│   └── benchmark/                # Benchmark tests (✅ 8 tests)
 │
 ├── agent/
 │   └── HANDOVER.md               ← Context handoff giữa sessions

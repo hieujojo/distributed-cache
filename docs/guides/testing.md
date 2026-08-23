@@ -72,7 +72,7 @@ npx jest --watch
 
 ```
 ✅ Test Suites: 13 passed, 13 total
-✅ Tests:       210 passed, 210 total
+✅ Tests:       218 passed, 218 total
 ✅ Coverage:    ≥ 80%
 ```
 
@@ -167,13 +167,15 @@ tests/
 │   ├── lru.test.ts                 (8 tests)
 │   ├── lfu.test.ts                 (5 tests)
 │   └── fifo.test.ts                (6 tests)
-└── server/
-    ├── protocol.test.ts            (47 tests)
-    ├── cache-server.test.ts        (13 tests)
-    └── client.test.ts              (17 tests)
+├── server/
+│   ├── protocol.test.ts            (47 tests)
+│   ├── cache-server.test.ts        (13 tests)
+│   └── client.test.ts              (17 tests)
+└── benchmark/
+    └── benchmark.test.ts           (8 tests)
 ```
 
-**Total: 210 tests, 13 test suites**
+**Total: 218 tests, 14 test suites**
 
 ---
 

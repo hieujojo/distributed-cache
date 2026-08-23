@@ -10,9 +10,9 @@
 ```
 Trạng thái: Module 1-8 HOÀN THÀNH
 Bắt đầu: 2026-08-21
-Cập nhật: 2026-08-22
-Tổng commits: ~40
-Tổng tests: 210 (Module 1: 30, Module 2: 19, Module 3: 77, Module 4: 46, Module 5: 18, Module 6: 20)
+Cập nhật: 2026-08-23
+Tổng commits: ~50
+Tổng tests: 218 (Module 1: 30, Module 2: 19, Module 3: 77, Module 4: 46, Module 5: 18, Module 6: 20, Benchmark: 8)
 ```
 
 ---
@@ -85,8 +85,8 @@ Files: src/core/invalidation.ts, tests/core/invalidation.test.ts
 Trạng thái: HOÀN THÀNH
 Module: 7 — Benchmark
 Commits: feat(bench)...
-Tests: 210 passed (benchmark không cần unit tests)
-Files: src/benchmark/throughput.ts, src/benchmark/data-movement.ts, src/benchmark/run.ts
+Tests: 218 passed (bao gồm benchmark tests)
+Files: src/benchmark/throughput.ts, src/benchmark/data-movement.ts, src/benchmark/run.ts, src/benchmark/memory.ts
 ```
 
 ### Milestone 8: Visualization ✅ (2026-08-22)
@@ -95,7 +95,7 @@ Files: src/benchmark/throughput.ts, src/benchmark/data-movement.ts, src/benchmar
 Trạng thái: HOÀN THÀNH
 Module: 8 — Visualization
 Commits: feat(vis)...
-Tests: 210 passed (visualization không cần unit tests)
+Tests: 218 passed
 Files: src/visualization/hash-ring.tsx, src/visualization/dashboard.tsx, src/visualization/server.ts
 ```
 
