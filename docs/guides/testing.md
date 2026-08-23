@@ -1,7 +1,6 @@
 # 🧪 TESTING — Hướng dẫn kiểm thử
 
 > **Mục đích:** Hướng dẫn cách test toàn bộ hệ thống, từ unit test đến integration test.
-> Format lấy cảm hứng từ Void Runner TESTING.md.
 
 ---
 
@@ -30,14 +29,30 @@ npm test
 ### Chạy 1 module cụ thể
 
 ```bash
-# Core
+# Core (Module 1)
 npx jest tests/core/consistent-hashing.test.ts
 npx jest tests/core/node.test.ts
 
-# Strategies
+# Strategies (Module 2)
 npx jest tests/strategies/lru.test.ts
 npx jest tests/strategies/lfu.test.ts
 npx jest tests/strategies/fifo.test.ts
+
+# Server (Module 3)
+npx jest tests/server/protocol.test.ts
+npx jest tests/server/cache-server.test.ts
+npx jest tests/server/client.test.ts
+
+# Cluster (Module 4)
+npx jest tests/core/cluster.test.ts
+npx jest tests/core/election.test.ts
+npx jest tests/core/failover.test.ts
+
+# Replication (Module 5)
+npx jest tests/core/replication.test.ts
+
+# Cache Invalidation (Module 6)
+npx jest tests/core/invalidation.test.ts
 ```
 
 ### Chạy với coverage
@@ -56,37 +71,36 @@ npx jest --watch
 ### Kết quả mong đợi
 
 ```
-✅ Test Suites: X passed, X total
-✅ Tests:       Y passed, Y total
+✅ Test Suites: 13 passed, 13 total
+✅ Tests:       210 passed, 210 total
 ✅ Coverage:    ≥ 80%
 ```
 
 ---
 
-## 2. Integration Tests (tương lai)
-
-Khi Module 3 (Network Layer) hoàn thành:
+## 2. Build Test
 
 ```bash
-# Test client-server communication
-npx jest tests/integration/
+# Kiểm tra TypeScript compile
+npx tsc --noEmit
 
-# Test cluster failover
-npx jest tests/integration/cluster.test.ts
+# Build package
+npm run build
+# Output: dist/index.js, dist/index.cjs, dist/index.d.ts
 ```
 
 ---
 
-## 3. Benchmark Tests (tương lai)
-
-Khi Module 7 (Benchmark) hoàn thành:
+## 3. Benchmark
 
 ```bash
-# Chạy benchmark
 npm run benchmark
-
-# Kết quả ở: benchmarks/results/
 ```
+
+Kết quả:
+- Balanced: ~1.4M ops/sec
+- Read-heavy: ~847K ops/sec
+- Write-heavy: ~1.38M ops/sec
 
 ---
 
@@ -102,9 +116,9 @@ npx tsc --noEmit
 ### Kiểm tra import errors
 
 ```bash
-# Đảm bảo import đúng extension
-import { something } from './file.js';  // ✅
-import { something } from './file';     // ❌
+# Import không cần .js extension trong codebase này
+import { something } from './file';  // ✅
+import { something } from './file.js';  // ❌
 ```
 
 ### Kiểm tra mock
@@ -114,6 +128,13 @@ import { something } from './file';     // ❌
 beforeEach(() => {
   jest.clearAllMocks();
 });
+```
+
+### Timer leak warning
+
+```bash
+# Nếu Jest báo timer leak → dùng --forceExit
+npx jest --forceExit
 ```
 
 ---
@@ -130,20 +151,29 @@ beforeEach(() => {
 
 ---
 
-## 6. Ghi kết quả test
-
-Khi chạy xong, ghi kết quả vào tasks/<module>.md:
+## 6. Test Structure
 
 ```
-### Test Results
-- [x] consistent-hashing.test.ts — 13 tests passed
-- [x] node.test.ts — 17 tests passed
-- [x] lru.test.ts — 8 tests passed
-- [x] lfu.test.ts — 8 tests passed
-- [x] fifo.test.ts — 6 tests passed
-
-**Total: 52 tests passed ✅**
+tests/
+├── core/
+│   ├── consistent-hashing.test.ts  (13 tests)
+│   ├── node.test.ts                (17 tests)
+│   ├── cluster.test.ts             (17 tests)
+│   ├── election.test.ts            (13 tests)
+│   ├── failover.test.ts            (16 tests)
+│   ├── replication.test.ts         (18 tests)
+│   └── invalidation.test.ts        (20 tests)
+├── strategies/
+│   ├── lru.test.ts                 (8 tests)
+│   ├── lfu.test.ts                 (5 tests)
+│   └── fifo.test.ts                (6 tests)
+└── server/
+    ├── protocol.test.ts            (47 tests)
+    ├── cache-server.test.ts        (13 tests)
+    └── client.test.ts              (17 tests)
 ```
+
+**Total: 210 tests, 13 test suites**
 
 ---
 
