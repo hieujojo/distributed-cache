@@ -243,13 +243,14 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 📝 Windows thường thiếu native build tools
 ```
 
-### L3. Import phải dùng .js extension
+### L3. Import KHÔNG dùng .js extension
 
 ```
 📅 2026-08-22
-🐛 import './types' bị lỗi "Cannot find module"
-✅ import './types.js'
-📝 TypeScript with moduleResolution=node cần .js extension
+✅ import { Value } from './types'
+✅ import { CacheNode } from '../core/node'
+❌ import { Value } from './types.js'
+📝 Codebase dùng moduleResolution=node → không cần .js extension
 ```
 
 ### L4. Jest dùng CommonJS exports
