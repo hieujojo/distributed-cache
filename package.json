@@ -13,7 +13,8 @@
     "test:coverage": "jest --coverage",
     "lint": "tsc --noEmit",
     "benchmark": "tsx src/benchmark/run.ts",
-    "viz": "tsx src/visualization/server.ts"
+    "viz": "tsx src/visualization/server.ts",
+    "demo": "tsx src/demo-quick.ts"
   },
   "keywords": [
     "distributed-cache",
