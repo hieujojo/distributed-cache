@@ -89,7 +89,7 @@ Bun:
   → Không bị ẩn bởi HTTP framework
 
 + Performance
-  → 少 overhead hơn HTTP
+  → Ít overhead hơn HTTP
   → Persistent connections
 
 + Phù hợp cho inter-node communication

@@ -88,7 +88,7 @@ Ghi nhanh, eventual consistency.
 
 **Khi nào dùng:**
 - Workload ghi nhiều
-- Chấp nhận inconsistency短暂
+- Chấp nhận inconsistency ngắn hạn
 - Cần throughput ghi cao
 
 ### 4. Read-through

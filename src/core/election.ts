@@ -6,7 +6,7 @@
  *   2. Nếu tie → chọn node đầu tiên (theo thứ tự ID)
  *
  * Trong thực tế, Bully algorithm cần network calls giữa các nodes.
- * Ở đây我们 simulate bằng cách chạy trên 1 process duy nhất.
+ * Ở đây chúng ta simulate bằng cách chạy trên 1 process duy nhất.
  */
 
 import { ClusterManager } from './cluster';

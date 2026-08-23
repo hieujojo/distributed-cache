@@ -30,8 +30,7 @@ export interface ReplicateResult {
   /** Số replicas thành công */
   success: number;
   /** Số replicas thất bại */
-  failed: number;
-  /** Danh sách replica IDs thành功 */
+  failed: number;    /** Danh sách replica IDs thành công */
   replicaIds: string[];
 }
 

@@ -280,7 +280,7 @@ Vấn đề: Memory không được release, gradually tăng
 Ví dụ:
   - Timer không được clear
   - Event listeners không unsubscribed
-  - Cache không evict旧 data
+  - Cache không evict data cũ
 
 Giải pháp:
   - Monitor memory usage

@@ -32,12 +32,12 @@
 **Ngày:** 2026-08-22
 **Quyết định:** Dùng murmurhash cho consistent hashing.
 **Lý do:**
-- F非 cryptographic hash, focus vào performance
+- Không phải cryptographic hash, focus vào performance
 - Phân phối đồng đều tốt cho hash ring
 - Được dùng trong Redis, Cassandra, DynamoDB
 
 **Alternatives đã cân nhắc:**
-- SHA-256: ❌ Quá chậm cho高频操作 (10k+ ops/sec)
+- SHA-256: ❌ Quá chậm cho thao tác tần suất cao (10k+ ops/sec)
 - MD5: ❌ Phân phối không đều bằng murmurhash
 - CRC32: ❌ Phân phối không đều, vulnerability known
 
@@ -58,7 +58,7 @@
 
 **Alternatives đã cân nhắc:**
 - If/else trong CacheNode: ❌ Vi phạm Open/Closed Principle
--继承 từ BaseNode: ❌ Coupling cao, khó test riêng
+- Kế thừa từ BaseNode: ❌ Coupling cao, khó test riêng
 
 **Tradeoffs:**
 - ✅ Extensible, testable, loosely coupled

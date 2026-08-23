@@ -255,7 +255,7 @@ Tại sao custom error?
      if (error instanceof ConnectionTimeoutError) {
        // Xử lý timeout
      } else {
-       throw error; // Lỗi khác →扔lên trên
+       throw error; // Lỗi khác → throw lên trên
      }
    }
 

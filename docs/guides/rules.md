@@ -269,15 +269,23 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 🐛 1 commit = 7 files quá khó review
 ✅ Mỗi file 1 commit riêng
 📝 Small commits: easier review, easier revert, better history
-```
-
-### L6. Solo project: commit trực tiếp vào main
+```### L6. Solo project: commit trực tiếp vào main
 
 ```
 📅 2026-08-22
 ✅ Dự án solo → commit + push thẳng vào main
 ✅ Không cần feature branch hay PR
-📝 Nếu có多人发展 → mới cần branch + PR
+📝 Nếu có nhiều người phát triển → mới cần branch + PR
+```
+
+### L7. KHÔNG kill processes bằng taskkill
+
+```
+📅 2026-08-23
+❌ taskkill //F //IM bash.exe  → kill nhầm session tool
+❌ taskkill //F //IM node.exe  → kill nhầm IDE/server
+✅ taskkill //F //PID 12345    → kill đúng process
+📝 Nếu bị kẹt → đóng terminal, mở lại
 ```
 
 ---
@@ -298,4 +306,5 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 | 10 | Git workflow | Xem GIT_WORKFLOW.md |
 | 11 | Code Structure | Khi viết code |
 | 12 | Conflict Prevention | Khi làm modules |
-| L1-L5 | Lessons Learned | Tham chiếu khi cần |
+| 13 | Không kill processes | Luôn |
+| L1-L6 | Lessons Learned | Tham chiếu khi cần |

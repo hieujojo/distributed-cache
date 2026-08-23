@@ -211,7 +211,7 @@ Cách xử lý:
   5. Re-replicate data từ surviving replicas
 
 Rủi ro:
-  - Election time →短暂 unavailability
+  - Election time →ngắn hạn unavailability
   - Split brain nếu detection wrong
   - Data loss nếu all replicas down
 

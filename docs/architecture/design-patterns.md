@@ -36,7 +36,7 @@ Vấn đề:
 
 Strategy Pattern giải quyết:
 - Mỗi policy = 1 strategy class
-- CacheNode chỉ cần知道 interface, không cần biết implementation
+- CacheNode chỉ cần biết interface, không cần biết implementation
 - Thêm policy mới = thêm class mới, không sửa code cũ
 ```
 
@@ -88,7 +88,7 @@ Primary node thay đổi data
 Observer Pattern giải quyết:
 - Primary = Subject (publisher)
 - Replicas = Observers (subscribers)
-- Primary chỉ cần publish event, không cần知道 ai subscribe
+- Primary chỉ cần publish event, không cần biết ai subscribe
 - Replica tự quyết định subscribe/unsubscribe
 ```
 
