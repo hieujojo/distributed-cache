@@ -3,6 +3,7 @@
  */
 
 import { CacheEntry, Value, NodeConfig } from './types';
+import { FileStorage, FileStorageConfig } from '../persistence/file-storage';
 
 /**
  * Cache Node
@@ -118,5 +119,78 @@ export class CacheNode {
    */
   getKeys(): string[] {
     return Array.from(this.store.keys());
+  }
+
+  /**
+   * Lấy store (dùng cho persistence)
+   */
+  getStore(): Map<string, CacheEntry> {
+    return this.store;
+  }
+
+  /**
+   * Load entries từ Map
+   */
+  loadEntries(entries: Map<string, CacheEntry>): void {
+    this.store = entries;
+  }
+
+  // ─── Persistence ────────────────────────────────────────────
+
+  private storage: FileStorage | null = null;
+
+  /**
+   * Setup persistence cho node này
+   * @param config - FileStorage config
+   */
+  enablePersistence(config: FileStorageConfig): void {
+    this.storage = new FileStorage(this.id, config);
+    this.storage.updateEntries(this.store);
+  }
+
+  /**
+   * Load data từ file
+   * @returns true nếu load thành công
+   */
+  loadFromDisk(): boolean {
+    if (!this.storage) return false;
+
+    const success = this.storage.load();
+    if (success) {
+      this.store = this.storage.getStore();
+    }
+    return success;
+  }
+
+  /**
+   * Save data vào file
+   * @returns true nếu save thành công
+   */
+  saveToDisk(): boolean {
+    if (!this.storage) return false;
+
+    this.storage.updateEntries(this.store);
+    return this.storage.save();
+  }
+
+  /**
+   * Bắt đầu auto save
+   */
+  startAutoSave(): void {
+    this.storage?.startAutoSave();
+  }
+
+  /**
+   * Dừng auto save
+   */
+  stopAutoSave(): void {
+    this.storage?.stopAutoSave();
+  }
+
+  /**
+   * Kiểm tra có bật persistence không
+   */
+  isPersistenceEnabled(): boolean {
+    return this.storage !== null;
   }
 }
