@@ -38,6 +38,7 @@ export interface CacheResponse {
  *
  * Format: "COMMAND key value ttl\r\n"
  * - SET user:123 John 60000
+ * - SET user:123 "Nguyễn Văn A"
  * - GET user:123
  * - DEL user:123
  * - PING
@@ -53,7 +54,7 @@ export function parseRequest(buffer: Buffer): CacheRequest {
     throw new Error('Empty request');
   }
 
-  const parts = text.split(' ');
+  const parts = parseParts(text);
   const command = parts[0].toUpperCase() as CommandType;
 
   switch (command) {
@@ -223,9 +224,15 @@ export function parseResponse(buffer: Buffer): CacheResponse {
  * Parse value từ string protocol
  *
  * Objects/arrays được encode dạng JSON: __JSON__{"key":"value"}
+ * Quoted strings: "value with spaces"
  * Strings, numbers, booleans giữ nguyên
  */
 function parseValue(raw: string): Value {
+  // Quoted string (e.g., "Nguyễn Văn A")
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    return raw.slice(1, -1);
+  }
+
   // JSON object/array
   if (raw.startsWith('__JSON__')) {
     try {
@@ -251,11 +258,47 @@ function parseValue(raw: string): Value {
 }
 
 /**
+ * Parse parts từ command string, hỗ trợ quoted strings
+ * VD: SET user:1001 "Nguyễn Văn A" 60000
+ *     → ['SET', 'user:1001', '"Nguyễn Văn A"', '60000']
+ */
+function parseParts(text: string): string[] {
+  const parts: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      current += char;
+    } else if (char === ' ' && !inQuotes) {
+      if (current) {
+        parts.push(current);
+        current = '';
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current) {
+    parts.push(current);
+  }
+
+  return parts;
+}
+
+/**
  * Serialize value thành string protocol
  */
 function serializeValue(value: Value | undefined): string {
   if (value === undefined) return '';
   if (value === null) return 'null';
   if (typeof value === 'object') return `__JSON__${JSON.stringify(value)}`;
-  return String(value);
+  const str = String(value);
+  // Wrap strings containing spaces in quotes to prevent parsing issues
+  if (str.includes(' ')) return `"${str}"`;
+  return str;
 }
