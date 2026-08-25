@@ -148,6 +148,15 @@ export class InvalidationManager {
   }
 
   /**
+   * Dispose toàn bộ resources — gọi khi不再 cần InvalidationManager.
+   * Dọn interval timer + tất cả event listeners để tránh memory leak.
+   */
+  dispose(): void {
+    this.stopExpirationCheck();
+    this.eventEmitter.removeAllListeners();
+  }
+
+  /**
    * Bắt đầu expiration check (interval-based)
    * Kiểm tra mỗi 1000ms
    */
@@ -166,6 +175,10 @@ export class InvalidationManager {
         }
       }
     }, 1000);
+    // Không giữ process Node.js alive chỉ vì sweep timer
+    if (typeof this.checkInterval === 'object' && 'unref' in this.checkInterval) {
+      this.checkInterval.unref();
+    }
   }
 
   /**
