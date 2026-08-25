@@ -1,6 +1,15 @@
 /**
- * Eviction Strategy Interface
+ * Eviction Strategy Interface + Factory
  */
+
+import { EvictionPolicy } from '../core/types';
+
+/** LRU Strategy */
+import { LRUStrategy } from './lru';
+/** LFU Strategy */
+import { LFUStrategy } from './lfu';
+/** FIFO Strategy */
+import { FIFOStrategy } from './fifo';
 
 /**
  * Interface cho eviction strategies
@@ -37,6 +46,21 @@ export interface EvictionStrategy {
 }
 
 /**
- * Loại eviction policy
+ * Re-export EvictionPolicy cho convenience
  */
-export type EvictionPolicy = 'lru' | 'lfu' | 'fifo';
+export type { EvictionPolicy };
+
+/**
+ * Factory — tạo EvictionStrategy từ policy name
+ */
+export function createEvictionStrategy(policy: EvictionPolicy): EvictionStrategy {
+  switch (policy) {
+    case 'lfu':
+      return new LFUStrategy();
+    case 'fifo':
+      return new FIFOStrategy();
+    case 'lru':
+    default:
+      return new LRUStrategy();
+  }
+}

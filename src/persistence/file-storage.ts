@@ -107,7 +107,8 @@ export class FileStorage {
         fs.mkdirSync(dir, { recursive: true });
       }
 
-      fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2), 'utf-8');
+      // Compact JSON — reduces memory spike + file size during save
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
       return true;
     } catch {
       return false;

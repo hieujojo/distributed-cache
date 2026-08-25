@@ -8,6 +8,11 @@
 export type Value = string | number | boolean | object | null;
 
 /**
+ * Loại eviction policy
+ */
+export type EvictionPolicy = 'lru' | 'lfu' | 'fifo';
+
+/**
  * Entry lưu trong cache node
  */
 export interface CacheEntry {
@@ -33,6 +38,19 @@ export interface NodeConfig {
   maxSize: number;
   /** TTL mặc định (ms) */
   defaultTtl: number;
+  /**
+   * Loại eviction policy khi vượt maxSize.
+   * 'lru' = Least Recently Used (mặc định)
+   * 'lfu' = Least Frequently Used
+   * 'fifo' = First In First Out
+   */
+  evictionPolicy?: EvictionPolicy;
+  /**
+   * Khoảng thời gian quét xoá entry hết hạn (ms).
+   * 0 = tắt sweep (chỉ lazy delete).
+   * Mặc định = 30000 (30 giây).
+   */
+  sweepIntervalMs?: number;
 }
 
 /**

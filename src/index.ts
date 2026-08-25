@@ -8,7 +8,7 @@
 export { ConsistentHash } from './core/consistent-hashing';
 export type { HashNode } from './core/consistent-hashing';
 export { CacheNode } from './core/node';
-export type { HashFunction, HashConfig, NodeConfig, CacheEntry, Value } from './core/types';
+export type { HashFunction, HashConfig, NodeConfig, CacheEntry, Value, EvictionPolicy } from './core/types';
 export { murmurHash, sortedInsert, sortedRemove } from './core/hash-helpers';
 
 // ─── Cluster ─────────────────────────────────────────────────────
@@ -28,7 +28,8 @@ export { InvalidationManager } from './core/invalidation';
 export type { InvalidationEventType, InvalidationEvent, InvalidationCallback } from './core/invalidation';
 
 // ─── Strategies ──────────────────────────────────────────────────
-export type { EvictionStrategy, EvictionPolicy } from './strategies/index';
+export { createEvictionStrategy } from './strategies/index';
+export type { EvictionStrategy } from './strategies/index';
 
 // ─── Server ──────────────────────────────────────────────────────
 export { CacheServer } from './server/cache-server';
