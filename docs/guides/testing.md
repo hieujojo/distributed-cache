@@ -18,38 +18,27 @@ npm test
 
 ---
 
-## 1. Testing Tools Overview
+## 1. Testing Tool
 
-### Phân loại tools
-
-| Loại test       | Công cụ                         | Test gì                     |
-|-----------------|--------------------------------|-----------------------------|
-| Unit Test       | Jest, Vitest, Node.js test      | Function, class riêng lẻ    |
-| Integration     | Jest + net lib                  | Nhiều files kết nối TCP/API |
-| API Test        | Supertest, Postman              | REST API (HTTP)             |
-| TCP/Socket Test | Jest + net module (Node.js)    | TCP server/client           |
-| E2E Test        | Playwright, Cypress             | Toàn bộ app qua browser     |
-| Load Test       | k6, Artillery                   │ Performance, throughput     |
-
-### So sánh các công cụ
-
-| Công cụ    | Độ phổ biến (VN) | Phù hợp project này | Ghi chú                    |
-|------------|-------------------|---------------------|----------------------------|
-| Jest       | ⭐⭐⭐⭐⭐           | ✅ Unit + Integration | Chuẩn ngành, mọi company   |
-| Playwright | ⭐⭐⭐⭐⭐           | ❌ Không có UI       | Cần browser                |
-| Supertest  | ⭐⭐⭐⭐            | ❌ Không dùng HTTP   | Chỉ cho REST API           |
-| Cypress    | ⭐⭐⭐⭐            | ❌ Cần browser       | E2E testing                |
-| k6         | ⭐⭐⭐             | ✅ Load test (thêm)  | Performance benchmark      |
-| Vitest     | ⭐⭐⭐             | ⚠️ Chưa phổ biến VN | Modern nhưng ít company   |
-
-### Kết luận cho project này
+### Jest — Công cụ duy nhất cần dùng
 
 ```
-✅ Jest (unit test) — hi có, 218 tests
-✅ Jest (integration test) — thêm mới, test TCP thật
-✅ k6 (load test) — optional, performance benchmark
-❌ Không cần: Vitest, Playwright, Supertest, Cypress
+Jest = Unit test + Integration test + TCP test
+→ Đủ cho toàn bộ project này
 ```
+
+| Loại test       | Jest làm gì                        |
+|-----------------|-----------------------------------|
+| Unit Test       | Test function, class riêng lẻ     |
+| Integration     | Test N files kết nối TCP thật     |
+| TCP/Socket Test | Test server + client qua network  |
+
+### Tại sao chỉ cần Jest?
+
+- **Phổ biến nhất** — mọi company ở VN đều dùng
+- **Đơn giản** — chỉ 1 công cụ, không cần học thêm
+- **Đủ mạnh** — unit + integration + TCP test đều được
+- **CV value** — biết Jest = biết testing cơ bản
 
 ---
 
