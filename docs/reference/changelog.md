@@ -235,7 +235,7 @@
 1. **Integration Tests (14 tests)**
    - File: `tests/integration/client-server.test.ts`
    - Test TCP server + client thật qua network
-   -涵盖: SET/GET/DEL, PING, TTL, multiple clients, large payload, stress test, server restart
+   - Covers: SET/GET/DEL, PING, TTL, multiple clients, large payload, stress test, server restart
    - Kết quả: 14/14 pass
 
 2. **jest-html-reporter**

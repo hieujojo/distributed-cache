@@ -13,11 +13,15 @@ const TEST_FILE = path.join(TEST_DIR, 'test-cache.json');
 
 // Cleanup sau mỗi test
 afterEach(() => {
-  if (fs.existsSync(TEST_FILE)) {
-    fs.unlinkSync(TEST_FILE);
-  }
-  if (fs.existsSync(TEST_DIR)) {
-    fs.rmSync(TEST_DIR, { recursive: true, force: true });
+  try {
+    if (fs.existsSync(TEST_FILE)) {
+      fs.unlinkSync(TEST_FILE);
+    }
+    if (fs.existsSync(TEST_DIR)) {
+      fs.rmSync(TEST_DIR, { recursive: true, force: true });
+    }
+  } catch {
+    // Bỏ qua lỗi cleanup
   }
 });
 
@@ -143,11 +147,11 @@ describe('FileStorage', () => {
       });
 
       storage.startAutoSave();
-      // Không có lỗi khi gọi第二次
+      // Không có lỗi khi gọi lại
       storage.startAutoSave();
 
       storage.stopAutoSave();
-      // Không có lỗi khi gọi第二次
+      // Không có lỗi khi gọi lại
       storage.stopAutoSave();
     });
   });
