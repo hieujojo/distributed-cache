@@ -18,7 +18,42 @@ npm test
 
 ---
 
-## 1. Unit Tests
+## 1. Testing Tools Overview
+
+### Phân loại tools
+
+| Loại test       | Công cụ                         | Test gì                     |
+|-----------------|--------------------------------|-----------------------------|
+| Unit Test       | Jest, Vitest, Node.js test      | Function, class riêng lẻ    |
+| Integration     | Jest + net lib                  | Nhiều files kết nối TCP/API |
+| API Test        | Supertest, Postman              | REST API (HTTP)             |
+| TCP/Socket Test | Jest + net module (Node.js)    | TCP server/client           |
+| E2E Test        | Playwright, Cypress             | Toàn bộ app qua browser     |
+| Load Test       | k6, Artillery                   │ Performance, throughput     |
+
+### So sánh các công cụ
+
+| Công cụ    | Độ phổ biến (VN) | Phù hợp project này | Ghi chú                    |
+|------------|-------------------|---------------------|----------------------------|
+| Jest       | ⭐⭐⭐⭐⭐           | ✅ Unit + Integration | Chuẩn ngành, mọi company   |
+| Playwright | ⭐⭐⭐⭐⭐           | ❌ Không có UI       | Cần browser                |
+| Supertest  | ⭐⭐⭐⭐            | ❌ Không dùng HTTP   | Chỉ cho REST API           |
+| Cypress    | ⭐⭐⭐⭐            | ❌ Cần browser       | E2E testing                |
+| k6         | ⭐⭐⭐             | ✅ Load test (thêm)  | Performance benchmark      |
+| Vitest     | ⭐⭐⭐             | ⚠️ Chưa phổ biến VN | Modern nhưng ít company   |
+
+### Kết luận cho project này
+
+```
+✅ Jest (unit test) — hi có, 218 tests
+✅ Jest (integration test) — thêm mới, test TCP thật
+✅ k6 (load test) — optional, performance benchmark
+❌ Không cần: Vitest, Playwright, Supertest, Cypress
+```
+
+---
+
+## 2. Unit Tests
 
 ### Chạy tất cả
 
@@ -71,14 +106,74 @@ npx jest --watch
 ### Kết quả mong đợi
 
 ```
-✅ Test Suites: 13 passed, 13 total
+✅ Test Suites: 14 passed, 14 total
 ✅ Tests:       218 passed, 218 total
 ✅ Coverage:    ≥ 80%
 ```
 
 ---
 
-## 2. Build Test
+## 3. Integration Tests (TCP Server/Client)
+
+### Mục đích
+
+Test N files kết nối với nhau qua TCP thật, không mock.
+
+### Chạy
+
+```bash
+npx jest tests/integration/ --forceExit
+```
+
+### Test cases
+
+| Test case          | Flow test                                     |
+|--------------------|-----------------------------------------------|
+| SET + GET          | Client → TCP → Server → CacheNode → GET       |
+| GET missing        | Client → GET key không tồn tại → NULL         |
+| DEL                | Client → SET → DEL → GET → NULL               |
+| PING/PONG          | Client → PING → Server trả PONG               |
+| TTL expiration     | SET (ttl=100ms) → chờ 200ms → GET → NULL     |
+| Multiple clients   | 2 clients cùng SET/GET → không conflict       |
+| Invalid command    | Gửi invalid command → nhận ERROR              |
+| Server restart     | Server tắt → bật lại → data mất (in-memory) |
+| Large payload      | SET value lớn → GET → đúng                    |
+| Concurrent ops     | Nhiều SET/GET cùng lúc → data đúng            |
+
+### Ví dụ code
+
+```typescript
+// tests/integration/client-server.test.ts
+import { CacheServer } from '../../src/server/cache-server';
+import { CacheClient } from '../../src/server/client';
+
+describe('TCP Integration', () => {
+  let server: CacheServer;
+  let client: CacheClient;
+
+  beforeAll(async () => {
+    server = new CacheServer({ port: 0 }); // random port
+    await server.start();
+    client = new CacheClient({ port: server.getPort() });
+    await client.connect();
+  });
+
+  afterAll(async () => {
+    await client.disconnect();
+    await server.stop();
+  });
+
+  it('SET then GET returns correct value', async () => {
+    await client.set('user:1001', 'Hiếu');
+    const result = await client.get('user:1001');
+    expect(result).toBe('Hiếu');  // TCP thật!
+  });
+});
+```
+
+---
+
+## 4. Build Test
 
 ```bash
 # Kiểm tra TypeScript compile
@@ -104,7 +199,7 @@ Kết quả:
 
 ---
 
-## 4. Debug khi test fail
+## 5. Debug khi test fail
 
 ### Kiểm tra syntax errors
 
@@ -139,7 +234,7 @@ npx jest --forceExit
 
 ---
 
-## 5. Checklist khi commit
+## 6. Checklist khi commit
 
 ```
 □ npm test → ALL PASS
@@ -151,7 +246,7 @@ npx jest --forceExit
 
 ---
 
-## 6. Test Structure
+## 7. Test Structure
 
 ```
 tests/
@@ -171,11 +266,48 @@ tests/
 │   ├── protocol.test.ts            (47 tests)
 │   ├── cache-server.test.ts        (13 tests)
 │   └── client.test.ts              (17 tests)
-└── benchmark/
-    └── benchmark.test.ts           (8 tests)
+├── benchmark/
+│   └── benchmark.test.ts           (8 tests)
+└── integration/                    ← MỚI
+    └── client-server.test.ts       (~10 tests)
 ```
 
-**Total: 218 tests, 14 test suites**
+**Total: ~228 tests, 15 test suites**
+
+---
+
+## 8. CI/CD Pipeline (GitHub Actions)
+
+### File: `.github/workflows/test.yml`
+
+```yaml
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx tsc --noEmit        # Typecheck
+      - run: npm test                 # Unit + Integration tests
+      - run: npm run build            # Build
+```
+
+### Badge trên README
+
+```markdown
+![Tests](https://github.com/hieujojo/distributed-cache/actions/workflows/test.yml/badge.svg)
+```
 
 ---
 
