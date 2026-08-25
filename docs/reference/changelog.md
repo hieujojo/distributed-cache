@@ -296,6 +296,35 @@
 
 ---
 
+## 2026-08-26 — replicatedKeys Set grow vô hạn
+
+> ReplicationManager.replicatedKeys chỉ `.add()` mà không bao giờ `.delete()`.
+
+- **Triệu chứng:** `ReplicationManager.replicatedKeys` (Set<string>) chỉ có `.add(key)` trong `replicate()`, không có `.delete()` ở bất kỳ đâu. Set grow vô hạn theo tổng số key đã từng set, kể cả khi key đã bị eviction hoặc expire khỏi CacheNode.
+- **Root cause:** Không có cơ chế đồng bộ giữa cache eviction và replication tracking. Keys được track nhưng không bao giờ untrack.
+- **Fix:**
+  1. Thêm `onEvicted?: (key: string) => void` callback vào `NodeConfig`
+  2. CacheNode gọi `onEvicted?.(victim)` trong `enforceMaxSize()`, `delete()`, và sweep
+  3. Thêm `untrackKey(key)` vào `ReplicationManager`
+  4. Caller wiring `onEvicted` khi tạo CacheNode để liên kết với ReplicationManager
+- **Bài học (C10.3):** Set/Map dùng để track trạng thái PHẢI có cơ chế xóa. Nếu chỉ add mà không delete → unbounded growth. Luôn hỏi: "khi nào entry này bị xóa?" khi thiết kế data structure.
+
+---
+
+## 2026-08-26 — heartbeatTimer + checkInterval thiếu .unref()
+
+> ClusterManager và InvalidationManager có setInterval không .unref() → giữ process alive.
+
+- **Triệu chứng:** `ClusterManager.heartbeatTimer` và `InvalidationManager.checkInterval` là `setInterval` không có `.unref()`. CacheNode sweep timer đã `.unref()` đúng nhưng 2 timer này bị quên.
+- **Root cause:** Khi thêm sweep timer cho CacheNode, đã `.unref()` đúng. Nhưng heartbeat timer và invalidation check timer viết trước đó không được update.
+- **Fix:**
+  1. Thêm `.unref()` cho `ClusterManager.heartbeatTimer`
+  2. Thêm `.unref()` cho `InvalidationManager.checkInterval`
+  3. Thêm `dispose()` method cho InvalidationManager — `stopExpirationCheck()` + `eventEmitter.removeAllListeners()`
+- **Bài học (C10.2 mở rộng):** Khi thêm timer mới vào library code, PHẢI `.unref()` ngay lập tức. Không được để "sẽ fix sau". Kiểm tra TOÀN BỘ timers trong project mỗi khi có thay đổi.
+
+---
+
 ## Rules rút ra từ Changelog
 
 ### Nhóm C1: Setup & Config
@@ -368,6 +397,7 @@
 |------|-------|
 | **C10.1** | Strategy/interface đã viết chưa đủ — PHẢI wiring vào call-site |
 | **C10.2** | Background timers trong library code PHẢI `.unref()` |
+| **C10.3** | Set/Map track trạng thái PHẢI có cơ chế xóa — không chỉ add |
 
 ---
 
@@ -416,6 +446,15 @@
 □ npm run build chạy thành công
 □ Output có đủ files (CJS + ESM + DTS)
 □ npm test vẫn pass sau khi đổi tsconfig
+```
+
+### RAM & Memory
+
+```
+□ Set/Map có cơ chế xóa (không chỉ .add())
+□ Timer có .unref() nếu là library code
+□ Có dispose()/destroy() cho managers có state
+□ Kiểm tra ONEVICTED callback khi CacheNode xóa key
 ```
 
 ---

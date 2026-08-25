@@ -391,7 +391,12 @@ FIFO (First In First Out):
 Background TTL sweep:
   → setInterval xoá expired entries định kỳ (mặc định 30s)
   → Timer .unref() để không giữ process Node.js sống
-  →_expired-but-unaccessed entries không nằm trong RAM mãi
+  → expired-but-unaccessed entries không nằm trong RAM mãi
+
+External tracking (onEvicted callback):
+  → CacheNode gọi onEvicted(key) khi key bị xóa
+  → ReplicationManager dùng để untrackKey(key)
+  → Set/Map track trạng thái phải có cơ chế xóa
 ```
 
 ---

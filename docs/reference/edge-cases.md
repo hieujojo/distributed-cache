@@ -81,6 +81,9 @@ Rủi ro:
 Prevention:
   - Luôn clear timer khi hoàn thành
   - Luôn unsubscribe listener khi không cần
+  - Timer PHẢI `.unref()` trong library code
+  - Managers có state PHẢI có dispose()/destroy()
+  - Set/Map dùng để track PHẢI có cơ chế xóa (onEvicted callback)
   - Test memory usage trong test suite
 ```
 

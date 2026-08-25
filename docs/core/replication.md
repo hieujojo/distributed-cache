@@ -173,6 +173,23 @@ Ghi cần đa số (2/3):
 Kết quả: Chỉ có 1 leader tại bất kỳ thời điểm nào
 ```
 
+## Tracking Replicated Keys
+
+ReplicationManager dùng `Set<string>` để track哪些 key đã replicate. Để tránh Set grow vô hạn:
+
+```
+CacheNode.onEvicted(key)  →  ReplicationManager.untrackKey(key)
+
+Khi key bị eviction (enforceMaxSize), xóa (delete), hoặc sweep (TTL expired):
+  → CacheNode gọi onEvicted callback
+  → ReplicationManager.xóa key khỏi replicatedKeys Set
+  → Set chỉ chứa keys đang active trong cache
+```
+
+Không có untrackKey → Set grow vô hạn theo tổng số key đã từng set.
+
+---
+
 ## Benchmark Metrics
 
 ### Replication Lag

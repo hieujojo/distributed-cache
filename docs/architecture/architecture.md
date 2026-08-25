@@ -102,6 +102,8 @@ Interface:
     getMaxSize(): number
     stopSweep(): void          // stop background TTL cleanup
     loadEntries(entries: Map): void  // bulk load + rebuild eviction index
+    // config.onEvicted callback — called on eviction, delete, sweep
+    // → use to sync external trackers (e.g. ReplicationManager)
   }
 ```
 

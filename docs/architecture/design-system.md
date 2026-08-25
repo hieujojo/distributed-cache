@@ -323,6 +323,8 @@ Cache Config:
   → maxCacheSize: RAM limit per node
   → defaultTTL: Thời gian sống mặc định
   → evictionPolicy: LRU, LFU, FIFO
+  → sweepIntervalMs: TTL cleanup interval (default 30s, 0=off)
+  → onEvicted: callback khi key bị xóa (dùng để sync external tracking)
 
 Network Config:
   → host: IP address
