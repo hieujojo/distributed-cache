@@ -191,6 +191,10 @@ export class ClusterManager {
     this.heartbeatTimer = setInterval(() => {
       this.checkHeartbeats();
     }, this.heartbeatInterval);
+    // Không giữ process Node.js alive chỉ vì heartbeat timer
+    if (typeof this.heartbeatTimer === 'object' && 'unref' in this.heartbeatTimer) {
+      this.heartbeatTimer.unref();
+    }
   }
 
   /**
