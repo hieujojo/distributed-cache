@@ -149,3 +149,11 @@ function serveStaticFile(
 }
 
 export default startVizServer;
+
+// Chạy server khi execute trực tiếp (ESM)
+const isMainModule = process.argv[1]?.includes('server.ts');
+if (isMainModule) {
+  const port = parseInt(process.env.VIZ_PORT || '8080', 10);
+  const cachePort = parseInt(process.env.CACHE_PORT || '3000', 10);
+  startVizServer({ port, cachePort });
+}
