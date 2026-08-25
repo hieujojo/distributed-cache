@@ -149,6 +149,8 @@ Luồng:
 
 Khi cache đầy (đạt max memory), xóa key nào?
 
+> **Kiến trúc hiện tại:** `CacheNode.set()` gọi `enforceMaxSize()` sau mỗi lần ghi. Nếu `store.size > maxSize`, eviction strategy được gọi liên tục cho đến khi-size ≤ maxSize. expired entries cũng được xoá định kỳ bởi background sweep (mặc định mỗi 30 giây).
+
 ### LRU (Least Recently Used)
 
 ```
@@ -274,6 +276,9 @@ Với eviction policies:
   → LRU: tốt cho temporal locality
   → LFU: tốt cho tần suất truy cập
   → TTL: memory usage giới hạn
+
+Background sweep đảm bảo expired entries không tồn tại vĩnh viễn trong RAM.
+timer dùng .unref() để không giữ Node.js process sống.
 ```
 
 ## Câu hỏi phỏng vấn thường gặp

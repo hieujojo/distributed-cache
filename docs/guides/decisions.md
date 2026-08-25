@@ -47,14 +47,15 @@
 
 ---
 
-## D3. Strategy Pattern cho Eviction Policies
+## D3. Strategy Pattern + Factory cho Eviction Policies
 
-**Ngày:** 2026-08-22
-**Quyết định:** Dùng Strategy Pattern cho LRU, LFU, FIFO.
+**Ngày:** 2026-08-22 (cập nhật 2026-08-26)
+**Quyết định:** Dùng Strategy Pattern + Factory function cho LRU, LFU, FIFO.
 **Lý do:**
 - Thêm eviction policy mới chỉ cần tạo file mới
 - Không sửa CacheNode khi thêm policy
-- So sánh performance giữa các strategy dễ dàng
+- `createEvictionStrategy(policy)` factory ẩn việc khởi tạo strategy
+- CacheNode constructor nhận `evictionPolicy?: 'lru' | 'lfu' | 'fifo'`
 
 **Alternatives đã cân nhắc:**
 - If/else trong CacheNode: ❌ Vi phạm Open/Closed Principle

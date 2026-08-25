@@ -72,12 +72,19 @@ npx tsc --noEmit
 ## Sử dụng như Library
 
 ```typescript
-import { ConsistentHash } from 'distributed-cache';
+import { ConsistentHash, CacheNode } from 'distributed-cache';
+
+// Tạo cache node với eviction policy tuỳ chọn
+const node = new CacheNode('node-1', {
+  maxSize: 10_000,
+  defaultTtl: 60_000,       // 60s
+  evictionPolicy: 'lru',     // 'lru' | 'lfu' | 'fifo'
+  sweepIntervalMs: 30_000,  // xoá expired entries mỗi 30s (0 = tắt)
+});
 
 const ring = new ConsistentHash();
-ring.addNode({ id: 'node-1', host: 'localhost', port: 3001 });
-ring.addNode({ id: 'node-2', host: 'localhost', port: 3002 });
+ring.addNode(node);
+ring.addNode(new CacheNode('node-2', { maxSize: 10_000 }));
 
-const node = ring.getNode('user:123');
-console.log(node);
+ring.getNode('user:123')?.set('user:123', 'John');
 ```

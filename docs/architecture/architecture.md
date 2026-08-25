@@ -85,18 +85,23 @@ Interface:
 
 ```
 Responsibility:
-  → Lưu trữ key-value pairs
+  → Lưu trữ key-value pairs trong RAM (Map<string, CacheEntry>)
   → Xử lý get/set/delete operations
-  → Áp dụng eviction policy khi đầy
-  → Manage TTL expiration
+  → enforced eviction: set() gọi eviction strategy khi store > maxSize
+  → Background TTL sweep: interval xoá expired entries định kỳ
+  → Persistent options: file-based save/load
 
 Interface:
   class CacheNode {
     get(key: string): Value | null
-    set(key: string, value: Value, ttl?: number): void
-    delete(key: string): void
+    set(key: string, value: Value, ttl?: number): void   // triggers eviction if full
+    delete(key: string): boolean
+    has(key: string): boolean
+    clear(): void
     getSize(): number
     getMaxSize(): number
+    stopSweep(): void          // stop background TTL cleanup
+    loadEntries(entries: Map): void  // bulk load + rebuild eviction index
   }
 ```
 
@@ -168,6 +173,7 @@ Client                    Cluster                Hash Ring            Cache Node
   │                          │                      │                    │
   │                          │                      │    store in memory  │
   │                          │                      │    apply TTL       │
+  │                          │                      │    enforceMaxSize() │ ← evict if over capacity
   │                          │                      │                    │
   │                          │                      │    replicate ──────→│ (replica)
   │                          │                      │                    │
@@ -249,6 +255,12 @@ Disk:
   + Capacity lớn hơn
   - Chậm hơn
 
+Bảo vệ RAM:
+  - enforced eviction: set() tự đuổi entry cũ khi vượt maxSize
+  - Background sweep: dọn expired entries mỗi 30s
+  - Configurable eviction policy (LRU/LFU/FIFO)
+  - FileStorage.save() compact JSON để giảm spike
+
 Quyết định: Cache = temporary data → In-memory phù hợp nhất
 ```
 
@@ -273,6 +285,6 @@ Quyết định: Dùng custom protocol đơn giản để hiểu nguyên lý
 |---|---|---|
 | **Node crash** | Heartbeat timeout | Leader election, promote replica |
 | **Network partition** | Missing heartbeats | Split-brain prevention with quorum |
-| **Memory full** | eviction policy triggered | LRU/LFU eviction |
+| **Memory full** | `enforceMaxSize()` on set | LRU/LFU/FIFO eviction (configurable) |
 | **Primary dies** | Replica detects | Elect new primary |
 | **Replica dies** | Primary detects | Create new replica |

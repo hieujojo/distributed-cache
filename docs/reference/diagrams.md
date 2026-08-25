@@ -138,7 +138,8 @@
 | Relationship | Type | Mô tả |
 |---|---|---|
 | ClusterManager → ConsistentHash | Uses | ClusterManager dùng ConsistentHash để route requests |
-| CacheNode → EvictionStrategy | Implements | CacheNode dùng strategy để evict data |
+| CacheNode → EvictionStrategy | Uses | CacheNode dùng strategy để evict data (enforced on set()) |
+| createEvictionStrategy() | Factory | Tạo strategy instance từ policy name ('lru' | 'lfu' | 'fifo') |
 | CacheNode → CacheEntry | Contains | CacheNode chứa nhiều CacheEntry |
 | ReplicationMgr → TCPAdapter | Uses | ReplicationMgr dùng TCPAdapter để sync data |
 | TCPAdapter → TCPServer | Wraps | TCPAdapter wrap TCPServer |

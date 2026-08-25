@@ -278,6 +278,24 @@
 
 ---
 
+## 2026-08-26 — CacheNode.set() không enforce maxSize → tràn RAM không kiểm soát
+
+> Cache node grow vô hạn vì maxSize chỉ là decor, eviction strategy đã viết sẵn nhưng chưa nối vào.
+
+- **Triệu chứng:** `CacheNode` có `maxSize` trong config nhưng `set()` không bao giờ kiểm tra. `Map` trong RAM grow vô hạn — expired-but-unaccessed entries nằm trong RAM mãi, eviction strategies trong `src/strategies/` đã viết sẵn nhưng chưa được gọi ở đâu.
+- **Root cause:** `CacheNode.set()` chỉ gọi `this.store.set(key, entry)` mà không kiểm tra `store.size > maxSize` và không gọi strategy.onEvict(). Strategy classes (LRU/LFU/FIFO) tồn tại nhưng không có ai thuê.
+- **Fix:**
+  1. Nối `eviction: EvictionStrategy` vào `CacheNode` — constructor gọi `createEvictionStrategy(policy)`
+  2. Thêm `enforceMaxSize()` private method — gọi sau mỗi `set()`, lặp `strategy.onEvict()` cho đến khi `store.size ≤ maxSize`
+  3. Thông báo `eviction.onAccess()` trong `get()`, `eviction.onInsert()` trong `set()`, `eviction.onRemove()` trong `delete()`/`has()`/expired
+  4. Thêm background TTL sweep (`startSweep()`) — interval 30s, `.unref()` để không giữ process sống
+  5. `loadEntries()` rebuild eviction index, enforce maxSize sau khi load từ disk
+  6. `FileStorage.save()` bỏ pretty-print (`JSON.stringify(data)` thay vì `JSON.stringify(data, null, 2)`) để giảm memory spike
+- **Bài học (C10.1):** Strategy/Interface đã tồn tại KHÔNG nghĩa là nó được dùng. Luôn kiểm tra call-site — tạo interface/xử lý chưa đủ, phải wiring vào code path. Khi viết eviction strategy → viết test enforced eviction ngay lập tức.
+- **Bài học (C10.2):** Background timers `.unref()` cần thiết trong library code để không giữ Node.js process sống. Sweep interval nên có default hợp lý (30s) và cho phép tắt (`sweepIntervalMs: 0`).
+
+---
+
 ## Rules rút ra từ Changelog
 
 ### Nhóm C1: Setup & Config
@@ -343,6 +361,13 @@
 | Rule | Mô tả |
 |------|-------|
 | **C9.1** | Kiểm tra tên class/exact export TRƯỚC khi import |
+
+### Nhóm C10: RAM & Memory Management
+
+| Rule | Mô tả |
+|------|-------|
+| **C10.1** | Strategy/interface đã viết chưa đủ — PHẢI wiring vào call-site |
+| **C10.2** | Background timers trong library code PHẢI `.unref()` |
 
 ---
 

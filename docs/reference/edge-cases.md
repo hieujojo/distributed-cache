@@ -36,16 +36,23 @@ Rủi ro:
   - Nếu eviction policy bug → memory overflow → crash
   - Nếu không log → không biết cache full xảy ra
 
-Code handling:
-  if (this.cache.size >= this.maxSize) {
-    const evictedKey = this.strategy.onEvict();
-    if (evictedKey) {
-      this.cache.delete(evictedKey);
-      logger.info('Evicted key', { key: evictedKey });
-    } else {
-      logger.warn('Cache full, cannot evict');
-      throw new CacheFullError();
+Code handling (src/core/node.ts — enforceMaxSize):
+  private enforceMaxSize(): void {
+    while (this.store.size > this.maxSize) {
+      const victim = this.eviction.onEvict();
+      if (victim === null) break;   // safety: avoid infinite loop
+      if (this.store.has(victim)) {
+        this.store.delete(victim);
+      }
     }
+  }
+
+  // Called after every set():
+  set(key, value, ttl?) {
+    ...
+    this.store.set(key, entry);
+    this.eviction.onInsert(key);
+    this.enforceMaxSize();          // ← enforced eviction
   }
 ```
 

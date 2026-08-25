@@ -367,9 +367,15 @@ Project này: AP (Available + Partition tolerant)
 ```
 Cache đầy → Phải xóa bớt data → Xóa cái nào?
 
+CacheNode.set() enforced eviction:
+  → Sau mỗi lần ghi, kiểm tra store.size > maxSize
+  → Nếu vượt → gọi eviction strategy.onEvict() liên tục
+  → Victim key bị xóa khỏi store
+  → Lặp cho đến khi store.size <= maxSize
+
 LRU (Least Recently Used):
   → Xóa key ít được truy cập nhất
-  → Phổ biến nhất
+  → Phổ biến nhất, mặc định cho CacheNode
   + Phù hợp cho most workloads
 
 LFU (Least Frequently Used):
@@ -381,6 +387,11 @@ FIFO (First In First Out):
   → Xóa key cũ nhất
   + Đơn giản nhất
   - Không quan tâm access pattern
+
+Background TTL sweep:
+  → setInterval xoá expired entries định kỳ (mặc định 30s)
+  → Timer .unref() để không giữ process Node.js sống
+  →_expired-but-unaccessed entries không nằm trong RAM mãi
 ```
 
 ---
@@ -408,8 +419,8 @@ FIFO (First In First Out):
 7. CAP Theorem = Trade-off consistency vs availability
    → Project này chọn AP (available, eventual consistency)
 
-8. Eviction Policies = Xóa data khi cache đầy
-   → LRU phổ biến nhất
+8. Eviction Policies = Xóa data khi cache đầy (enforced on set())
+   → LRU phổ biến nhất, sweep xoá expired entries định kỳ
 ```
 
 ---

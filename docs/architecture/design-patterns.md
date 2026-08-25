@@ -56,14 +56,20 @@ Strategy Pattern giải quyết:
 ### Trong project này
 
 ```
-CacheNode có thể dùng bất kỳ eviction strategy nào:
+CacheNode dùng eviction strategy được chọn qua config:
 
-CacheNode + LRUStrategy  → Cache xóa key ít dùng nhất
-CacheNode + LFUStrategy  → Cache xóa key ít frequent nhất
-CacheNode + FIFOStrategy → Cache xóa key cũ nhất
+new CacheNode('node-1', { evictionPolicy: 'lru' })  // mặc định
+new CacheNode('node-2', { evictionPolicy: 'lfu' })
+new CacheNode('node-3', { evictionPolicy: 'fifo' })
+
+Khi set() và store > maxSize:
+  → strategy.onEvict() trả về victim key
+  → CacheNode xóa victim khỏi store
+  → Lặp cho đến khi store.size <= maxSize
 
 Khi muốn thêm RandomStrategy:
 - Chỉ cần tạo class RandomStrategy implements EvictionStrategy
+- Thêm case trong createEvictionStrategy()
 - Không sửa CacheNode, không sửa LRUStrategy
 ```
 
@@ -165,16 +171,19 @@ Factory Pattern giải quyết:
 ### Trong project này
 
 ```
-CacheNodeFactory:
-- Nhận config từ client
-- Chọn strategy phù hợp (LRU, LFU, FIFO)
-- Tạo CacheNode với strategy đó
-- Trả về CacheNode ready to use
+createEvictionStrategy(policy) — Factory function trong strategies/index.ts:
+
+- Nhận policy name ('lru' | 'lfu' | 'fifo')
+- Tạo strategy instance tương ứng
+- Trả về EvictionStrategy interface
 
 Client không cần biết:
 - Có bao nhiêu loại strategy
-- Cách tạo từng loại strategy
-- Strategy nào phù hợp với config nào
+- Class name cụ thể của từng loại
+- Cách khởi tạo từng loại
+
+CacheNode dùng factory trong constructor:
+  this.eviction = createEvictionStrategy(config?.evictionPolicy ?? 'lru')
 ```
 
 ---
@@ -401,7 +410,7 @@ Khi có bug:
 |---|---|---|---|
 | **Strategy** | Chọn algorithm runtime | Nhiều cách làm 1 việc | Eviction policies (LRU, LFU) |
 | **Observer** | Thông báo state change | 1→N communication | Event-driven replication |
-| **Factory** | Ẩn logic tạo object | Nhiều loại object | Tạo CacheNode với config |
+| **Factory** | Ẩn logic tạo object | Nhiều loại object | `createEvictionStrategy(policy)` tạo LRU/LFU/FIFO |
 | **Singleton** | 1 instance duy nhất | Cần global state | ClusterManager |
 | **Adapter** | Chuyển đổi interface | 2 interface không tương thích | TCP protocol ↔ business objects |
 | **Proxy** | Kiểm soát truy cập | Thêm caching, logging | Cache layer trước database |
