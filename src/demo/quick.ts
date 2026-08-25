@@ -2,8 +2,8 @@
  * Quick Demo — Chạy thử without TCP server
  */
 
-import { CacheNode } from './core/node';
-import { ConsistentHash } from './core/consistent-hashing';
+import { CacheNode } from '../core/node';
+import { ConsistentHash } from '../core/consistent-hashing';
 
 console.log('🚀 Distributed Cache Demo\n');
 
@@ -52,7 +52,7 @@ console.log(`   Size: ${node.getSize()}/${node.getMaxSize()}`);
 
 // 4. Eviction
 console.log('\n4️⃣  Eviction (LRU):');
-const { LRUStrategy } = await import('./strategies/lru');
+const { LRUStrategy } = await import('../strategies/lru');
 const lru = new LRUStrategy();
 lru.onInsert('key-a');
 lru.onInsert('key-b');

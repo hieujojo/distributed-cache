@@ -4,10 +4,10 @@
  * Cách chạy: npx tsx src/demo/index.ts
  */
 
-import { CacheNode } from './core/node';
-import { ConsistentHash } from './core/consistent-hashing';
-import { CacheServer } from './server/cache-server';
-import { CacheClient } from './server/client';
+import { CacheNode } from '../core/node';
+import { ConsistentHash } from '../core/consistent-hashing';
+import { CacheServer } from '../server/cache-server';
+import { CacheClient } from '../server/client';
 
 async function main() {
   console.log('🚀 Distributed Cache Demo\n');

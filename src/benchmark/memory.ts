@@ -2,8 +2,8 @@
  * Đo RAM usage khi chạy cache system
  */
 
-import { CacheNode } from './core/node';
-import { ConsistentHash } from './core/consistent-hashing';
+import { CacheNode } from '../core/node';
+import { ConsistentHash } from '../core/consistent-hashing';
 
 function formatMB(bytes: number): string {
   return (bytes / 1024 / 1024).toFixed(2) + ' MB';
