@@ -165,6 +165,15 @@ export class ReplicationManager {
   }
 
   /**
+   * Bỏ theo dõi key đã bị eviction hoặc xóa khỏi cache.
+   * Gọi từ CacheNode.onEvicted callback để tránh
+   * replicatedKeys grow vô hạn.
+   */
+  untrackKey(key: string): void {
+    this.replicatedKeys.delete(key);
+  }
+
+  /**
    * Lấy config hiện tại
    */
   getConfig(): ReplicationConfig {

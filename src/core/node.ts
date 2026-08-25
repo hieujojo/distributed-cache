@@ -24,6 +24,7 @@ export class CacheNode {
   private store: Map<string, CacheEntry>;
   private eviction: EvictionStrategy;
   private sweepTimer: ReturnType<typeof setInterval> | null;
+  private onEvicted?: (key: string) => void;
 
   constructor(id: string, config?: Partial<NodeConfig>) {
     this.id = id;
@@ -38,6 +39,9 @@ export class CacheNode {
     // --- TTL sweep ---
     const sweepMs = config?.sweepIntervalMs ?? DEFAULT_SWEEP_MS;
     this.sweepTimer = sweepMs > 0 ? this.startSweep(sweepMs) : null;
+
+    // --- Eviction callback ---
+    this.onEvicted = config?.onEvicted;
   }
 
   // ─── Public API ────────────────────────────────────────────────
@@ -104,6 +108,7 @@ export class CacheNode {
     const existed = this.store.delete(key);
     if (existed) {
       this.eviction.onRemove(key);
+      this.onEvicted?.(key);
     }
     return existed;
   }
@@ -252,6 +257,7 @@ export class CacheNode {
       // kiểm tra trước khi delete khỏi store
       if (this.store.has(victim)) {
         this.store.delete(victim);
+        this.onEvicted?.(victim);
       }
     }
   }
@@ -267,6 +273,7 @@ export class CacheNode {
         if (entry.expiresAt !== null && now > entry.expiresAt) {
           this.store.delete(key);
           this.eviction.onRemove(key);
+          this.onEvicted?.(key);
         }
       }
     }, intervalMs);

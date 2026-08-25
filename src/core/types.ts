@@ -51,6 +51,11 @@ export interface NodeConfig {
    * Mặc định = 30000 (30 giây).
    */
   sweepIntervalMs?: number;
+  /**
+   * Callback được gọi khi key bị eviction hoặc xóa.
+   * Dùng để dọn dẹp external tracking (ví dụ: replicatedKeys).
+   */
+  onEvicted?: (key: string) => void;
 }
 
 /**
