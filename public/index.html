@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributed Cache — Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 20px 30px;
+      border-bottom: 2px solid #0f3460;
+    }
+    .header h1 {
+      font-size: 24px;
+      color: #00d4ff;
+      margin-bottom: 5px;
+    }
+    .header p { color: #888; font-size: 14px; }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #2a2a4a;
+    }
+    .card h2 {
+      font-size: 16px;
+      color: #00d4ff;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 .icon { font-size: 20px; }
+    .full-width { grid-column: 1 / -1; }
+    
+    /* Hash Ring Canvas */
+    #hashRing {
+      width: 100%;
+      height: 400px;
+      background: #0d0d1a;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    .stat-box {
+      background: #0d0d1a;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #2a2a4a;
+    }
+    .stat-box .value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00d4ff;
+    }
+    .stat-box .label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    /* Nodes Table */
+    .nodes-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .nodes-table th, .nodes-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #2a2a4a;
+    }
+    .nodes-table th {
+      color: #888;
+      font-weight: normal;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .nodes-table td { color: #e0e0e0; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status-online { background: #0a3d0a; color: #4ade80; }
+    .status-offline { background: #3d0a0a; color: #f87171; }
+    
+    /* Commands */
+    .command-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .command-item {
+      background: #0d0d1a;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+    }
+    .command-item .cmd { color: #00d4ff; }
+    .command-item .desc { color: #888; margin-left: 10px; }
+    
+    /* Activity Log */
+    .activity-log {
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      background: #0d0d1a;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .log-entry { 
+      padding: 5px 0;
+      border-bottom: 1px solid #1a1a2e;
+    }
+    .log-time { color: #666; }
+    .log-success { color: #4ade80; }
+    .log-error { color: #f87171; }
+    .log-info { color: #00d4ff; }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 12px;
+      border-top: 1px solid #2a2a4a;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔴 Distributed Cache Dashboard</h1>
+    <p>Real-time monitoring for cache cluster • Consistent Hashing • TCP Protocol</p>
+  </div>
+  
+  <div class="container">
+    <!-- Stats Overview -->
+    <div class="card full-width">
+      <h2><span class="icon">📊</span> Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="value" id="totalKeys">0</div>
+          <div class="label">Total Keys</div>
+        </div>
+        <div class="stat-box">
+          <div class="value" id="totalNodes">3</div>
+          <div class="label">Active Nodes</div>
+        </div>
+        <div class="stat-box">
+          <div class="value" id="opsPerSec">0</div>
+          <div class="label">Ops/sec</div>
+        </div>
+        <div class="stat-box">
+          <div class="value" id="uptime">0s</div>
+          <div class="label">Uptime</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Hash Ring -->
+    <div class="card">
+      <h2><span class="icon">🔵</span> Hash Ring</h2>
+      <canvas id="hashRing"></canvas>
+    </div>
+    
+    <!-- Nodes -->
+    <div class="card">
+      <h2><span class="icon">🖥️</span> Cache Nodes</h2>
+      <table class="nodes-table">
+        <thead>
+          <tr>
+            <th>Node ID</th>
+            <th>Keys</th>
+            <th>Memory</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="nodesTable">
+          <tr>
+            <td>node-1</td>
+            <td>0</td>
+            <td>0 MB</td>
+            <td><span class="status-badge status-online">Online</span></td>
+          </tr>
+          <tr>
+            <td>node-2</td>
+            <td>0</td>
+            <td>0 MB</td>
+            <td><span class="status-badge status-online">Online</span></td>
+          </tr>
+          <tr>
+            <td>node-3</td>
+            <td>0</td>
+            <td>0 MB</td>
+            <td><span class="status-badge status-online">Online</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Supported Commands -->
+    <div class="card">
+      <h2><span class="icon">⚡</span> Supported Commands</h2>
+      <div class="command-list">
+        <div class="command-item">
+          <span class="cmd">SET</span>
+          <span class="desc">key value [ttl]</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd">GET</span>
+          <span class="desc">key</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd">DEL</span>
+          <span class="desc">key</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd">PING</span>
+          <span class="desc">→ PONG</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd">REPLICATE</span>
+          <span class="desc">key value</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd">ELECT</span>
+          <span class="desc">nodeId</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Activity Log -->
+    <div class="card">
+      <h2><span class="icon">📝</span> Activity Log</h2>
+      <div class="activity-log" id="activityLog">
+        <div class="log-entry">
+          <span class="log-time">[--:--:--]</span>
+          <span class="log-info">Dashboard initialized</span>
+        </div>
+        <div class="log-entry">
+          <span class="log-time">[--:--:--]</span>
+          <span class="log-success">Waiting for cache server connection...</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Architecture Info -->
+    <div class="card full-width">
+      <h2><span class="icon">🏗️</span> Architecture</h2>
+      <div style="background: #0d0d1a; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 13px; line-height: 1.8;">
+        <pre style="color: #888;">
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                             │
+│   CacheClient ──TCP──▶ CacheServer ──▶ ConsistentHash           │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        STORAGE LAYER                            │
+│   ┌──────────┐    ┌──────────┐    ┌──────────┐                 │
+│   │  node-1  │    │  node-2  │    │  node-3  │                 │
+│   │  (Map)   │    │  (Map)   │    │  (Map)   │                 │
+│   └──────────┘    └──────────┘    └──────────┘                 │
+│        ▲               ▲               ▲                        │
+│        └───────────────┴───────────────┘                        │
+│                    Consistent Hashing                           │
+│                 (150 virtual nodes)                             │
+└─────────────────────────────────────────────────────────────────┘
+        </pre>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Distributed Cache System v0.1.0 • Built with TypeScript • 
+    <a href="https://github.com/hieujojo/distributed-cache" style="color: #00d4ff;">GitHub</a>
+  </div>
+
+  <script>
+    // Animate hash ring
+    const canvas = document.getElementById('hashRing');
+    const ctx = canvas.getContext('2d');
+    let rotation = 0;
+    
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    const nodes = [
+      { id: 'node-1', angle: 0, color: '#00d4ff' },
+      { id: 'node-2', angle: 120, color: '#ff6b6b' },
+      { id: 'node-3', angle: 240, color: '#4ade80' },
+    ];
+    
+    function drawHashRing() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 40;
+      
+      // Draw ring
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#2a2a4a';
+      ctx.lineWidth = 20;
+      ctx.stroke();
+      
+      // Draw virtual nodes (dots on ring)
+      for (let i = 0; i < 36; i++) {
+        const angle = (i * 10 + rotation) * Math.PI / 180;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#3a3a5a';
+        ctx.fill();
+      }
+      
+      // Draw physical nodes
+      nodes.forEach(node => {
+        const angle = (node.angle + rotation) * Math.PI / 180;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        
+        // Glow effect
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 25);
+        gradient.addColorStop(0, node.color + '80');
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x - 25, y - 25, 50, 50);
+        
+        // Node circle
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.fillStyle = node.color;
+        ctx.fill();
+        
+        // Node label
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.fillText(node.id, x, y + 25);
+      });
+      
+      // Center text
+      ctx.fillStyle = '#00d4ff';
+      ctx.font = 'bold 16px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.fillText('Hash Ring', centerX, centerY - 10);
+      ctx.fillStyle = '#888';
+      ctx.font = '12px Segoe UI';
+      ctx.fillText('150 virtual nodes', centerX, centerY + 10);
+      
+      rotation += 0.2;
+      requestAnimationFrame(drawHashRing);
+    }
+    
+    drawHashRing();
+    
+    // Update stats (simulated)
+    let ops = 0;
+    setInterval(() => {
+      ops = Math.floor(Math.random() * 500) + 1200;
+      document.getElementById('opsPerSec').textContent = ops.toLocaleString();
+    }, 2000);
+    
+    // Log simulated activity
+    const logEntries = [
+      { type: 'success', msg: 'SET user:1001 → node-1' },
+      { type: 'success', msg: 'GET user:1002 → node-2' },
+      { type: 'info', msg: 'PING → PONG (2ms)' },
+      { type: 'success', msg: 'SET order:5001 → node-3' },
+      { type: 'success', msg: 'DEL temp-key → OK' },
+    ];
+    
+    let logIndex = 0;
+    setInterval(() => {
+      const log = document.getElementById('activityLog');
+      const entry = logEntries[logIndex % logEntries.length];
+      const time = new Date().toLocaleTimeString();
+      log.innerHTML += `<div class="log-entry"><span class="log-time">[${time}]</span> <span class="log-${entry.type}">${entry.msg}</span></div>`;
+      log.scrollTop = log.scrollHeight;
+      logIndex++;
+    }, 3000);
+  </script>
+</body>
+</html>

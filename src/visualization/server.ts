@@ -43,7 +43,7 @@ export function startVizServer(config: VizServerConfig): http.Server {
   const {
     port,
     cachePort = 3000,
-    staticDir = path.join(process.cwd(), 'dist'),
+    staticDir = path.join(process.cwd(), 'public'),
   } = config;
 
   const server = http.createServer((req, res) => {
