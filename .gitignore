@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+test-report/
 .env
 .env.local
 .DS_Store

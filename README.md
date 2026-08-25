@@ -1,5 +1,7 @@
 # Distributed Cache System
 
+![Tests](https://github.com/hieujojo/distributed-cache/actions/workflows/test.yml/badge.svg)
+
 > Hệ thống cache phân tán xây dựng từ đầu bằng TypeScript — mô phỏng cách Redis hoạt động.
 
 ## Đọc docs theo thứ tự
@@ -84,7 +86,8 @@ distributed-cache/
 │   ├── core/                     # Core tests (✅ 93 tests)
 │   ├── strategies/               # Strategy tests (✅ 19 tests)
 │   ├── server/                   # Server tests (✅ 77 tests)
-│   └── benchmark/                # Benchmark tests (✅ 8 tests)
+│   ├── benchmark/                # Benchmark tests (✅ 8 tests)
+│   └── integration/              # Integration tests (✅ 14 tests)
 │
 ├── agent/
 │   └── HANDOVER.md               ← Context handoff giữa sessions
@@ -108,7 +111,8 @@ distributed-cache/
 | Hash | murmurhash | Performance, proven in Redis/Cassandra |
 | Network | TCP sockets | Low latency, Redis-compatible |
 | Frontend | React + Canvas | Popular, efficient rendering |
-| Testing | Jest | Standard for Node.js |
+| Testing | Jest (unit + integration) | Standard for Node.js |
+| CI/CD | GitHub Actions | Automated testing |
 | Build | tsup | Fast bundler |
 
 ---
@@ -124,6 +128,8 @@ distributed-cache/
 ✅ Module 6: Cache Invalidation
 ✅ Module 7: Benchmark
 ✅ Module 8: Visualization
+✅ Testing: 232 tests (218 unit + 14 integration)
+✅ CI/CD: GitHub Actions
 ```
 
 ---

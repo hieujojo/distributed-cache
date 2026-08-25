@@ -226,6 +226,58 @@
 
 ---
 
+## 2026-08-25 — Integration Tests + CI/CD + HTML Report
+
+> User: yêu cầu thêm integration test, CI/CD, HTML report.
+
+### Đã làm
+
+1. **Integration Tests (14 tests)**
+   - File: `tests/integration/client-server.test.ts`
+   - Test TCP server + client thật qua network
+   -涵盖: SET/GET/DEL, PING, TTL, multiple clients, large payload, stress test, server restart
+   - Kết quả: 14/14 pass
+
+2. **jest-html-reporter**
+   - Cài đặt: `npm install --save-dev jest-html-reporter`
+   - Config trong `jest.config.cjs`
+   - Output: `test-report/index.html`
+   - Không cần port, mở file là xem
+
+3. **CI/CD Pipeline**
+   - File: `.github/workflows/test.yml`
+   - Trigger: push/PR to main
+   - Steps: checkout → Node.js 20 → npm ci → typecheck → test → coverage → build
+   - Upload test-report artifact (7 ngày retention)
+
+4. **Badge trên README**
+   - `![Tests](https://github.com/.../actions/.../badge.svg)`
+
+5. **Coverage**
+   - Statements: 92.27%
+   - Branches: 81.05%
+   - Functions: 92.94%
+   - Lines: 93.28%
+
+### Kết quả cuối cùng
+
+```
+✅ Test Suites: 15 passed, 15 total
+✅ Tests:       232 passed, 232 total
+✅ Coverage:    92%+ (vượt yêu cầu 80%)
+✅ Build:       CJS + ESM + DTS
+✅ CI/CD:       GitHub Actions configured
+✅ HTML Report: test-report/index.html
+```
+
+### Bài học
+
+- **Protocol limitation:** SET command dùng space-separated format → value KHÔNG được chứa spaces. Nếu cần value có spaces → phải encode hoặc đổi delimiter.
+- **Server restart test:** CacheNode objects persist trong memory dù server stop/start. Để test "data mất" → phải tạo server + nodes MỚI hoàn toàn.
+- **jest-html-reporter:** File-based, không cần port, mở trực tiếp trong browser. Phù hợp hơn jest-dashboard cho project nhỏ.
+
+---
+
 ## Rules rút ra từ Changelog
 
 ### Nhóm C1: Setup & Config

@@ -288,6 +288,26 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 📝 Nếu bị kẹt → đóng terminal, mở lại
 ```
 
+### L8. TCP protocol value không chứa spaces
+
+```
+📅 2026-08-25
+🐛 SET user:1001 "hello world" → parser lỗi "TTL must be a number"
+✅ SET user:1001 hello-world  (thay space bằng dash)
+📝 Protocol dùng space-separated format, value chỉ 1 word
+📝 Muốn value có spaces → encode hoặc đổi delimiter
+```
+
+### L9. Server restart test phải dùng nodes mới
+
+```
+📅 2026-08-25
+🐛 Test expect data mất sau restart nhưng vẫn còn
+✅ Tạo CacheNode MỚI + CacheServer MỚI để test fresh state
+📝 CacheNode objects persist trong memory dù server stop/start
+📝 Muốn test "data mất" → phải tạo objects mới hoàn toàn
+```
+
 ---
 
 ## Rules từ Changelog (C-rules)

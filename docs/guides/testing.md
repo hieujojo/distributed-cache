@@ -95,8 +95,8 @@ npx jest --watch
 ### Kết quả mong đợi
 
 ```
-✅ Test Suites: 14 passed, 14 total
-✅ Tests:       218 passed, 218 total
+✅ Test Suites: 15 passed, 15 total
+✅ Tests:       232 passed, 232 total
 ✅ Coverage:    ≥ 80%
 ```
 
@@ -261,7 +261,7 @@ tests/
     └── client-server.test.ts       (~10 tests)
 ```
 
-**Total: ~228 tests, 15 test suites**
+**Total: 232 tests, 15 test suites**
 
 ---
 

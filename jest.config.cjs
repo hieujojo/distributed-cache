@@ -12,4 +12,17 @@ module.exports = {
       lines: 80,
     },
   },
+  reporters: [
+    'default',
+    [
+      'jest-html-reporter',
+      {
+        pageTitle: 'Distributed Cache — Test Report',
+        outputPath: 'test-report/index.html',
+        includeFailureMsg: true,
+        includeSuiteFailure: true,
+        sortBy: 'status',
+      },
+    ],
+  ],
 };
