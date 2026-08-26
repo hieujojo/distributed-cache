@@ -325,6 +325,41 @@
 
 ---
 
+## 2026-08-26 — Medusa Integration: ICacheService adapter + benchmark
+
+> User: yêu cầu tích hợp distributed cache vào Medusa.js e-commerce platform.
+
+### Đã làm
+
+1. **Medusa Module: `@medusajs/cache-distributed`**
+   - Location: `medusa/packages/modules/cache-distributed/`
+   - Implements `ICacheService` interface từ `@medusajs/framework/types`
+   - Uses `CacheNode` + `ConsistentHash` từ distributed-cache
+   - Supports: LRU/LFU/FIFO eviction, wildcard invalidation, replication
+
+2. **Standalone Adapter Test (14 tests)**
+   - File: `tests/medusa-adapter.test.ts`
+   - Test adapter logic independently (tránh yarn workspace conflicts)
+   - Covers: get/set, TTL, invalidate (wildcard), clear, distribution, replication
+   - Kết quả: 14/14 pass
+
+3. **Benchmark: InMemory vs Distributed (4 tests)**
+   - File: `tests/benchmark-medusa.test.ts`
+   - So sánh Medusa InMemoryCacheService vs DistributedCacheService
+   - Kết quả:
+     - GET: InMemory 297K vs Distributed 120K ops/sec (2.5x slower)
+     - SET: InMemory 200K vs Distributed 131K ops/sec (1.5x slower)
+     - MIXED: InMemory 333K vs Distributed 119K ops/sec
+     - Distribution: 36/35/29% across 3 nodes (even)
+
+### Bài học
+
+- **C11.1:** Yarn workspaces (Medusa dùng Yarn 3.2.1) block npm install trong sub-packages. Giải pháp: test adapter logic standalone trong distributed-cache project trước, sau đó copy vào Medusa.
+- **C11.2:** Distributed cache chậm hơn ~2-3x so với single-node in-memory do consistent hashing overhead. Trade-off: slower but gains scalability + fault tolerance.
+- **C11.3:** `file:` dependency trong Yarn workspaces cần `yarn install` lại để link. Nếu yarn install quá chậm → dùng junction/symlink thủ công.
+
+---
+
 ## Rules rút ra từ Changelog
 
 ### Nhóm C1: Setup & Config
@@ -398,6 +433,14 @@
 | **C10.1** | Strategy/interface đã viết chưa đủ — PHẢI wiring vào call-site |
 | **C10.2** | Background timers trong library code PHẢI `.unref()` |
 | **C10.3** | Set/Map track trạng thái PHẢI có cơ chế xóa — không chỉ add |
+
+### Nhóm C11: Monorepo & Integration
+
+| Rule | Mô tả |
+|------|-------|
+| **C11.1** | Yarn workspaces block npm install — test adapter standalone trước |
+| **C11.2** | Distributed cache slower ~2-3x — trade-off: scalability vs speed |
+| **C11.3** | `file:` dependency cần yarn install lại để link |
 
 ---
 

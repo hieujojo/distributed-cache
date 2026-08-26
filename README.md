@@ -128,7 +128,8 @@ distributed-cache/
 ✅ Module 6: Cache Invalidation
 ✅ Module 7: Benchmark
 ✅ Module 8: Visualization
-✅ Testing: 232 tests (218 unit + 14 integration)
+✅ Medusa Integration: ICacheService adapter + benchmark
+✅ Testing: 248 tests (232 + 14 adapter + 4 benchmark)
 ✅ CI/CD: GitHub Actions
 ```
 
@@ -142,6 +143,49 @@ cd distributed-cache
 npm install
 npm test
 ```
+
+---
+
+## Medusa Integration
+
+Distributed Cache tích hợp với [Medusa.js](https://github.com/medusajs/medusa) e-commerce platform.
+
+### Adapter: ICacheService
+
+```typescript
+import { DistributedCacheService } from "@medusajs/cache-distributed"
+
+// Medusa ICacheService interface
+const cache = new DistributedCacheService({}, {
+  nodeCount: 3,
+  maxSize: 10000,
+  ttl: 30,
+  evictionPolicy: "lru",
+  replication: true,
+})
+
+await cache.set("product:123", productData, 60)
+const data = await cache.get("product:123")
+await cache.invalidate("product:*") // wildcard support
+```
+
+### Benchmark Results
+
+```
+┌─────────────────┬──────────────┬──────────────┬──────────────┐
+│ Metric          │ InMemory     │ Distributed  │ Notes        │
+├─────────────────┼──────────────┼──────────────┼──────────────┤
+│ GET ops/sec     │ 297,352      │ 119,661      │ 2.5x slower  │
+│ SET ops/sec     │ 200,201      │ 131,293      │ 1.5x slower  │
+│ MIXED ops/sec   │ 332,940      │ 119,474      │ 80/20 r/w    │
+│ GET p99         │ 0.007ms      │ 0.025ms      │ +18μs        │
+│ Distribution    │ 1 node       │ 36/35/29%    │ Even ✅      │
+└─────────────────┴──────────────┴──────────────┴──────────────┘
+```
+
+Trade-off: slower than single-node in-memory, but gains **scalability + fault tolerance + consistent hashing**.
+
+See `tests/medusa-adapter.test.ts` and `tests/benchmark-medusa.test.ts`.
 
 ---
 
