@@ -175,7 +175,7 @@ Kết quả: Chỉ có 1 leader tại bất kỳ thời điểm nào
 
 ## Tracking Replicated Keys
 
-ReplicationManager dùng `Set<string>` để track哪些 key đã replicate. Để tránh Set grow vô hạn:
+ReplicationManager dùng `Set<string>` để track những key đã replicate. Để tránh Set grow vô hạn:
 
 ```
 CacheNode.onEvicted(key)  →  ReplicationManager.untrackKey(key)
