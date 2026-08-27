@@ -262,4 +262,32 @@ describe('ClusterManager', () => {
       expect(cluster.isEmpty()).toBe(false);
     });
   });
+
+  describe('flushAll', () => {
+    it('should clear all nodes in cluster', () => {
+      const cluster = ClusterManager.getInstance();
+      const n1 = new CacheNode('node-1', { maxSize: 100 });
+      const n2 = new CacheNode('node-2', { maxSize: 100 });
+      const n3 = new CacheNode('node-3', { maxSize: 100 });
+      cluster.addNode(n1);
+      cluster.addNode(n2);
+      cluster.addNode(n3);
+
+      n1.set('a', 1);
+      n2.set('b', 2);
+      n3.set('c', 3);
+
+      const freed = cluster.flushAll();
+      expect(typeof freed).toBe('number');
+      expect(freed).toBeGreaterThanOrEqual(0);
+      expect(n1.getSize()).toBe(0);
+      expect(n2.getSize()).toBe(0);
+      expect(n3.getSize()).toBe(0);
+    });
+
+    it('should return 0 when cluster is empty', () => {
+      const cluster = ClusterManager.getInstance();
+      expect(cluster.flushAll()).toBe(0);
+    });
+  });
 });

@@ -247,7 +247,23 @@ export class ClusterManager {
   }
 
   /**
-   * Kiểm tra heartbeat — nếu node miss quá nhiều → đánh dấu unhealthy
+   * Flush tat ca nodes — xoa toan bo cache + GC hint.
+   * @returns So bytes RAM duoc giai phong
+   */
+  flushAll(): number {
+    let totalFreed = 0;
+    for (const node of this.nodes.values()) {
+      totalFreed += node.clear();
+    }
+    // GC hint cho toan bo process
+    if (typeof globalThis.gc === 'function') {
+      globalThis.gc();
+    }
+    return totalFreed;
+  }
+
+  /**
+   * Kiem tra heartbeat — nếu node miss quá nhiều → đánh dấu unhealthy
    */
   private checkHeartbeats(): void {
     const maxMissed = Math.ceil(this.heartbeatTimeout / this.heartbeatInterval);
