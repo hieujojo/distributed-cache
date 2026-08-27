@@ -1,6 +1,6 @@
 {
   "name": "@hieujojo/distributed-cache",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Lightweight distributed cache built from scratch in TypeScript — consistent hashing, replication, eviction strategies (LRU/LFU/FIFO), TTL, cluster management, and TCP protocol",
   "main": "dist/index.js",
   "module": "dist/index.js",
