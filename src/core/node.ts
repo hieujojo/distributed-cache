@@ -145,13 +145,19 @@ export class CacheNode {
   }
 
   /**
-   * Xóa tất cả entries + reset strategy
+   * Xoa tat ca entries + reset strategy + GC hint.
+   * @returns So bytes RAM duoc giai phong (truoc/sau)
    */
-  clear(): void {
+  clear(): number {
+    const before = process.memoryUsage().heapUsed;
     this.store.clear();
-    this.eviction = createEvictionStrategy(
-      this.eviction instanceof Object ? 'lru' : 'lru',
-    );
+    this.eviction = createEvictionStrategy('lru');
+    // GC hint: yeu cau Node.js thu hoi memory ngay lap tuc
+    if (typeof globalThis.gc === 'function') {
+      globalThis.gc();
+    }
+    const after = process.memoryUsage().heapUsed;
+    return Math.max(0, before - after);
   }
 
   /**

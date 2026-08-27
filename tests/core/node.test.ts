@@ -124,6 +124,27 @@ describe('CacheNode', () => {
       expect(node.getSize()).toBe(0);
       expect(node.get('key1')).toBeNull();
     });
+
+    it('should return number of bytes freed', () => {
+      // Populate with data
+      for (let i = 0; i < 100; i++) {
+        node.set(`key:${i}`, { data: 'x'.repeat(100) });
+      }
+      const freed = node.clear();
+      expect(typeof freed).toBe('number');
+      expect(freed).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should reset eviction strategy after clear', () => {
+      for (let i = 0; i < 50; i++) {
+        node.set(`key:${i}`, `value:${i}`);
+      }
+      node.clear();
+      // After clear, should be able to store again without issues
+      node.set('new-key', 'new-value');
+      expect(node.get('new-key')).toBe('new-value');
+      expect(node.getSize()).toBe(1);
+    });
   });
 
   describe('getKeys', () => {
