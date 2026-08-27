@@ -1,6 +1,6 @@
 {
   "name": "distributed-cache",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A lightweight distributed cache system implementing consistent hashing, data replication, and cache invalidation strategies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
