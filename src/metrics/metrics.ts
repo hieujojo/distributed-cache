@@ -1,12 +1,29 @@
 /**
- * Metrics - Thu thập metrics cho cache system
+ * Metrics - Thu thap metrics cho cache system
  *
  * Track:
  * - Hit/miss ratio
  * - Operations per second
  * - Latency (avg, P99)
- * - Memory usage
+ * - Memory usage + threshold warning
  */
+
+
+/** Bao cao memory chi tiet */
+export interface MemoryUsageReport {
+  heapUsed: number;
+  heapTotal: number;
+  rss: number;
+  external: number;
+  totalSystemRAM: number;
+  freeSystemRAM: number;
+  /** Ti le RSS / tong RAM he thong (0-1) */
+  usagePercent: number;
+  /** Nguong canh bao (0-1) */
+  thresholdPercent: number;
+  /** true neu vuot nguong */
+  exceeded: boolean;
+}
 
 /** Snapshot of metrics at a point in time */
 export interface MetricsSnapshot {
@@ -45,8 +62,11 @@ export class Metrics {
   private lastOpsCount: number;
   private lastOpsTime: number;
   private currentOpsPerSecond: number;
+  private memoryThreshold: number;
+  private onMemoryWarning: ((usage: MemoryUsageReport) => void) | null;
+  private memoryCheckTimer: ReturnType<typeof setInterval> | null;
 
-  constructor() {
+  constructor(config?: { memoryThresholdPercent?: number; onMemoryWarning?: (usage: MemoryUsageReport) => void; memoryCheckIntervalMs?: number }) {
     this.hits = 0;
     this.misses = 0;
     this.totalLatency = 0;
@@ -54,6 +74,18 @@ export class Metrics {
     this.lastOpsCount = 0;
     this.lastOpsTime = Date.now();
     this.currentOpsPerSecond = 0;
+    this.memoryThreshold = config?.memoryThresholdPercent ?? 0.8;
+    this.onMemoryWarning = config?.onMemoryWarning ?? null;
+    this.memoryCheckTimer = null;
+
+    // Start periodic memory check if callback provided
+    if (this.onMemoryWarning) {
+      const interval = config?.memoryCheckIntervalMs ?? 10_000;
+      this.memoryCheckTimer = setInterval(() => this.checkMemory(), interval);
+      if (typeof this.memoryCheckTimer === 'object' && 'unref' in this.memoryCheckTimer) {
+        this.memoryCheckTimer.unref();
+      }
+    }
   }
 
   /**
@@ -179,7 +211,60 @@ export class Metrics {
   }
 
   /**
-   * Format snapshot thành string dễ đọc
+   * Dispose — stop all timers
+   */
+  dispose(): void {
+    this.stopMemoryCheck();
+  }
+
+  /**
+   * Kiem tra memory usage va trigger warning neu vuot nguong.
+   * @returns true neu vuot nguong
+   */
+  checkMemory(): boolean {
+    const report = this.getMemoryUsageReport();
+    const exceeded = report.usagePercent > this.memoryThreshold;
+    if (exceeded && this.onMemoryWarning) {
+      this.onMemoryWarning(report);
+    }
+    return exceeded;
+  }
+
+  /**
+   * Lay bao cao memory chi tiet
+   */
+  getMemoryUsageReport(): MemoryUsageReport {
+    const os = require('os');
+    const mem = process.memoryUsage();
+    const totalSystemRAM = os.totalmem();
+    const freeSystemRAM = os.freemem();
+    const usagePercent = mem.rss / totalSystemRAM;
+
+    return {
+      heapUsed: mem.heapUsed,
+      heapTotal: mem.heapTotal,
+      rss: mem.rss,
+      external: mem.external,
+      totalSystemRAM,
+      freeSystemRAM,
+      usagePercent,
+      thresholdPercent: this.memoryThreshold,
+      exceeded: usagePercent > this.memoryThreshold,
+    };
+  }
+
+  /**
+   * Stop memory check timer
+   */
+  stopMemoryCheck(): void {
+    if (this.memoryCheckTimer) {
+      clearInterval(this.memoryCheckTimer);
+      this.memoryCheckTimer = null;
+    }
+  }
+
+  /**
+   * Format snapshot thanh string de doc
    */
   formatSnapshot(snapshot?: MetricsSnapshot): string {
     const s = snapshot ?? this.getSnapshot();

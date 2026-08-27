@@ -158,4 +158,71 @@ describe('Metrics', () => {
       expect(memory.heapTotal).toBeGreaterThan(0);
     });
   });
+
+  describe('Memory threshold', () => {
+    it('should check memory and return false when below threshold', () => {
+      const m = new Metrics({ memoryThresholdPercent: 0.95 });
+      const exceeded = m.checkMemory();
+      expect(exceeded).toBe(false);
+      m.dispose();
+    });
+
+    it('should check memory and return true when above threshold', () => {
+      // Set threshold very low so it always exceeds
+      const m = new Metrics({ memoryThresholdPercent: 0.001 });
+      const exceeded = m.checkMemory();
+      expect(exceeded).toBe(true);
+      m.dispose();
+    });
+
+    it('should trigger warning callback when exceeded', () => {
+      const warnings: any[] = [];
+      const m = new Metrics({
+        memoryThresholdPercent: 0.001,
+        onMemoryWarning: (report) => warnings.push(report),
+        memoryCheckIntervalMs: 50,
+      });
+
+      // Trigger check manually
+      m.checkMemory();
+      expect(warnings.length).toBe(1);
+      expect(warnings[0].exceeded).toBe(true);
+      expect(warnings[0].totalSystemRAM).toBeGreaterThan(0);
+      expect(warnings[0].freeSystemRAM).toBeGreaterThan(0);
+      m.dispose();
+    });
+
+    it('should return detailed memory usage report', () => {
+      const m = new Metrics();
+      const report = m.getMemoryUsageReport();
+
+      expect(report.heapUsed).toBeGreaterThan(0);
+      expect(report.rss).toBeGreaterThan(0);
+      expect(report.totalSystemRAM).toBeGreaterThan(0);
+      expect(report.freeSystemRAM).toBeGreaterThan(0);
+      expect(report.usagePercent).toBeGreaterThan(0);
+      expect(report.usagePercent).toBeLessThanOrEqual(1);
+      expect(report.thresholdPercent).toBe(0.8);
+      expect(typeof report.exceeded).toBe('boolean');
+      m.dispose();
+    });
+
+    it('should stop memory check on dispose', () => {
+      let callCount = 0;
+      const m = new Metrics({
+        memoryThresholdPercent: 0.001,
+        onMemoryWarning: () => { callCount++; },
+        memoryCheckIntervalMs: 50,
+      });
+
+      m.dispose();
+      const countAfterDispose = callCount;
+
+      // Wait and verify no more calls
+      return new Promise((resolve) => setTimeout(() => {
+        expect(callCount).toBe(countAfterDispose);
+        resolve(undefined);
+      }, 150));
+    });
+  });
 });
