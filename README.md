@@ -2,160 +2,113 @@
 
 ![Tests](https://github.com/hieujojo/distributed-cache/actions/workflows/test.yml/badge.svg)
 
-> Hệ thống cache phân tán xây dựng từ đầu bằng TypeScript — mô phỏng cách Redis hoạt động.
+> Lightweight distributed cache built from scratch in TypeScript — demonstrating consistent hashing, replication, and eviction strategies used in Redis, DynamoDB, and Cassandra.
 
-## Đọc docs theo thứ tự
+## Documentation
 
-```
-BƯỚC 1 — Hiểu big picture:
-  1. README.md (bạn đang đọc)
-  2. docs/core/knowledge-base.md         ← Đọc TRƯỚC TIÊN
+📖 **[Docs (EN)](https://distributed-cache-docs.vercel.app/)** | **[Tài liệu (VI)](https://distributed-cache-docs.vercel.app/vi/)**
 
-BƯỚC 2 — Hiểu kiến trúc:
-  3. docs/architecture/architecture.md
-  4. docs/architecture/tech-stack.md
+## Features
 
-BƯỚC 3 — Hiểu core algorithms:
-  5. docs/core/consistent-hashing.md
-  6. docs/core/replication.md
-  7. docs/core/cache-invalidation.md
+| Feature | Description |
+|---|---|
+| Consistent Hashing | Hash ring with virtual nodes for even data distribution |
+| Eviction (LRU/LFU/FIFO) | Automatically remove old entries when cache is full |
+| TTL (Time To Live) | Auto-expire entries after a set time |
+| Replication | Copy data to backup nodes for fault tolerance |
+| Cache Invalidation | Wildcard-based cleanup when source data changes |
+| Cluster Management | Leader election + automatic failover |
+| TCP Protocol | Low-latency network communication |
+| Persistence | Optional file-based storage |
 
-BƯỚC 4 — Biết quy tắc code:
-  8. docs/guides/rules.md                ← Rules + lessons learned
-  9. docs/guides/decisions.md            ← Design decisions
-  10. docs/guides/testing.md             ← Testing guide
-  11. docs/architecture/design-system.md
-  12. docs/architecture/design-patterns.md
-
-BƯỚC 5 — Biết cách contribute:
-  13. CONTRIBUTING.md
-  14. docs/guides/setup.md
-
-BƯỚC 6 — Reference khi cần:
-  15. docs/reference/diagrams.md
-  16. docs/reference/edge-cases.md
-  17. docs/reference/changelog.md        ← Bug tracking
-```
-
----
-
-## Khi bắt đầu code
+## Performance
 
 ```
-1. Đọc agent/HANDOVER.md    ← Context từ session trước
-2. Đọc agent/WORKFLOW.md     ← Quy trình
-3. Đọc agent/PROGRESS.md     ← Xem progress
-4. Đọc tasks/<module>.md     ← Chi tiết task
-5. Code theo tasks file
+Throughput:  120,000+ ops/sec (in-memory)
+Latency:     <0.01ms avg, <0.03ms p99
+Distribution: 36/35/29% across 3 nodes (even)
 ```
-
----
-
-## Cấu trúc thư mục
-
-```
-distributed-cache/
-├── src/                          # SOURCE CODE
-│   ├── core/                     # Core logic (✅ Module 1, 4)
-│   ├── strategies/               # Cache strategies (✅ Module 2)
-│   ├── server/                   # Network layer (✅ Module 3)
-│   ├── visualization/            # Frontend (✅ Module 8)
-│   ├── benchmark/                # Performance testing (✅ Module 7)
-│   └── demo/                     # Demo scripts
-│
-├── docs/                         # DOCUMENTATION
-│   ├── core/                     # Kiến thức cốt lõi (4 files)
-│   ├── architecture/             # Kiến trúc & design (4 files)
-│   ├── guides/                   # Hướng dẫn & quy tắc (4 files)
-│   └── reference/                # Reference khi cần (3 files)
-│
-├── agent/                        # AI WORKFLOW (7 files)
-│   ├── WORKFLOW.md               ← Quy trình tổng hợp
-│   ├── PROGRESS.md               ← Track progress + milestones
-│   ├── MODULES.md                ← Tổng quan modules
-│   ├── COMMIT_CONVENTION.md      ← Quy tắc commit
-│   ├── GIT_WORKFLOW.md           ← Git workflow
-│   ├── CODE_STYLE.md             ← Code style
-│   └── PR_TEMPLATE.md            ← Template PR
-│
-├── tasks/                        # TASK TRACKING (9 files)
-│   ├── 00-overview.md            ← Dependencies chung
-│   └── 01-08 modules             ← Chi tiết từng module
-│
-├── tests/                        # TESTS
-│   ├── core/                     # Core tests (✅ 93 tests)
-│   ├── strategies/               # Strategy tests (✅ 19 tests)
-│   ├── server/                   # Server tests (✅ 77 tests)
-│   ├── benchmark/                # Benchmark tests (✅ 8 tests)
-│   └── integration/              # Integration tests (✅ 14 tests)
-│
-├── agent/
-│   └── HANDOVER.md               ← Context handoff giữa sessions
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-├── LICENSE
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
----
-
-## Tech Stack
-
-| Layer | Công nghệ | Lý do |
-|---|---|---|
-| Language | TypeScript | Type safety, IDE support |
-| Runtime | Node.js | Ecosystem, compatibility |
-| Hash | murmurhash | Performance, proven in Redis/Cassandra |
-| Network | TCP sockets | Low latency, Redis-compatible |
-| Frontend | React + Canvas | Popular, efficient rendering |
-| Testing | Jest (unit + integration) | Standard for Node.js |
-| CI/CD | GitHub Actions | Automated testing |
-| Build | tsup | Fast bundler |
-
----
-
-## Trạng thái
-
-```
-✅ Module 1: Core Foundation (consistent hashing, cache node)
-✅ Module 2: Eviction Strategies (LRU, LFU, FIFO)
-✅ Module 3: Network Layer (TCP server, client, protocol)
-✅ Module 4: Cluster Management (cluster, election, failover)
-✅ Module 5: Replication
-✅ Module 6: Cache Invalidation
-✅ Module 7: Benchmark
-✅ Module 8: Visualization
-✅ Medusa Integration: ICacheService adapter + benchmark
-✅ Testing: 248 tests (232 + 14 adapter + 4 benchmark)
-✅ CI/CD: GitHub Actions
-```
-
----
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/hieujojo/distributed-cache.git
-cd distributed-cache
-npm install
-npm test
+npm install distributed-cache
 ```
 
----
+```typescript
+import { CacheNode, ConsistentHash } from "distributed-cache";
+
+// Create nodes
+const node1 = new CacheNode("node-1", { maxSize: 10000 });
+const node2 = new CacheNode("node-2", { maxSize: 10000 });
+const node3 = new CacheNode("node-3", { maxSize: 10000 });
+
+// Setup consistent hashing
+const hash = new ConsistentHash();
+hash.addNode({ id: "node-1" });
+hash.addNode({ id: "node-2" });
+hash.addNode({ id: "node-3" });
+
+// Store data
+const key = "user:123";
+const node = hash.getNode(key);
+node?.set(key, { name: "John", email: "john@example.com" });
+
+// Retrieve data
+const value = node?.get(key);
+console.log(value); // { name: "John", email: "john@example.com" }
+```
+
+## With TCP Server
+
+```typescript
+import { CacheServer, CacheClient, CacheNode } from "distributed-cache";
+
+// Start server
+const server = new CacheServer({ host: "127.0.0.1", port: 3000 });
+server.addNode(new CacheNode("node-1", { maxSize: 10000 }));
+await server.start();
+
+// Connect client
+const client = new CacheClient({ host: "127.0.0.1", port: 3000 });
+await client.connect();
+
+// Use cache
+await client.set("product:456", { name: "iPhone", price: 999 });
+const product = await client.get("product:456");
+console.log(product); // { name: "iPhone", price: 999 }
+
+await client.disconnect();
+await server.stop();
+```
+
+## Eviction Strategies
+
+```typescript
+const lru = new CacheNode("lru", { maxSize: 3, evictionPolicy: "lru" });  // default
+const lfu = new CacheNode("lfu", { maxSize: 3, evictionPolicy: "lfu" });
+const fifo = new CacheNode("fifo", { maxSize: 3, evictionPolicy: "fifo" });
+```
+
+## Benchmark
+
+```
+╔══════════════════════════════════════════════════════╗
+║  Cache Operations (5000 ops, 1000 keys)            ║
+╠══════════════════════════════════════════════════════╣
+║  GET:   120,000+ ops/sec   avg: 0.008ms            ║
+║  SET:   131,000+ ops/sec   avg: 0.008ms            ║
+║  MIXED: 119,000+ ops/sec   (80% read, 20% write)   ║
+╚══════════════════════════════════════════════════════╝
+```
+
+Real-world benchmark: [Medusa.js integration](https://distributed-cache-docs.vercel.app/guide/benchmark)
 
 ## Medusa Integration
-
-Distributed Cache tích hợp với [Medusa.js](https://github.com/medusajs/medusa) e-commerce platform.
-
-### Adapter: ICacheService
 
 ```typescript
 import { DistributedCacheService } from "@medusajs/cache-distributed"
 
-// Medusa ICacheService interface
 const cache = new DistributedCacheService({}, {
   nodeCount: 3,
   maxSize: 10000,
@@ -166,40 +119,50 @@ const cache = new DistributedCacheService({}, {
 
 await cache.set("product:123", productData, 60)
 const data = await cache.get("product:123")
-await cache.invalidate("product:*") // wildcard support
 ```
 
-### Benchmark Results
+## Tech Stack
+
+| Layer | Technology | Why |
+|---|---|---|
+| Language | TypeScript | Type safety, IDE support |
+| Runtime | Node.js | Ecosystem, compatibility |
+| Hash | murmurhash | Fast, good distribution |
+| Network | TCP sockets | Low latency, Redis-compatible |
+| Testing | Jest | Industry standard |
+| CI/CD | GitHub Actions | Automated testing |
+| Build | tsup | Fast bundler |
+
+## Tests
 
 ```
-┌─────────────────┬──────────────┬──────────────┬──────────────┐
-│ Metric          │ InMemory     │ Distributed  │ Notes        │
-├─────────────────┼──────────────┼──────────────┼──────────────┤
-│ GET ops/sec     │ 297,352      │ 119,661      │ 2.5x slower  │
-│ SET ops/sec     │ 200,201      │ 131,293      │ 1.5x slower  │
-│ MIXED ops/sec   │ 332,940      │ 119,474      │ 80/20 r/w    │
-│ GET p99         │ 0.007ms      │ 0.025ms      │ +18μs        │
-│ Distribution    │ 1 node       │ 36/35/29%    │ Even ✅      │
-└─────────────────┴──────────────┴──────────────┴──────────────┘
+✅ 317 tests — all pass
+✅ Coverage: 91.8% statements, 81.8% branches
+✅ CI/CD: GitHub Actions (auto test on push/PR)
 ```
 
-Trade-off: slower than single-node in-memory, but gains **scalability + fault tolerance + consistent hashing**.
+## Project Structure
 
-See `tests/medusa-adapter.test.ts` and `tests/benchmark-medusa.test.ts`.
-
----
+```
+distributed-cache/
+├── src/
+│   ├── core/          # Consistent hashing, CacheNode, Cluster
+│   ├── strategies/    # LRU, LFU, FIFO
+│   ├── server/        # TCP server, client, protocol
+│   ├── metrics/       # Memory monitoring, auto-flush
+│   └── demo/          # Demo scripts
+├── tests/
+│   ├── core/          # Core tests
+│   ├── strategies/    # Strategy tests
+│   ├── server/        # Server tests
+│   └── integration/   # Integration tests
+├── docs/              # Internal documentation
+└── .github/workflows/ # CI/CD
+```
 
 ## Security
 
-Xem SECURITY.md để biết các security considerations.
-
----
-
-## Design Decisions
-
-Xem docs/guides/decisions.md để hiểu tại sao chọn tech stack và patterns hiện tại.
-
----
+See [SECURITY.md](SECURITY.md) for security considerations.
 
 ## License
 
