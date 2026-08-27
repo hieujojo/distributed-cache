@@ -3,7 +3,7 @@
 ## Yêu cầu hệ thống
 
 ```
-Node.js:  >= 20.0.0
+Node.js:  >= 22.0.0
 npm:      >= 10.0.0
 Git:      >= 2.0.0
 OS:       macOS, Linux, Windows

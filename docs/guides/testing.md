@@ -175,7 +175,7 @@ npm run build
 
 ---
 
-## 3. Benchmark
+## 4. Benchmark
 
 ```bash
 npm run benchmark
@@ -267,7 +267,12 @@ tests/
 
 ## 8. CI/CD Pipeline (GitHub Actions)
 
-### File: `.github/workflows/test.yml`
+### Files
+
+- `.github/workflows/test.yml` — Auto test on push/PR to main
+- `.github/workflows/publish.yml` — Auto publish to npm on tag push
+
+### test.yml
 
 ```yaml
 name: Test
@@ -282,15 +287,67 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'npm'
       - run: npm ci
       - run: npx tsc --noEmit        # Typecheck
       - run: npm test                 # Unit + Integration tests
+      - run: npm run test:coverage    # Coverage
       - run: npm run build            # Build
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-report
+          path: test-report/
+          retention-days: 7
 ```
+
+### publish.yml
+
+```yaml
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+### Publish workflow
+
+```bash
+# Bump version + create tag → tự publish
+npm version patch    # 0.1.x → 0.1.x+1
+npm version minor    # 0.x.x → 0.x+1.0
+npm version major    # x.x.x → x+1.0.0
+git push --tags      # GitHub Actions tự publish
+```
+
+### Prerequisites
+
+- npm account: https://www.npmjs.com
+- npm token: Classic Token → Automation (bypass 2FA)
+- GitHub Secret: `NPM_TOKEN`
 
 ### Badge trên README
 

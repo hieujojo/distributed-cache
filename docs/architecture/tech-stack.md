@@ -5,7 +5,7 @@
 | Layer | Công nghệ | Phiên bản | Lý do chọn |
 |---|---|---|---|
 | Language | TypeScript | 5.x | Type safety, IDE support |
-| Runtime | Node.js | 20.x LTS | Non-blocking I/O, event-driven |
+| Runtime | Node.js | 22.x LTS | Non-blocking I/O, event-driven |
 | Network | TCP sockets | built-in | Giao tiếp node-to-node |
 | Frontend | React | 18.x | Component-based, ecosystem |
 | Visualization | Canvas API | built-in | Render hash ring |
@@ -230,7 +230,7 @@ Webpack:
 ```json
 {
   "typescript": "^5.4.0",
-  "node": ">=20.0.0",
+  "node": ">=22.0.0",
   "react": "^18.3.0",
   "jest": "^29.7.0",
   "tsup": "^8.0.0"

@@ -308,6 +308,34 @@ Mọi module giao tiếp qua interfaces trong src/core/types.ts
 📝 Muốn test "data mất" → phải tạo objects mới hoàn toàn
 ```
 
+### L9. CI/CD: Actions v7 + Node.js 22
+
+```
+📅 2026-08-27
+❌ actions/checkout@v4 + setup-node@v4 → Node.js 20 deprecated
+✅ actions/checkout@v7 + setup-node@v7 + upload-artifact@v7
+✅ node-version: '22'
+📝 GitHub Actions v4 dùng Node.js 20internally → deprecated, phải upgrade v7
+```
+
+### L10. npm publish cần Classic Token bypass 2FA
+
+```
+📅 2026-08-27
+❌ Granular Access Token → 403 Forbidden (thiếu bypass 2FA)
+✅ Classic Token → Automation (tự bypass 2FA)
+📝 npm yêu cầu token có quyền bypass 2FA để publish từ CI/CD
+```
+
+### L11. Scoped package name khi trùng tên
+
+```
+📅 2026-08-27
+❌ npm install distributed-cache (đã có người khác dùng)
+✅ npm install @hieujojo/distributed-cache (scoped)
+📝 Kiểm tra tên package trên npm TRƯỚC khi publish
+```
+
 ---
 
 ## Rules từ Changelog (C-rules)

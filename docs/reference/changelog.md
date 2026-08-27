@@ -6,6 +6,46 @@
 
 ---
 
+## 2026-08-27 — CI/CD: Actions v4 deprecated → upgrade v7
+
+> GitHub Actions chạy workflow fail với warning Node.js 20 deprecated.
+
+- **Triệu chứng:** Workflow `test.yml` và `publish.yml` fail. Annotations: "Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4".
+- **Root cause:** `actions/checkout@v4` và `actions/setup-node@v4` dùng Node.js 20internally. GitHub đang deprecate Node.js 20 → forced upgrade to Node.js 24 → compatibility issues.
+- **Fix:** Upgrade tất cả actions lên `@v7` (latest stable):
+  - `actions/checkout@v4` → `@v7`
+  - `actions/setup-node@v4` → `@v7`
+  - `actions/upload-artifact@v4` → `@v7`
+  - `node-version: '20'` → `'22'`
+- **Bài học (L9):** GitHub Actions internally dùng Node.js version → khi GitHub deprecate Node.js version, tất cả actions phải upgrade. Kiểm tra `actions/checkout` releases trên GitHub thường xuyên.
+
+---
+
+## 2026-08-27 — npm publish 403: Granular token thiếu bypass 2FA
+
+> Publish to npm fail với 403 Forbidden.
+
+- **Triệu chứng:** `npm publish --access public` fail: "403 Forbidden - Two-factor authentication or granular access token with bypass 2fa enabled is required to publish packages."
+- **Root cause:** npm token được tạo là Granular Access Token — không có quyền bypass 2FA. npm yêu cầu Classic Token loại Automation (hoặc Granular token với bypass 2FA enabled) để publish từ CI/CD.
+- **Fix:** Tạo lại token trên npm website:
+  1. https://www.npmjs.com/settings/tokens → Generate New Token
+  2. Chọn **Classic Token** → **Automation** (tự bypass 2FA)
+  3. Update GitHub Secret `NPM_TOKEN` với token mới
+- **Bài học (L10):** npm publish từ CI/CD BẮT BUỘC dùng Classic Automation token hoặc Granular token có checkbox "Bypass two-factor authentication (2FA)" enabled.
+
+---
+
+## 2026-08-27 — Package name trùng trên npm
+
+> `npm view distributed-cache` thấy package đã tồn tại (tác giả khác).
+
+- **Triệu chứng:** `distributed-cache` trên npm đã có version 0.0.5 (tác giả lkzwieder, từ 2017). Publish sẽ bị reject do trùng tên.
+- **Root cause:** Không check tên package trên npm trước khi publish.
+- **Fix:** Đổi sang scoped package name: `@hieujojo/distributed-cache`. Update trong package.json, README.md, setup.md.
+- **Bài học (L11):** Luôn check `npm view <package-name>` TRƯỚC khi publish. Nếu trùng → dùng scoped name `@<scope>/<package>`.
+
+---
+
 ## 2026-08-22 — Jest config lỗi "Cannot use import statement"
 
 > User: setup project, chạy `npm test` bị lỗi.
