@@ -148,7 +148,7 @@ export class InvalidationManager {
   }
 
   /**
-   * Dispose toàn bộ resources — gọi khi不再 cần InvalidationManager.
+   * Dispose toan bo resources — goi khi khong con can InvalidationManager.
    * Dọn interval timer + tất cả event listeners để tránh memory leak.
    */
   dispose(): void {
