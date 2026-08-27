@@ -10,6 +10,7 @@
 import { CacheEntry, Value, NodeConfig, EvictionPolicy } from './types';
 import { EvictionStrategy, createEvictionStrategy } from '../strategies/index';
 import { FileStorage, FileStorageConfig } from '../persistence/file-storage';
+import { totalmem } from 'os';
 
 /** Default sweep interval — 30 s */
 const DEFAULT_SWEEP_MS = 30_000;
@@ -25,6 +26,9 @@ export class CacheNode {
   private eviction: EvictionStrategy;
   private sweepTimer: ReturnType<typeof setInterval> | null;
   private onEvicted?: (key: string) => void;
+  private autoFlushPercent: number;
+  private autoFlushTimer: ReturnType<typeof setInterval> | null;
+  private onAutoFlush?: (freed: number) => void;
 
   constructor(id: string, config?: Partial<NodeConfig>) {
     this.id = id;
@@ -42,6 +46,13 @@ export class CacheNode {
 
     // --- Eviction callback ---
     this.onEvicted = config?.onEvicted;
+
+    // --- Auto-flush on memory pressure ---
+    this.autoFlushPercent = config?.autoFlushPercent ?? 0;
+    this.autoFlushTimer = null;
+    if (this.autoFlushPercent > 0) {
+      this.autoFlushTimer = this.startAutoFlush(10_000);
+    }
   }
 
   // ─── Public API ────────────────────────────────────────────────
@@ -188,13 +199,65 @@ export class CacheNode {
   }
 
   /**
-   * Dừng sweep timer — gọi khi tắt node / chạy test
+   * Dung sweep timer — goi khi tat node / chay test
    */
   stopSweep(): void {
     if (this.sweepTimer) {
       clearInterval(this.sweepTimer);
       this.sweepTimer = null;
     }
+  }
+
+  /**
+   * Dung auto-flush timer
+   */
+  stopAutoFlush(): void {
+    if (this.autoFlushTimer) {
+      clearInterval(this.autoFlushTimer);
+      this.autoFlushTimer = null;
+    }
+  }
+
+  /**
+   * Set callback khi auto-flu duoc trigger
+   */
+  setOnAutoFlush(callback: (freed: number) => void): void {
+    this.onAutoFlush = callback;
+  }
+
+  /**
+   * Kiem tra RAM he thong — neu vuot nguong thi tu dong flush 50% entries
+   */
+  checkMemoryAndFlush(): number {
+    if (this.autoFlushPercent <= 0) return 0;
+
+    const totalRAM = totalmem();
+    const rss = process.memoryUsage().rss;
+    const usagePercent = rss / totalRAM;
+
+    if (usagePercent <= this.autoFlushPercent) return 0;
+
+    // Flush 50% entries (khong flush het de tranh mat het cache)
+    const targetSize = Math.floor(this.store.size * 0.5);
+    const evicted = this.store.size - targetSize;
+
+    for (let i = 0; i < evicted; i++) {
+      const victim = this.eviction.onEvict();
+      if (victim === null) break;
+      if (this.store.has(victim)) {
+        this.store.delete(victim);
+        this.onEvicted?.(victim);
+      }
+    }
+
+    // GC hint
+    if (typeof globalThis.gc === 'function') {
+      globalThis.gc();
+    }
+
+    const freed = Math.max(0, rss - process.memoryUsage().rss);
+    this.onAutoFlush?.(freed);
+    return freed;
   }
 
   // ─── Persistence ────────────────────────────────────────────────
@@ -284,6 +347,19 @@ export class CacheNode {
       }
     }, intervalMs);
     // Không giữ process Node.js sống chỉ vì sweep timer
+    if (typeof timer === 'object' && 'unref' in timer) {
+      timer.unref();
+    }
+    return timer;
+  }
+
+  /**
+   * Bat dau auto-flush timer — kiem tra RAM dinh ky
+   */
+  private startAutoFlush(intervalMs: number): ReturnType<typeof setInterval> {
+    const timer = setInterval(() => {
+      this.checkMemoryAndFlush();
+    }, intervalMs);
     if (typeof timer === 'object' && 'unref' in timer) {
       timer.unref();
     }

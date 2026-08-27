@@ -56,6 +56,11 @@ export interface NodeConfig {
    * Dùng để dọn dẹp external tracking (ví dụ: replicatedKeys).
    */
   onEvicted?: (key: string) => void;
+  /**
+   * Ti le RAM he thong de tu dong flush (0-1, mac dinh 0 = tat).
+   * Vi du: 0.8 = flush khi RSS > 80% RAM he thong.
+   */
+  autoFlushPercent?: number;
 }
 
 /**

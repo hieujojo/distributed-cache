@@ -160,4 +160,55 @@ describe('CacheNode', () => {
       expect(keys).toContain('key3');
     });
   });
+
+  describe('auto-flush', () => {
+    it('should not flush when below threshold', () => {
+      const n = new CacheNode('af-test', {
+        maxSize: 10000,
+        autoFlushPercent: 0.95,
+        sweepIntervalMs: 0,
+      });
+      for (let i = 0; i < 100; i++) {
+        n.set(`k:${i}`, `v:${i}`);
+      }
+      const freed = n.checkMemoryAndFlush();
+      expect(freed).toBe(0);
+      expect(n.getSize()).toBe(100);
+      n.stopSweep();
+      n.stopAutoFlush();
+    });
+
+    it('should flush 50% when above threshold', () => {
+      const n = new CacheNode('af-test2', {
+        maxSize: 10000,
+        autoFlushPercent: 0.001,
+        sweepIntervalMs: 0,
+      });
+      for (let i = 0; i < 100; i++) {
+        n.set(`k:${i}`, `v:${i}`);
+      }
+      n.checkMemoryAndFlush();
+      // Should flush ~50% of entries
+      expect(n.getSize()).toBeLessThanOrEqual(60);
+      n.stopSweep();
+      n.stopAutoFlush();
+    });
+
+    it('should call onAutoFlush callback', () => {
+      let calledWith = -1;
+      const n = new CacheNode('af-test3', {
+        maxSize: 10000,
+        autoFlushPercent: 0.001,
+        sweepIntervalMs: 0,
+      });
+      n.setOnAutoFlush((freed) => { calledWith = freed; });
+      for (let i = 0; i < 100; i++) {
+        n.set(`k:${i}`, `v:${i}`);
+      }
+      n.checkMemoryAndFlush();
+      expect(calledWith).toBeGreaterThanOrEqual(0);
+      n.stopSweep();
+      n.stopAutoFlush();
+    });
+  });
 });
