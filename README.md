@@ -32,11 +32,11 @@ Distribution: 36/35/29% across 3 nodes (even)
 ## Quick Start
 
 ```bash
-npm install distributed-cache
+npm install @hieujojo/distributed-cache
 ```
 
 ```typescript
-import { CacheNode, ConsistentHash } from "distributed-cache";
+import { CacheNode, ConsistentHash } from "@hieujojo/distributed-cache";
 
 // Create nodes
 const node1 = new CacheNode("node-1", { maxSize: 10000 });
@@ -62,7 +62,7 @@ console.log(value); // { name: "John", email: "john@example.com" }
 ## With TCP Server
 
 ```typescript
-import { CacheServer, CacheClient, CacheNode } from "distributed-cache";
+import { CacheServer, CacheClient, CacheNode } from "@hieujojo/distributed-cache";
 
 // Start server
 const server = new CacheServer({ host: "127.0.0.1", port: 3000 });

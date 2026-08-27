@@ -72,7 +72,7 @@ npx tsc --noEmit
 ## Sử dụng như Library
 
 ```typescript
-import { ConsistentHash, CacheNode } from 'distributed-cache';
+import { ConsistentHash, CacheNode } from '@hieujojo/distributed-cache';
 
 // Tạo cache node với eviction policy tuỳ chọn
 const node = new CacheNode('node-1', {

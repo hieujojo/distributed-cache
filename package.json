@@ -1,5 +1,5 @@
 {
-  "name": "distributed-cache",
+  "name": "@hieujojo/distributed-cache",
   "version": "0.1.1",
   "description": "A lightweight distributed cache system implementing consistent hashing, data replication, and cache invalidation strategies",
   "main": "dist/index.js",
