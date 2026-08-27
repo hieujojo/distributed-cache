@@ -1,0 +1,44 @@
+# Publish to npm
+# Trigger: push tag v* (e.g., v0.1.0, v1.0.0)
+# Prerequisites:
+#   1. Create npm account at https://www.npmjs.com
+#   2. Get npm token: npm login → npm token create
+#   3. Add NPM_TOKEN to GitHub repo Secrets
+
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+
+      # Setup Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      # Install dependencies
+      - run: npm ci
+
+      # Typecheck
+      - run: npx tsc --noEmit
+
+      # Run tests
+      - run: npm test
+
+      # Build
+      - run: npm run build
+
+      # Publish to npm
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
