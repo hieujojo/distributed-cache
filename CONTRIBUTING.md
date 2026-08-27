@@ -1,65 +1,59 @@
 # Contributing
 
-Cảm ơn bạn đã quan tâm đến contributing! 🎉
-
----
-
-## Quick Start
+## Development Setup
 
 ```bash
-# 1. Fork repository trên GitHub
-
-# 2. Clone
-git clone https://github.com/YOUR_USERNAME/distributed-cache.git
+git clone https://github.com/hieujojo/distributed-cache.git
 cd distributed-cache
-
-# 3. Install
 npm install
-
-# 4. Tạo feature branch
-git checkout -b feature/your-feature
-
-# 5. Code + Test
-npm test
-
-# 6. Commit
-git commit -m "feat(scope): your message"
-
-# 7. Push + PR
-git push origin feature/your-feature
 ```
 
----
+## Scripts
 
-## Quy tắc cần biết
+```bash
+npm test                 # Run all tests
+npm run test:coverage    # Run tests with coverage
+npm run build            # Build package
+npm run lint             # Typecheck
+npm run benchmark        # Run performance benchmarks
+```
 
-| Quy tắc | Chi tiết |
-|---|---|
-| **Commit convention** | Xem agent/COMMIT_CONVENTION.md |
-| **Git workflow** | Xem agent/GIT_WORKFLOW.md |
-| **Code style** | Xem agent/CODE_STYLE.md |
-| **PR template** | Xem agent/PR_TEMPLATE.md |
-| **Rules** | Xem docs/guides/rules.md |
-| **Testing** | Xem docs/guides/testing.md |
+## Project Rules
 
----
+1. **Tests must pass** before every commit
+2. **Coverage >= 80%** for new code
+3. **Typecheck clean** (`npm run lint`)
+4. Follow existing code style (no linter configured — match patterns in codebase)
 
-## Pull Request
+## Commit Convention
 
-1. Code compile không lỗi
-2. Tất cả tests pass
-3. Coverage >= 80%
-4. Update docs (nếu cần)
-5. PR description rõ ràng
+```
+<type>: <description>
 
----
+Types: feat, fix, docs, test, refactor, ci, chore
+```
 
-## Questions?
+Examples:
+```
+feat: add LFU eviction strategy
+fix: handle empty cache in getNode()
+docs: update README with benchmarks
+test: add integration tests for TCP server
+ci: upgrade GitHub Actions to v7
+```
 
-Tạo Issue trên GitHub nếu có thắc mắc.
+## Architecture
 
----
+- `src/core/` — Core logic (ConsistentHash, CacheNode, Cluster)
+- `src/strategies/` — Eviction strategies (LRU, LFU, FIFO)
+- `src/server/` — TCP server, client, protocol
+- `src/metrics/` — Memory monitoring
+- `tests/` — Unit + integration tests
 
-## License
+## Adding a New Eviction Strategy
 
-Bằng việc contribute, bạn đồng ý rằng code sẽ được distribute dưới MIT License.
+1. Create `src/strategies/your-strategy.ts`
+2. Implement `EvictionStrategy` interface from `src/core/types.ts`
+3. Add to `src/strategies/index.ts` factory
+4. Add tests in `tests/strategies/`
+5. Update docs

@@ -1,55 +1,71 @@
-# Distributed Cache System
+# `@hieujojo/distributed-cache`
 
-![Tests](https://github.com/hieujojo/distributed-cache/actions/workflows/test.yml/badge.svg)
+> Lightweight distributed cache built from scratch in TypeScript — demonstrating consistent hashing, replication, and eviction strategies used in **Redis**, **DynamoDB**, and **Cassandra**.
 
-> Lightweight distributed cache built from scratch in TypeScript — demonstrating consistent hashing, replication, and eviction strategies used in Redis, DynamoDB, and Cassandra.
+[![npm version](https://img.shields.io/npm/v/@hieujojo/distributed-cache.svg)](https://www.npmjs.com/package/@hieujojo/distributed-cache)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://github.com/hieujojo/distributed-cache/actions/workflows/test.yml/badge.svg)](https://github.com/hieujojo/distributed-cache/actions)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 
-## Documentation
+---
 
-📖 **[Docs (EN)](https://distributed-cache-docs.vercel.app/)** | **[Tài liệu (VI)](https://distributed-cache-docs.vercel.app/vi/)**
+📖 **[Documentation (EN)](https://distributed-cache-docs.vercel.app/)** | **[Tài liệu (VI)](https://distributed-cache-docs.vercel.app/vi/)**
+
+---
 
 ## Features
 
 | Feature | Description |
 |---|---|
-| Consistent Hashing | Hash ring with virtual nodes for even data distribution |
-| Eviction (LRU/LFU/FIFO) | Automatically remove old entries when cache is full |
-| TTL (Time To Live) | Auto-expire entries after a set time |
-| Replication | Copy data to backup nodes for fault tolerance |
-| Cache Invalidation | Wildcard-based cleanup when source data changes |
-| Cluster Management | Leader election + automatic failover |
-| TCP Protocol | Low-latency network communication |
-| Persistence | Optional file-based storage |
+| **Consistent Hashing** | Hash ring with virtual nodes for even data distribution |
+| **Eviction Strategies** | LRU, LFU, FIFO — auto-remove old entries when cache is full |
+| **TTL** | Auto-expire entries after a set time |
+| **Replication** | Copy data to backup nodes for fault tolerance |
+| **Cache Invalidation** | Wildcard-based cleanup when source data changes |
+| **Cluster Management** | Leader election + automatic failover |
+| **TCP Protocol** | Low-latency wire protocol (Redis-inspired) |
+| **Persistence** | Optional file-based storage |
+| **Medusa.js Integration** | Ready-to-use adapter for e-commerce platforms |
 
 ## Performance
 
 ```
-Throughput:  120,000+ ops/sec (in-memory)
-Latency:     <0.01ms avg, <0.03ms p99
-Distribution: 36/35/29% across 3 nodes (even)
+╔══════════════════════════════════════════════════════╗
+║  Cache Operations (5000 ops, 1000 keys, 3 nodes)   ║
+╠══════════════════════════════════════════════════════╣
+║  GET:   120,000+ ops/sec   avg: 0.008ms            ║
+║  SET:   131,000+ ops/sec   avg: 0.008ms            ║
+║  MIXED: 119,000+ ops/sec   (80% read, 20% write)   ║
+╠══════════════════════════════════════════════════════╣
+║  Data Distribution: 36% / 35% / 29% (even)         ║
+║  Eviction:          LRU (default), LFU, FIFO        ║
+╚══════════════════════════════════════════════════════╝
 ```
 
-## Quick Start
+## Install
 
 ```bash
 npm install @hieujojo/distributed-cache
 ```
 
+## Quick Start
+
 ```typescript
 import { CacheNode, ConsistentHash } from "@hieujojo/distributed-cache";
 
-// Create nodes
+// Create cache nodes
 const node1 = new CacheNode("node-1", { maxSize: 10000 });
 const node2 = new CacheNode("node-2", { maxSize: 10000 });
 const node3 = new CacheNode("node-3", { maxSize: 10000 });
 
-// Setup consistent hashing
+// Setup consistent hashing (hash ring)
 const hash = new ConsistentHash();
-hash.addNode({ id: "node-1" });
-hash.addNode({ id: "node-2" });
-hash.addNode({ id: "node-3" });
+hash.addNode(node1);
+hash.addNode(node2);
+hash.addNode(node3);
 
-// Store data
+// Store data — automatically routes to correct node
 const key = "user:123";
 const node = hash.getNode(key);
 node?.set(key, { name: "John", email: "john@example.com" });
@@ -59,7 +75,7 @@ const value = node?.get(key);
 console.log(value); // { name: "John", email: "john@example.com" }
 ```
 
-## With TCP Server
+## TCP Server
 
 ```typescript
 import { CacheServer, CacheClient, CacheNode } from "@hieujojo/distributed-cache";
@@ -73,7 +89,7 @@ await server.start();
 const client = new CacheClient({ host: "127.0.0.1", port: 3000 });
 await client.connect();
 
-// Use cache
+// Use cache via TCP
 await client.set("product:456", { name: "iPhone", price: 999 });
 const product = await client.get("product:456");
 console.log(product); // { name: "iPhone", price: 999 }
@@ -85,29 +101,20 @@ await server.stop();
 ## Eviction Strategies
 
 ```typescript
-const lru = new CacheNode("lru", { maxSize: 3, evictionPolicy: "lru" });  // default
-const lfu = new CacheNode("lfu", { maxSize: 3, evictionPolicy: "lfu" });
-const fifo = new CacheNode("fifo", { maxSize: 3, evictionPolicy: "fifo" });
+// LRU (default) — evicts least recently used
+const lru = new CacheNode("lru", { maxSize: 1000, evictionPolicy: "lru" });
+
+// LFU — evicts least frequently used
+const lfu = new CacheNode("lfu", { maxSize: 1000, evictionPolicy: "lfu" });
+
+// FIFO — evicts oldest entries
+const fifo = new CacheNode("fifo", { maxSize: 1000, evictionPolicy: "fifo" });
 ```
 
-## Benchmark
-
-```
-╔══════════════════════════════════════════════════════╗
-║  Cache Operations (5000 ops, 1000 keys)            ║
-╠══════════════════════════════════════════════════════╣
-║  GET:   120,000+ ops/sec   avg: 0.008ms            ║
-║  SET:   131,000+ ops/sec   avg: 0.008ms            ║
-║  MIXED: 119,000+ ops/sec   (80% read, 20% write)   ║
-╚══════════════════════════════════════════════════════╝
-```
-
-Real-world benchmark: [Medusa.js integration](https://distributed-cache-docs.vercel.app/guide/benchmark)
-
-## Medusa Integration
+## Medusa.js Integration
 
 ```typescript
-import { DistributedCacheService } from "@medusajs/cache-distributed"
+import { DistributedCacheService } from "@medusajs/cache-distributed";
 
 const cache = new DistributedCacheService({}, {
   nodeCount: 3,
@@ -115,23 +122,36 @@ const cache = new DistributedCacheService({}, {
   ttl: 30,
   evictionPolicy: "lru",
   replication: true,
-})
+});
 
-await cache.set("product:123", productData, 60)
-const data = await cache.get("product:123")
+await cache.set("product:123", productData, 60);
+const data = await cache.get("product:123");
 ```
 
-## Tech Stack
+## Architecture
 
-| Layer | Technology | Why |
-|---|---|---|
-| Language | TypeScript | Type safety, IDE support |
-| Runtime | Node.js | Ecosystem, compatibility |
-| Hash | murmurhash | Fast, good distribution |
-| Network | TCP sockets | Low latency, Redis-compatible |
-| Testing | Jest | Industry standard |
-| CI/CD | GitHub Actions | Automated testing |
-| Build | tsup | Fast bundler |
+```
+┌─────────────────────────────────────────────────┐
+│              Client Layer                        │
+│  CacheClient  │  Visualization  │  Benchmark    │
+└──────────────────┬──────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────┐
+│              Network Layer                       │
+│  TCP Server ── Protocol Parser ── Serializer    │
+└──────────────────┬──────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────┐
+│              Core Layer                          │
+│  ClusterManager │ ConsistentHash │ Replication  │
+│  CacheNode      │ EvictionPolicy │ TTL Sweep    │
+└──────────────────┬──────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────┐
+│              Storage Layer                       │
+│  In-Memory HashMap (key → value + metadata)     │
+└─────────────────────────────────────────────────┘
+```
 
 ## Tests
 
@@ -139,31 +159,49 @@ const data = await cache.get("product:123")
 ✅ 317 tests — all pass
 ✅ Coverage: 91.8% statements, 81.8% branches
 ✅ CI/CD: GitHub Actions (auto test on push/PR)
+✅ Integration: TCP server/client real network tests
 ```
+
+## Tech Stack
+
+| Layer | Technology | Why |
+|---|---|---|
+| Language | TypeScript 5.x | Type safety, IDE support |
+| Runtime | Node.js >=22 | Non-blocking I/O, event-driven |
+| Hash | murmurhash | Fast, good distribution |
+| Network | TCP sockets | Low latency, persistent connections |
+| Testing | Jest | Industry standard, built-in mocking |
+| CI/CD | GitHub Actions | Automated test + npm publish |
+| Build | tsup | Fast bundler, ESM + CJS |
 
 ## Project Structure
 
 ```
 distributed-cache/
 ├── src/
-│   ├── core/          # Consistent hashing, CacheNode, Cluster
-│   ├── strategies/    # LRU, LFU, FIFO
-│   ├── server/        # TCP server, client, protocol
-│   ├── metrics/       # Memory monitoring, auto-flush
-│   └── demo/          # Demo scripts
+│   ├── core/              # ConsistentHash, CacheNode, Cluster
+│   ├── strategies/        # LRU, LFU, FIFO
+│   ├── server/            # TCP server, client, protocol
+│   ├── metrics/           # Memory monitoring, auto-flush
+│   └── demo/              # Example scripts
 ├── tests/
-│   ├── core/          # Core tests
-│   ├── strategies/    # Strategy tests
-│   ├── server/        # Server tests
-│   └── integration/   # Integration tests
-├── docs/              # Internal documentation
-└── .github/workflows/ # CI/CD
+│   ├── core/              # Unit tests
+│   ├── strategies/        # Strategy tests
+│   ├── server/            # Server tests
+│   ├── integration/       # TCP integration tests
+│   └── benchmark/         # Performance tests
+├── docs/                  # Internal documentation
+└── .github/workflows/     # CI/CD pipelines
 ```
 
 ## Security
 
-See [SECURITY.md](SECURITY.md) for security considerations.
+See [SECURITY.md](SECURITY.md) for security considerations and known limitations.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ## License
 
-MIT
+[MIT](LICENSE) &copy; Truong Cong Hieu

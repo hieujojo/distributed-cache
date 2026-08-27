@@ -1,10 +1,19 @@
 {
   "name": "@hieujojo/distributed-cache",
   "version": "0.1.3",
-  "description": "A lightweight distributed cache system implementing consistent hashing, data replication, and cache invalidation strategies",
+  "description": "Lightweight distributed cache built from scratch in TypeScript — consistent hashing, replication, eviction strategies (LRU/LFU/FIFO), TTL, cluster management, and TCP protocol",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -16,17 +25,44 @@
     "viz": "tsx src/visualization/server.ts",
     "demo": "tsx src/demo/quick.ts",
     "demo:full": "tsx src/demo/index.ts",
-    "memory": "tsx src/benchmark/memory.ts"
+    "memory": "tsx src/benchmark/memory.ts",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "distributed-cache",
     "consistent-hashing",
+    "hash-ring",
     "cache",
+    "lru",
+    "lfu",
+    "fifo",
+    "eviction",
+    "replication",
+    "cluster",
+    "tcp",
     "typescript",
-    "distributed-systems"
+    "nodejs",
+    "distributed-systems",
+    "in-memory",
+    "ttl",
+    "failover",
+    "leader-election"
   ],
-  "author": "hieujojo",
+  "author": "Truong Cong Hieu <conghieuzc112@gmail.com> (https://github.com/hieujojo)",
   "license": "MIT",
+  "homepage": "https://distributed-cache-docs.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hieujojo/distributed-cache.git",
+    "directory": "packages/distributed-cache"
+  },
+  "bugs": {
+    "url": "https://github.com/hieujojo/distributed-cache/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/hieujojo"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
@@ -43,12 +79,10 @@
     "node": ">=22.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hieujojo/distributed-cache.git"
-  },
   "dependencies": {
     "murmurhash": "^2.0.1"
   }
