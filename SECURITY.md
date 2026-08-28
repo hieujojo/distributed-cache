@@ -18,7 +18,7 @@
 If you discover a security vulnerability, please report it responsibly:
 
 1. **DO NOT** open a public GitHub issue
-2. Email: conghieuzc112@gmail.com
+2. Use [GitHub Private Vulnerability Reporting](https://github.com/hieujojo/distributed-cache/security/advisories/new) to report
 3. Include: description, steps to reproduce, potential impact
 4. You will receive acknowledgment within 48 hours
 
