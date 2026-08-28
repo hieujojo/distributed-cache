@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Hash Ring -->
+  <circle cx="100" cy="100" r="70" stroke="#3b82f6" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+  
+  <!-- Node 0 (top) -->
+  <circle cx="100" cy="30" r="14" fill="#3b82f6"/>
+  <text x="100" y="35" text-anchor="middle" fill="white" font-family="monospace" font-size="12" font-weight="bold">0</text>
+  
+  <!-- Node 1 (bottom-right) -->
+  <circle cx="160.6" cy="135" r="14" fill="#3b82f6"/>
+  <text x="160.6" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="12" font-weight="bold">1</text>
+  
+  <!-- Node 2 (bottom-left) -->
+  <circle cx="39.4" cy="135" r="14" fill="#3b82f6"/>
+  <text x="39.4" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="12" font-weight="bold">2</text>
+  
+  <!-- Center DB icon -->
+  <rect x="85" y="85" width="30" height="30" rx="4" fill="#1e293b"/>
+  <text x="100" y="105" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="10">DB</text>
+  
+  <!-- Connecting lines -->
+  <line x1="100" y1="44" x2="100" y2="85" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="148" y1="128" x2="115" y2="105" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="52" y1="128" x2="85" y2="105" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3"/>
+</svg>

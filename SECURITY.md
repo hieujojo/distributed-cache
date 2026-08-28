@@ -2,7 +2,7 @@
 
 ## Known Limitations
 
-This is an **educational project** demonstrating distributed cache concepts. It is **NOT production-ready** and has the following known security limitations:
+> **⚠️ This is an educational project.** It demonstrates distributed cache concepts and is **NOT production-ready**.
 
 | Issue | Severity | Description |
 |---|---|---|
@@ -22,7 +22,7 @@ If you discover a security vulnerability, please report it responsibly:
 3. Include: description, steps to reproduce, potential impact
 4. You will receive acknowledgment within 48 hours
 
-## Security Best Practices for Production Use
+## Security Checklist for Production Use
 
 If you adapt this code for production:
 
@@ -32,3 +32,4 @@ If you adapt this code for production:
 - [ ] Validate all protocol inputs
 - [ ] Sanitize error messages (no internal details)
 - [ ] Set maximum key/value sizes
+- [ ] Enable audit logging
